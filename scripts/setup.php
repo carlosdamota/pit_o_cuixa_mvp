@@ -34,9 +34,9 @@ function prompt(string $message): string
         echo "\n[ERROR] Cannot read from stdin.\n";
         exit(1);
     }
-    $line = trim(fgets($handle));
+    $line = fgets($handle);
     fclose($handle);
-    return $line;
+    return $line === false ? '' : trim($line);
 }
 
 // ── Helper: Print coloured status ────────────────────────────────────────
@@ -124,7 +124,19 @@ $executed   = 0;
 
 foreach ($statements as $stmt) {
     $stmt = trim($stmt);
-    if ($stmt === '' || str_starts_with($stmt, '--')) {
+    
+    // Remove comment lines
+    $lines = explode("\n", $stmt);
+    $codeLines = [];
+    foreach ($lines as $line) {
+        $trimmedLine = trim($line);
+        if ($trimmedLine !== '' && !str_starts_with($trimmedLine, '--')) {
+            $codeLines[] = $line;
+        }
+    }
+    $stmt = trim(implode("\n", $codeLines));
+    
+    if ($stmt === '') {
         continue;
     }
 
@@ -153,8 +165,13 @@ if ($isNewDb) {
 }
 
 // ── 7. Check existing admin users ────────────────────────────────────────
-$stmt = $pdo->query('SELECT COUNT(*) AS cnt FROM users WHERE role = \'admin\'');
-$adminCount = (int) $stmt->fetch()['cnt'];
+try {
+    $stmt = $pdo->query('SELECT COUNT(*) AS cnt FROM users WHERE role = \'admin\'');
+    $adminCount = (int) $stmt->fetch()['cnt'];
+} catch (\PDOException $e) {
+    // If users table doesn't exist, assume no admin users
+    return 0;
+}
 
 if ($adminCount > 0) {
     echo "\n";
