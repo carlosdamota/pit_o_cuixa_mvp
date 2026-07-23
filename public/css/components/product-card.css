@@ -1,0 +1,157 @@
+/* ======================================================================
+   Pit o Cuixa — Product Card Component
+   
+   BEM block: .product-card
+   DS-002: Consistent BEM naming
+   Part of: product-group__grid (responsive grid)
+   ====================================================================== */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ── Image ──────────────────────────────────────────────────── */
+.product-card__image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background-color: var(--color-surface-container-low);
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05);
+}
+
+.product-card__image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary), #fff3b0);
+}
+
+.product-card__placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.6;
+}
+
+/* ── Body ────────────────────────────────────────────────────── */
+.product-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  flex: 1;
+}
+
+.product-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.product-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  /* Clamp to 3 lines on desktop */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Footer (price + CTA) ────────────────────────────────────── */
+.product-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-sm);
+}
+
+.product-card__price {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.product-card__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--color-on-surface);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.product-card__cta:hover {
+  background-color: #e6d41e;
+  color: var(--color-on-surface);
+  opacity: 0.9;
+}
+
+.product-card__cta:focus-visible {
+  outline: 2px solid var(--color-on-surface);
+  outline-offset: 2px;
+}
+
+/* ── Grid container (used in both home featured and menu groups) ── */
+.featured__grid,
+.product-group__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+/* DS-003: Tablet — 2 columns */
+@media (min-width: 640px) {
+  .featured__grid,
+  .product-group__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* DS-003: Desktop — 3 columns */
+@media (min-width: 1024px) {
+  .featured__grid,
+  .product-group__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* DS-003: Wide desktop — 4 columns */
+@media (min-width: 1280px) {
+  .product-group__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

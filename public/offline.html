@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pit o Cuixa — Sin conexión</title>
+  <meta name="description" content="Pit o Cuixa no está disponible sin conexión.">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Quicksand', system-ui, -apple-system, sans-serif;
+      background: #f7f9ff;
+      color: #1a1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .offline-card {
+      text-align: center;
+      padding: 2rem;
+      max-width: 380px;
+    }
+
+    .offline-icon {
+      width: 80px;
+      height: 80px;
+      background: #f7e721;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1a1c1e;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .retry-btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: #f7e721;
+      color: #1a1c1e;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .retry-btn:hover {
+      background: #e5d41e;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="offline-icon">P</div>
+    <h1>Sin conexión</h1>
+    <p>Parece que no tienes conexión a internet. Vuelve a intentarlo cuando estés conectado.</p>
+    <p lang="en" style="font-size:0.875rem;color:#888;">You appear to be offline. Please try again when you have a connection.</p>
+    <a href="/" class="retry-btn">Reintentar / Retry</a>
+  </div>
+</body>
+</html>

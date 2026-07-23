@@ -1,0 +1,34 @@
+# Pit o Cuixa — CODEOWNERS
+#
+# Each line is a file pattern followed by one or more owners.
+# Order matters: last match takes precedence.
+# @pitocuixa/* teams must be created in GitHub org.
+
+# ── Root defaults ────────────────────────────────────────────────────────
+* @pitocuixa/tech-lead
+
+# ── Backend ──────────────────────────────────────────────────────────────
+/src/backend/          @pitocuixa/backend
+/db/                   @pitocuixa/backend
+/scripts/              @pitocuixa/backend
+/.env.example          @pitocuixa/backend
+
+# ── Frontend ─────────────────────────────────────────────────────────────
+/src/frontend/         @pitocuixa/frontend
+/public/css/           @pitocuixa/frontend
+/public/js/            @pitocuixa/frontend
+/public/img/           @pitocuixa/frontend
+/public/manifest.json  @pitocuixa/frontend
+/public/sw.js          @pitocuixa/frontend
+/public/offline.html   @pitocuixa/frontend
+
+# ── Shared ───────────────────────────────────────────────────────────────
+/src/shared/           @pitocuixa/backend @pitocuixa/frontend
+
+# ── DevOps / Config ──────────────────────────────────────────────────────
+/.github/              @pitocuixa/tech-lead
+/public/.htaccess      @pitocuixa/tech-lead
+/.gitignore            @pitocuixa/tech-lead
+
+# ── Specs / Project Docs ────────────────────────────────────────────────
+/openspec/             @pitocuixa/tech-lead

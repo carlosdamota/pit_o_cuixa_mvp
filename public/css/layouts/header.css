@@ -1,0 +1,147 @@
+/* ======================================================================
+   Pit o Cuixa — Header Layout
+   
+   BEM block: .header
+   Site header with logo, navigation, mobile menu toggle.
+   DS-002: Consistent BEM naming
+   ====================================================================== */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background-color: var(--color-surface-container-lowest);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.header__logo {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+
+.header__logo:hover {
+  color: var(--color-on-surface);
+}
+
+/* ── Menu Toggle (mobile) ────────────────────────────────────── */
+.header__menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header__menu-icon,
+.header__menu-icon::before,
+.header__menu-icon::after {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-on-surface);
+  transition: transform var(--transition-fast);
+}
+
+.header__menu-icon {
+  position: relative;
+}
+
+.header__menu-icon::before,
+.header__menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.header__menu-icon::before {
+  top: -7px;
+}
+
+.header__menu-icon::after {
+  top: 7px;
+}
+
+/* ── Desktop Menu ────────────────────────────────────────────── */
+.header__menu {
+  display: none; /* hidden on mobile */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.header__menu--open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  background-color: var(--color-surface-container-lowest);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-sm) 0;
+}
+
+.header__link {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.header__link:hover {
+  color: var(--color-on-surface);
+}
+
+.header__link--active {
+  color: var(--color-on-surface);
+  font-weight: var(--font-weight-semibold);
+}
+
+.header__lang {
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.05em;
+}
+
+/* DS-003: Tablet+ — horizontal menu, no hamburger */
+@media (min-width: 640px) {
+  .header__menu-toggle {
+    display: none;
+  }
+
+  .header__menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .header__menu--open {
+    all: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+}

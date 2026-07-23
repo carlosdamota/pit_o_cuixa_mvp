@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate (PHP + JSON + CSS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: none
+          coverage: none
+
+      - name: PHP Syntax Check (lint)
+        run: |
+          EXIT_CODE=0
+          while IFS= read -r -d '' FILE; do
+            php -l "$FILE" || EXIT_CODE=$?
+          done < <(find . -name '*.php' -not -path './vendor/*' -not -path './data/*' -print0)
+          exit $EXIT_CODE
+
+      - name: Check for Debug Statements
+        run: |
+          EXIT_CODE=0
+          echo "Checking for debug statements..."
+          if grep -rn 'var_dump\|print_r\|console\.log' --include='*.php' --include='*.js' . | grep -v 'vendor/' | grep -v 'data/' | grep -v '.git/' | grep .; then
+            echo "ERROR: Debug statements found (var_dump/print_r/console.log)"
+            EXIT_CODE=1
+          else
+            echo "No debug statements found."
+          fi
+          exit $EXIT_CODE
+
+      - name: Validate JSON Files
+        run: |
+          EXIT_CODE=0
+          while IFS= read -r -d '' FILE; do
+            echo "Validating JSON: $FILE"
+            php -r "json_decode(file_get_contents('$FILE')); if (json_last_error() !== JSON_ERROR_NONE) { echo 'ERROR: ' . json_last_error_msg() . PHP_EOL; exit(1); } else { echo 'OK' . PHP_EOL; }" || EXIT_CODE=$?
+          done < <(find . -name '*.json' -not -path './vendor/*' -not -path './data/*' -not -path './.git/*' -print0)
+          exit $EXIT_CODE
+
+      - name: CSS Basic Validation
+        run: |
+          EXIT_CODE=0
+          while IFS= read -r -d '' FILE; do
+            echo "Checking CSS: $FILE"
+            # Basic check: count opening vs closing braces
+            OPEN=$(tr -cd '{' < "$FILE" | wc -c)
+            CLOSE=$(tr -cd '}' < "$FILE" | wc -c)
+            if [ "$OPEN" -ne "$CLOSE" ]; then
+              echo "ERROR: Unbalanced braces in $FILE ($OPEN open, $CLOSE close)"
+              EXIT_CODE=1
+            else
+              echo "OK ($FILE)"
+            fi
+          done < <(find . -name '*.css' -not -path './vendor/*' -not -path './data/*' -not -path './.git/*' -print0)
+          exit $EXIT_CODE

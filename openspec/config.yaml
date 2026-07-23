@@ -1,0 +1,55 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Project: Pit o cuixa
+  Stack: PHP 8.x vanilla + HTML + CSS + JS vanilla + SQLite
+  Team: 8 personas, 2 subequipos (frontend / backend), monorepo GitHub con Actions protegiendo main
+  Language: Bilingüe ES/EN
+  Hosting: CMS-compatible (PHP + SQLite)
+  Design System: Primary #f7e721, Secondary #d32f2f, Surface #f7f9ff, Container #edf4ff/#ffffff,
+    On Surface #1a1c1e, Quicksand font, 8px border radius
+  Dependencies: None (sin Composer, sin frameworks)
+  CI: GitHub Actions
+
+testing:
+  strict_tdd: false
+  reason: "No test runner detected. PHP vanilla sin PHPUnit ni Pest. No Makefile test targets found."
+  runner: null
+  layers:
+    unit: { available: false, tool: "—" }
+    integration: { available: false, tool: "—" }
+    e2e: { available: false, tool: "—" }
+  coverage: { available: false, command: "—" }
+  quality:
+    linter: { available: false, command: "—" }
+    type_checker: { available: false, command: "—" }
+    formatter: { available: false, command: "—" }
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Write proposals in English by default; switch to ES if user explicitly requests
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Specs in English by default; team may write scenarios bilingües ES/EN
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Leverage vanilla patterns (no frameworks, no Composer)
+  tasks:
+    - Group by subequipo (frontend / backend)
+    - Use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns
+    - Maintain vanilla PHP+JS+CSS stack discipline
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "php -l"  # Syntax check as minimal validation
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas

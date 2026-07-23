@@ -1,0 +1,93 @@
+/* ======================================================================
+   Pit o Cuixa — Design Tokens
+   
+   All visual constants as CSS custom properties.
+   Every component MUST reference tokens instead of hardcoded values.
+   
+   DS-001: Complete token coverage
+   DS-005: Color application rules
+   DS-006: Border radius consistency
+   ====================================================================== */
+
+:root {
+  /* ── Colors ──────────────────────────────────────────────────────── */
+  /* DS-005: Primary = hero sections, CTAs */
+  --color-primary: #f7e721;
+
+  /* DS-005: Secondary = price tags, warning badges */
+  --color-secondary: #d32f2f;
+
+  /* DS-005: Surface colors */
+  --color-surface: #f7f9ff;
+  --color-surface-container-low: #edf4ff;
+  --color-surface-container-lowest: #ffffff;
+
+  /* On-surface text */
+  --color-on-surface: #1a1c1e;
+
+  /* Semantic */
+  --color-text-muted: #6b7280;
+  --color-border: #d1d5db;
+  --color-error: #dc2626;
+  --color-success: #16a34a;
+
+  /* ── Typography ──────────────────────────────────────────────────── */
+  /* DS-004: Quicksand with sans-serif fallback */
+  --font-family: 'Quicksand', sans-serif;
+
+  /* Scale */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+
+  /* Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ── Spacing (4px base grid) ─────────────────────────────────────── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ── Border ──────────────────────────────────────────────────────── */
+  /* DS-006: All rounded corners use --radius (8px) */
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ─────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* ── Transitions ─────────────────────────────────────────────────── */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* ── Z-index ─────────────────────────────────────────────────────── */
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+
+  /* ── Breakpoints (min-width, mobile-first) ──────────────────────── */
+  /* DS-003: Mobile-first media queries */
+  /* Usage: @media (min-width: 640px) { ... } */
+  /* --bp-mobile:  640px; (small tablet) */
+  /* --bp-tablet:  1024px; */
+  /* --bp-desktop: 1280px; */
+}

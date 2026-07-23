@@ -1,0 +1,30 @@
+{
+  "name": "Pit o Cuixa",
+  "short_name": "Pit o Cuixa",
+  "description": "Pollería y rostería en Torredembarra",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#f7e721",
+  "background_color": "#f7f9ff",
+  "lang": "es",
+  "categories": ["food", "restaurant"],
+  "icons": [
+    {
+      "src": "/img/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/img/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/img/icons/icon-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

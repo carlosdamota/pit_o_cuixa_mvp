@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <rect width="180" height="180" rx="22" fill="#f7e721"/>
+  <text x="90" y="114" font-family="system-ui, sans-serif" font-size="72" font-weight="800" text-anchor="middle" fill="#1a1c1e">P</text>
+  <circle cx="136" cy="44" r="12" fill="#d32f2f" opacity="0.9"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Maskable icon: content centered in safe zone (80% of canvas) -->
+  <rect width="512" height="512" rx="0" fill="#f7e721"/>
+  <rect x="51" y="51" width="410" height="410" rx="48" fill="#f7e721"/>
+  <text x="256" y="320" font-family="system-ui, sans-serif" font-size="192" font-weight="800" text-anchor="middle" fill="#1a1c1e">P</text>
+  <circle cx="384" cy="128" r="32" fill="#d32f2f" opacity="0.9"/>
+</svg>
