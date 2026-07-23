@@ -48,7 +48,8 @@ $uri    = $_SERVER['REQUEST_URI'] ?? '/';
 function renderPage(string $page, array $meta = [], array $data = [], int $code = 200): void
 {
     // Validate page name to prevent Local File Inclusion
-    if (!preg_match('/^[a-z0-9_-]+$/i', $page)) {
+    // Allow alphanumeric, underscore, hyphen, and forward slash for subdirectories
+    if (!preg_match('/^[a-z0-9_\/-]+$/i', $page)) {
         \Pit\Cuixa\Backend\Http\Response::error('Invalid page', 400);
         return;
     }
