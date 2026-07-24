@@ -28,6 +28,7 @@ use Pit\Cuixa\Backend\Pages\Admin\Login as AdminLogin;
 use Pit\Cuixa\Backend\Pages\Admin\Dashboard as AdminDashboard;
 use Pit\Cuixa\Backend\Pages\Admin\Products as AdminProductsPage;
 use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
+use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 
@@ -113,6 +114,7 @@ $router->add('POST', '/api/auth/logout', static function (array $params): void {
 });
 
 // Admin API CRUD
+$router->add('GET',    '/api/admin/products',       static function (array $params): void { AdminProducts::list(); });
 $router->add('POST',   '/api/admin/products',       static function (array $params): void { AdminProducts::create(); });
 $router->add('PUT',    '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::update((int) ($params['id'] ?? 0)); });
 $router->add('DELETE', '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::delete((int) ($params['id'] ?? 0)); });
@@ -158,6 +160,10 @@ $router->add('GET', '/admin/products', static function (array $params): void {
 
 $router->add('GET', '/admin/categories', static function (array $params): void {
     AdminCategoriesPage::render();
+});
+
+$router->add('GET', '/admin/import-export', static function (array $params): void {
+    AdminImportExportPage::render();
 });
 
 // ── 4d. 404 Fallback ──────────────────────────────────────────────────

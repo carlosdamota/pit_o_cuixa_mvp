@@ -434,3 +434,419 @@ export function validateForm(form) {
 
   return allValid;
 }
+
+// ======================================================================
+//  Phase 3 — Row Animation Helpers
+// ======================================================================
+
+/**
+ * Escape HTML special characters for safe innerHTML insertion.
+ * @param {string} str
+ * @returns {string}
+ */
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/**
+ * Insert a new table row with slide-in animation.
+ * @param {HTMLTableSectionElement} tbody
+ * @param {string} html  Row HTML (<tr>...</tr>)
+ * @param {number} [index]  Insert position (-1 or undefined = append)
+ * @returns {HTMLTableRowElement}
+ */
+export function insertTableRow(tbody, html, index = -1) {
+  // Remove empty state row if present
+  const emptyRow = tbody.querySelector('.admin-table__empty');
+  if (emptyRow) emptyRow.remove();
+
+  const temp = document.createElement('tbody');
+  temp.innerHTML = html.trim();
+  const row = temp.firstElementChild;
+
+  if (index >= 0 && index < tbody.children.length) {
+    tbody.insertBefore(row, tbody.children[index]);
+  } else {
+    tbody.appendChild(row);
+  }
+
+  requestAnimationFrame(() => {
+    row.style.animation = 'admin-row-in 250ms ease';
+  });
+
+  row.addEventListener('animationend', () => {
+    row.style.animation = '';
+  }, { once: true });
+
+  return row;
+}
+
+/**
+ * Remove a table row with slide-out animation.
+ * @param {HTMLTableRowElement} row
+ * @returns {Promise<void>} Resolves when row is removed
+ */
+export function removeTableRow(row) {
+  return new Promise((resolve) => {
+    row.style.animation = 'admin-row-out 200ms ease forwards';
+    row.addEventListener('animationend', () => {
+      row.remove();
+      resolve();
+    }, { once: true });
+    // Fallback
+    setTimeout(() => {
+      if (row.parentNode) row.remove();
+      resolve();
+    }, 300);
+  });
+}
+
+/**
+ * Update a table row's content with a brief highlight pulse.
+ * @param {HTMLTableRowElement} row
+ * @param {string} html  New <tr>...</tr> HTML
+ */
+export function updateTableRow(row, html) {
+  const temp = document.createElement('tbody');
+  temp.innerHTML = html.trim();
+  const newRow = temp.firstElementChild;
+
+  row.innerHTML = newRow.innerHTML;
+  // Copy data attributes
+  for (const attr of newRow.attributes) {
+    if (attr.name.startsWith('data-')) {
+      row.setAttribute(attr.name, attr.value);
+    }
+  }
+
+  // Yellow highlight
+  row.style.animation = 'admin-row-highlight 600ms ease';
+  row.addEventListener('animationend', () => {
+    row.style.animation = '';
+  }, { once: true });
+}
+
+/**
+ * Show or hide the empty state row in a table.
+ * @param {HTMLTableSectionElement} tbody
+ * @param {number} colspan
+ * @param {string} message
+ */
+export function toggleEmptyState(tbody, colspan, message) {
+  const existing = tbody.querySelector('.admin-table__empty');
+  if (existing) existing.remove();
+
+  if (tbody.children.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="${colspan}" class="admin-table__empty">${escHtml(message)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ======================================================================
+//  Phase 3 — Drawer Component
+// ======================================================================
+
+/**
+ * Slide-out drawer panel for forms.
+ *
+ * @example
+ *   const drawer = new Drawer({
+ *     drawer: '[data-drawer]',
+ *     overlay: '[data-drawer-overlay]',
+ *   });
+ *   drawer.open('Crear producto');
+ *   drawer.close();
+ */
+export class Drawer {
+  constructor(opts = {}) {
+    this.drawer = typeof opts.drawer === 'string'
+      ? document.querySelector(opts.drawer)
+      : opts.drawer;
+    this.overlay = typeof opts.overlay === 'string'
+      ? document.querySelector(opts.overlay)
+      : opts.overlay;
+    this.onClose = opts.onClose || null;
+    this._previousActive = null;
+    this._onKeyDown = this._handleKeyDown.bind(this);
+
+    // Bind close buttons
+    const closeBtns = (this.drawer || document).querySelectorAll('[data-drawer-close], [data-drawer-cancel]');
+    closeBtns.forEach(btn => btn.addEventListener('click', () => this.close()));
+
+    // Overlay click to close
+    if (this.overlay) {
+      this.overlay.addEventListener('click', (e) => {
+        if (e.target === this.overlay) this.close();
+      });
+    }
+  }
+
+  /**
+   * Open the drawer.
+   * @param {string} [title]  Optional title to set in [data-drawer-title]
+   */
+  open(title) {
+    this._previousActive = document.activeElement;
+
+    // Only set title if provided
+    if (title !== undefined && this.drawer) {
+      const titleEl = this.drawer.querySelector('[data-drawer-title]');
+      if (titleEl) titleEl.textContent = title;
+    }
+
+    this.overlay.hidden = false;
+    this.drawer.hidden = false;
+
+    // Trigger animations
+    requestAnimationFrame(() => {
+      this.overlay.classList.add('admin-drawer__overlay--visible');
+      this.drawer.classList.add('admin-drawer--visible');
+    });
+
+    // Focus first input after animation starts
+    setTimeout(() => {
+      const firstInput = this.drawer.querySelector(
+        'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (firstInput && typeof firstInput.focus === 'function') {
+        firstInput.focus();
+      }
+    }, 150);
+
+    document.addEventListener('keydown', this._onKeyDown);
+  }
+
+  /**
+   * Close the drawer with slide-out animation.
+   */
+  close() {
+    this.overlay.classList.remove('admin-drawer__overlay--visible');
+    this.drawer.classList.remove('admin-drawer--visible');
+
+    setTimeout(() => {
+      this.overlay.hidden = true;
+      this.drawer.hidden = true;
+    }, 300);
+
+    document.removeEventListener('keydown', this._onKeyDown);
+
+    if (this._previousActive && typeof this._previousActive.focus === 'function') {
+      this._previousActive.focus();
+      this._previousActive = null;
+    }
+
+    if (typeof this.onClose === 'function') this.onClose();
+  }
+
+  /**
+   * Clean up event listeners.
+   */
+  destroy() {
+    this.close();
+    this._onKeyDown = null;
+  }
+
+  /** @private */
+  _handleKeyDown(e) {
+    if (e.key === 'Escape') {
+      this.close();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusable = this.drawer.querySelectorAll(
+        'input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+}
+
+// ======================================================================
+//  Phase 3 — Pagination
+// ======================================================================
+
+/**
+ * Fetch a paginated page from an API endpoint.
+ * @param {string} url  Base API URL
+ * @param {number} page
+ * @param {number} limit
+ * @returns {Promise<object>}
+ */
+export async function fetchPaginated(url, page, limit = 20) {
+  const separator = url.includes('?') ? '&' : '?';
+  const res = await fetch(`${url}${separator}page=${page}&limit=${limit}`, {
+    credentials: 'same-origin',
+    headers: { 'X-CSRF-Token': getCsrfToken() },
+  });
+  return res.json();
+}
+
+/**
+ * Render pagination controls.
+ * Callers should attach a single click listener on the container using
+ * paginationClickHandler() to handle page navigation.
+ *
+ * @param {object} opts
+ * @param {HTMLElement} opts.container  The pagination wrapper element
+ * @param {number}      opts.currentPage
+ * @param {number}      opts.totalPages
+ * @param {number}      [opts.total]
+ */
+export function renderPagination(opts) {
+  const { container, currentPage, totalPages, total } = opts;
+
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const pages = [];
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, currentPage + 2);
+  if (start > 1) pages.push(1);
+  if (start > 2) pages.push('…');
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < totalPages - 1) pages.push('…');
+  if (end < totalPages) pages.push(totalPages);
+
+  container.innerHTML = [
+    `<div class="admin-pagination__info">Página ${currentPage} de ${totalPages}${total !== undefined ? ` (${total} en total)` : ''}</div>`,
+    '<ul class="admin-pagination__list">',
+    ...pages.map(p => {
+      if (p === '…') {
+        return '<li class="admin-pagination__item"><span class="admin-pagination__ellipsis">…</span></li>';
+      }
+      return `<li class="admin-pagination__item">
+              <button class="admin-pagination__link${p === currentPage ? ' admin-pagination__link--active' : ''}" data-page="${p}"${p === currentPage ? ' aria-current="page"' : ''}>${p}</button>
+             </li>`;
+    }),
+    '</ul>',
+  ].join('');
+
+  // Store state for click handler
+  container.dataset.currentPage = String(currentPage);
+  container.dataset.totalPages = String(totalPages);
+}
+
+/**
+ * Handle a click on a paginated container and determine the target page.
+ * Returns the page number to navigate to, or 0 if no navigation needed.
+ *
+ * @param {HTMLElement} container  The pagination wrapper
+ * @param {Event}       e          Click event
+ * @returns {number} Page to navigate to, or 0
+ */
+export function paginationClickHandler(container, e) {
+  const btn = e.target.closest('[data-page]');
+  if (!btn || btn.disabled) return 0;
+
+  const currentPage = parseInt(container.dataset.currentPage || '1', 10);
+  const totalPages = parseInt(container.dataset.totalPages || '1', 10);
+
+  let page = parseInt(btn.dataset.page, 10);
+  if (btn.dataset.page === 'prev') page = currentPage - 1;
+  if (btn.dataset.page === 'next') page = currentPage + 1;
+
+  if (page < 1 || page > totalPages || page === currentPage) return 0;
+  return page;
+}
+
+/**
+ * Update the URL query parameter for page (for history/bookmark support).
+ * @param {number} page
+ */
+export function setPageParam(page) {
+  const url = new URL(window.location);
+  url.searchParams.set('page', String(page));
+  window.history.pushState({ page }, '', url);
+}
+
+/**
+ * Fade out old rows and replace with new HTML.
+ * @param {HTMLTableSectionElement} tbody
+ * @param {string} html  Full HTML string of rows (no wrapping table)
+ */
+export function swapTableRows(tbody, html) {
+  // Fade out existing rows
+  const oldRows = [...tbody.querySelectorAll('tr')];
+  oldRows.forEach(row => {
+    if (row.classList.contains('admin-table__empty')) {
+      row.remove();
+      return;
+    }
+    row.style.animation = 'admin-fade-out 150ms ease forwards';
+  });
+
+  // After fade, replace content
+  setTimeout(() => {
+    tbody.innerHTML = html.trim();
+    // Fade in new rows
+    requestAnimationFrame(() => {
+      tbody.querySelectorAll('tr').forEach((row, i) => {
+        row.style.animation = `admin-row-in 200ms ease`;
+        row.style.animationDelay = `${i * 40}ms`;
+      });
+    });
+  }, 160);
+}
+
+// ======================================================================
+//  Phase 3 — Keyboard Shortcuts
+// ======================================================================
+
+/**
+ * Initialize global keyboard shortcuts for admin pages.
+ *
+ * @param {object} handlers
+ * @param {() => void}  [handlers.escape]   Close modal/drawer
+ * @param {() => void}  [handlers.submit]   Submit active form (Ctrl/Cmd+Enter)
+ * @param {() => void}  [handlers.create]   Open create drawer (Ctrl/Cmd+N)
+ * @param {() => void}  [handlers.help]     Show shortcuts help (?)
+ */
+export function initKeyboardShortcuts(handlers) {
+  document.addEventListener('keydown', (e) => {
+    // Block shortcuts when typing in inputs (except Escape)
+    const tag = document.activeElement?.tagName;
+    const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    if (isInput && e.key !== 'Escape') return;
+
+    const mod = e.ctrlKey || e.metaKey;
+
+    if (e.key === 'Escape' && handlers.escape) {
+      handlers.escape();
+      e.preventDefault();
+      return;
+    }
+
+    if (mod && (e.key === 'Enter' || e.key === 'NumpadEnter') && handlers.submit) {
+      handlers.submit();
+      e.preventDefault();
+      return;
+    }
+
+    if (mod && (e.key === 'n' || e.key === 'N') && handlers.create) {
+      handlers.create();
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === '?' && !e.shiftKey && handlers.help && !isInput) {
+      handlers.help();
+      e.preventDefault();
+    }
+  });
+}
