@@ -109,7 +109,8 @@ class Menu
             'canonical'   => $siteUrl . '/menu',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'es' => $siteUrl . '/menu',
+                'ca' => $siteUrl . '/menu',
+                'es' => $siteUrl . '/menu?lang=es',
                 'en' => $siteUrl . '/menu?lang=en',
             ],
             'jsonld'      => $menuJsonLd,

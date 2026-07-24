@@ -1,25 +1,30 @@
 /**
- * Pit o Cuixa — Menu Category Filter
+ * Pit o Cuixa — Menu Category Filter + Search
  *
- * ESM module: category filter show/hide with "All" reset.
+ * ESM module: unified filter (category + search text) with "All" reset.
  * Progressive enhancement: server HTML renders without JS.
  *
  * Data attributes:
- *   [data-filter-bar]       — container with category tab buttons
- *   [data-filter]           — category slug on each button ('all' for reset)
+ *   [data-filter-bar]       — container with category tab buttons + search
+ *   [data-filter]           — category slug on each tab button ('all' for reset)
+ *   [data-menu-search]      — search input
  *   [data-menu-products]    — container holding all product-group sections
  *   [data-category]         — category slug on each product-group section
+ *   [data-product-slug]     — product slug on each card
+ *   [data-search-text]      — lowercased bilingual search corpus on each card
  *
  * @module menu-filter
  */
 
 /**
- * Initialise the menu category filter.
+ * Initialise the menu filter and search.
  * Call after DOM is ready.
  */
 export function initMenuFilter() {
   const filterBar = document.querySelector('[data-filter-bar]');
   const productsContainer = document.querySelector('[data-menu-products]');
+  const searchInput = document.querySelector('[data-menu-search]');
+  const noResults = document.getElementById('search-no-results');
 
   if (!filterBar || !productsContainer) {
     return; // Not on the menu page — skip
@@ -32,37 +37,59 @@ export function initMenuFilter() {
     return;
   }
 
-  /**
-   * Show all product groups (reset filter).
-   */
-  function showAll() {
-    groups.forEach((group) => {
-      group.style.display = '';
-    });
-  }
+  // ── Filter state ────────────────────────────────────────────
+  let activeCategory = 'all';  // 'all' | category slug
+  let searchQuery    = '';     // lowercased, applied only if length >= 2
 
-  /**
-   * Show only groups matching a specific category slug.
-   *
-   * @param {string} slug  Category slug to filter by
-   */
-  function filterByCategory(slug) {
+  // ── Apply filters (category AND search) ─────────────────────
+  function applyFilters() {
+    let anyVisible = false;
+
     groups.forEach((group) => {
       const category = group.getAttribute('data-category');
+      const categoryMatch = activeCategory === 'all' || category === activeCategory;
 
-      if (category === slug) {
-        group.style.display = '';
-      } else {
+      if (!categoryMatch) {
+        group.style.display = 'none';
+        return;
+      }
+
+      // Category matches — show group (may be hidden by search below)
+      group.style.display = '';
+
+      const cards = group.querySelectorAll('.product-card');
+      let hasVisibleCard = false;
+
+      cards.forEach((card) => {
+        const searchText = card.getAttribute('data-search-text') || '';
+        const searchMatch = searchQuery.length < 2 || searchText.includes(searchQuery);
+
+        if (searchMatch) {
+          card.style.display = '';
+          hasVisibleCard = true;
+          anyVisible = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Hide group if no cards survived the search
+      if (!hasVisibleCard) {
         group.style.display = 'none';
       }
     });
+
+    // Toggle no-results announcement
+    if (noResults) {
+      if (!anyVisible && searchQuery.length >= 2) {
+        noResults.classList.remove('visually-hidden');
+      } else {
+        noResults.classList.add('visually-hidden');
+      }
+    }
   }
 
-  /**
-   * Activate a tab and deactivate others.
-   *
-   * @param {HTMLElement} activeTab  The tab button to activate
-   */
+  // ── Tab activation ──────────────────────────────────────────
   function setActiveTab(activeTab) {
     tabs.forEach((tab) => {
       tab.classList.remove('filter-bar__tab--active');
@@ -73,11 +100,7 @@ export function initMenuFilter() {
     activeTab.setAttribute('aria-pressed', 'true');
   }
 
-  /**
-   * Handle tab click.
-   *
-   * @param {MouseEvent} event
-   */
+  // ── Handle tab click ────────────────────────────────────────
   function handleTabClick(event) {
     const tab = event.currentTarget;
     const filter = tab.getAttribute('data-filter');
@@ -87,20 +110,24 @@ export function initMenuFilter() {
     }
 
     setActiveTab(tab);
-
-    if (filter === 'all') {
-      showAll();
-    } else {
-      filterByCategory(filter);
-    }
+    activeCategory = filter;
+    applyFilters();
   }
 
-  // Attach click handlers
+  // Attach click handlers to tabs
   tabs.forEach((tab) => {
     tab.addEventListener('click', handleTabClick);
   });
 
-  // ── Keyboard navigation ────────────────────────────────────
+  // ── Handle search input ─────────────────────────────────────
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.toLowerCase().trim();
+      applyFilters();
+    });
+  }
+
+  // ── Keyboard navigation (tabs only) ─────────────────────────
   filterBar.addEventListener('keydown', (event) => {
     const current = document.activeElement;
     if (!current || !current.hasAttribute('data-filter')) {

@@ -2,20 +2,17 @@
 /**
  * Pit o Cuixa — Navigation Partial
  *
- * Renders the main site navigation with language toggle.
+ * Renders the main site navigation with locale dropdown.
  * Available variables: $locale (current language code), $pageName
  *
  * @package Pit\Cuixa\Frontend\Templates\Partials
  */
 
 $currentPage = $pageName ?? 'home';
-$otherLang   = LANG === 'es' ? 'en' : 'es';
 
-// Build language-switch URL keeping the current path
-$langUrl = $_SERVER['REQUEST_URI'];
-$langUrl = preg_replace('/[?&]lang=[a-z]{2}/', '', $langUrl);
-$separator = str_contains($langUrl, '?') ? '&' : '?';
-$langUrl .= $separator . 'lang=' . $otherLang;
+// Build current URI without lang param for the form action
+$baseUri = $_SERVER['REQUEST_URI'];
+$baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
 ?>
 <nav class="header__nav container" role="navigation" aria-label="<?= __('nav.home') ?>">
     <a href="/" class="header__logo" aria-label="<?= __('site.name') ?>">
@@ -39,12 +36,15 @@ $langUrl .= $separator . 'lang=' . $otherLang;
                 <?= __('nav.menu') ?>
             </a>
         </li>
-        <li>
-            <a href="<?= htmlspecialchars($langUrl, ENT_QUOTES, 'UTF-8') ?>"
-               class="header__link header__lang"
-               hreflang="<?= $otherLang ?>">
-                <?= __('lang.switch') ?>
-            </a>
+        <li class="header__lang-item">
+            <form action="<?= htmlspecialchars($baseUri, ENT_QUOTES, 'UTF-8') ?>" method="get" class="header__lang-form">
+                <select name="lang" class="header__lang-select" aria-label="<?= __('lang.switch') ?>" onchange="this.form.submit()">
+                    <option value="ca"<?= LANG === 'ca' ? ' selected' : '' ?>>Català</option>
+                    <option value="es"<?= LANG === 'es' ? ' selected' : '' ?>>Castellano</option>
+                    <option value="en"<?= LANG === 'en' ? ' selected' : '' ?>>English</option>
+                </select>
+                <noscript><button type="submit" class="header__lang-btn"><?= __('lang.switch') ?></button></noscript>
+            </form>
         </li>
     </ul>
 </nav>

@@ -21,8 +21,18 @@ $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.')
 $imageUrl    = $product['image_url']   ?? null;
 $orderUrl    = $product['last_shop_url'] ?? '#';
 $slug        = $product['slug']        ?? '';
+
+// Build search corpus from both locales (lowercased, space-separated)
+$searchText = strtolower(
+    ($product['name_es']        ?? '') . ' ' .
+    ($product['name_en']        ?? '') . ' ' .
+    ($product['description_es'] ?? '') . ' ' .
+    ($product['description_en'] ?? '')
+);
 ?>
-<article class="product-card" data-product-slug="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>">
+<article class="product-card"
+         data-product-slug="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
+         data-search-text="<?= htmlspecialchars($searchText, ENT_QUOTES, 'UTF-8') ?>">
     <div class="product-card__image-wrap">
         <?php if ($imageUrl): ?>
             <img class="product-card__image"

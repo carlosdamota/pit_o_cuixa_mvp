@@ -128,7 +128,8 @@ table {
 /* Enhancements at larger breakpoints handled per component */
 
 /* ── Utility Classes ────────────────────────────────────────────────── */
-.sr-only {
+.sr-only,
+.visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;

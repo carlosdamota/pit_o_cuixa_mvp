@@ -63,7 +63,8 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/',
             'alternates' => [
-                ['hreflang' => 'es', 'href' => $siteUrl . '/'],
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/?lang=en'],
                 ['hreflang' => 'x-default', 'href' => $siteUrl . '/'],
             ],
@@ -73,7 +74,8 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/menu',
             'alternates' => [
-                ['hreflang' => 'es', 'href' => $siteUrl . '/menu'],
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/menu'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/menu?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/menu?lang=en'],
                 ['hreflang' => 'x-default', 'href' => $siteUrl . '/menu'],
             ],
@@ -89,15 +91,17 @@ class Sitemap
                     continue;
                 }
 
+                $caUrl = $siteUrl . '/producte/' . $product['slug'];
                 $esUrl = $siteUrl . '/producto/' . $product['slug'];
                 $enUrl = $siteUrl . '/product/' . $product['slug'];
 
                 $pages[] = [
-                    'loc' => $esUrl,
+                    'loc' => $caUrl,
                     'alternates' => [
+                        ['hreflang' => 'ca', 'href' => $caUrl],
                         ['hreflang' => 'es', 'href' => $esUrl],
                         ['hreflang' => 'en', 'href' => $enUrl],
-                        ['hreflang' => 'x-default', 'href' => $esUrl],
+                        ['hreflang' => 'x-default', 'href' => $caUrl],
                     ],
                 ];
             }

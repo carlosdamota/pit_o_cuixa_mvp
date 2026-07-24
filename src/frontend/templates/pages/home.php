@@ -62,7 +62,7 @@ $featured = $pageData['featured_products'] ?? [];
                 <div class="info__icon" aria-hidden="true">📞</div>
                 <h3 class="info__label"><?= __('home.info.phone') ?></h3>
                 <p class="info__text">
-                    <a href="tel:+34977642010"><?= __('home.info.phone') ?></a>
+                    <a href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"><?= __('home.info.phone') ?></a>
                 </p>
             </div>
 

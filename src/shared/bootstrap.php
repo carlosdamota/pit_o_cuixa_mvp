@@ -45,10 +45,18 @@ spl_autoload_register(static function (string $class): void {
 });
 
 // ── 4. Locale Detection ─────────────────────────────────────────────────
+// Priority: ?lang= query param → lang cookie → Config::defaultLocale()
 $locale = Config::defaultLocale();
 
-if (isset($_GET['lang']) && in_array($_GET['lang'], Config::supportedLocales(), true)) {
-    $locale = $_GET['lang'];
+if (isset($_GET['lang'])) {
+    $requested = $_GET['lang'];
+
+    if (in_array($requested, Config::supportedLocales(), true)) {
+        $locale = $requested;
+        // Persist choice in cookie for subsequent requests (1 year)
+        setcookie('lang', $locale, time() + 365 * 86400, '/', '', true, true);
+    }
+    // Invalid ?lang= falls back to default — no cookie set
 } elseif (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], Config::supportedLocales(), true)) {
     $locale = $_COOKIE['lang'];
 }
@@ -56,8 +64,33 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], Config::supportedLocales(), 
 // Make locale available globally (used by __() and templates)
 define('LANG', $locale);
 
-// ── 5. Load i18n ────────────────────────────────────────────────────────
-require_once __DIR__ . '/i18n/' . LANG . '.php';
+// ── 5. Load i18n with Fallback Chain ────────────────────────────────────
+// Each locale file now returns a pure data array (no function definitions).
+// Fallback order: requested locale → CA → EN
+$localeStrings = require __DIR__ . '/i18n/' . LANG . '.php';
+$caStrings     = require __DIR__ . '/i18n/ca.php';
+$enStrings     = require __DIR__ . '/i18n/en.php';
+
+$GLOBALS['_translations'] = array_merge($enStrings, $caStrings, $localeStrings);
+
+/**
+ * Translate a key into the current locale.
+ * Falls back through: requested locale → CA → EN → key itself.
+ *
+ * @param  string $key     Translation key (dot-notation: section.key)
+ * @param  array  $params  Optional sprintf parameters
+ * @return string
+ */
+function __(string $key, array $params = []): string
+{
+    $text = $GLOBALS['_translations'][$key] ?? $key;
+
+    if ($params !== []) {
+        $text = sprintf($text, ...$params);
+    }
+
+    return $text;
+}
 
 // ── 6. Set timezone ─────────────────────────────────────────────────────
 date_default_timezone_set('Europe/Madrid');
