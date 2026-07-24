@@ -30,21 +30,32 @@ $locale     = $pageData['locale']     ?? LANG;
      ============================================================ -->
 <nav class="filter-bar" data-filter-bar aria-label="<?= __('menu.heading') ?>">
     <div class="filter-bar__inner container">
-        <button class="filter-bar__tab filter-bar__tab--active"
-                data-filter="all"
-                type="button"
-                aria-pressed="true">
-            <?= __('menu.filter.all') ?>
-        </button>
+        <div class="filter-bar__search">
+            <label for="menu-search" class="visually-hidden"><?= __('menu.search.label') ?></label>
+            <input type="search"
+                   id="menu-search"
+                   class="filter-bar__search-input"
+                   data-menu-search
+                   placeholder="<?= __('menu.search.placeholder') ?>">
+        </div>
 
-        <?php foreach ($catList as $cat): ?>
-            <button class="filter-bar__tab"
-                    data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
+        <div class="filter-bar__tabs">
+            <button class="filter-bar__tab filter-bar__tab--active"
+                    data-filter="all"
                     type="button"
-                    aria-pressed="false">
-                <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
+                    aria-pressed="true">
+                <?= __('menu.filter.all') ?>
             </button>
-        <?php endforeach; ?>
+
+            <?php foreach ($catList as $cat): ?>
+                <button class="filter-bar__tab"
+                        data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
+                        type="button"
+                        aria-pressed="false">
+                    <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
     </div>
 </nav>
 
@@ -70,6 +81,11 @@ $locale     = $pageData['locale']     ?? LANG;
             </div>
         </section>
     <?php endforeach; ?>
+
+    <p id="search-no-results"
+       class="visually-hidden"
+       aria-live="polite"
+       role="status"><?= __('menu.search.no_results') ?></p>
 
     <?php if ($groups === []): ?>
         <div class="container">
