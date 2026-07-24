@@ -13,7 +13,7 @@ declare(strict_types = 1); //Evitamos conversiones en el tipo de los datos
 
 namespace Pit\Cuixa\Backend\Api;
 
-class PodructScraper{
+class WebScraper{
 
     /**
      * Descarga y procesamiento de la carta del restaurante, devuelve los productos encontrados
