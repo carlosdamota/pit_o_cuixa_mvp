@@ -45,10 +45,10 @@ Chain strategy: pending
 
 ## Phase 3: Architecture Uplift
 
-- [ ] 3.1 Refactor CRUD products/categories: replace `window.location.reload()` with `AdminApi` → DOM row insert/update/remove, maintain sort/page state
-- [ ] 3.2 Add pagination to products table (page nav prev/next, limit param, server-side SQL `LIMIT/OFFSET`, client-side row batch swap)
-- [ ] 3.3 Build slide-out drawer form panel (`.admin-drawer` BEM + JS toggle + overlay + focus-trap)
-- [ ] 3.4 Add keyboard shortcuts: `Ctrl+N` new product, `Ctrl+F` search focus, `Esc` close drawer/modal (global handler)
+- [x] 3.1 Refactor CRUD products/categories: replace `window.location.reload()` with `AdminApi` → DOM row insert/update/remove, maintain sort/page state
+- [x] 3.2 Add pagination to products table (page nav prev/next, limit param, server-side SQL `LIMIT/OFFSET`, client-side row batch swap)
+- [x] 3.3 Build slide-out drawer form panel (`.admin-drawer` BEM + JS toggle + overlay + focus-trap)
+- [x] 3.4 Add keyboard shortcuts: `Ctrl+N` new product, `Ctrl+F` search focus, `Esc` close drawer/modal (global handler)
 
 ### Dependencies
 

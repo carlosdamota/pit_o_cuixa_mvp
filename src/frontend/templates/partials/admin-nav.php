@@ -36,6 +36,12 @@ $userDisplay = $user['display_name'] ?? $user['username'] ?? '';
                 Categorías
             </a>
         </li>
+        <li class="admin-nav__item">
+            <a href="/admin/import-export"
+               class="admin-nav__link <?= str_starts_with($currentPath, '/admin/import-export') ? 'admin-nav__link--active' : '' ?>">
+                Importar / Exportar
+            </a>
+        </li>
     </ul>
 
     <div class="admin-nav__footer">
