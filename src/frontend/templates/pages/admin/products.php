@@ -94,8 +94,11 @@ $lang       = $pageData['locale'] ?? LANG;
 
                     <div class="admin-field">
                         <label class="admin-field__label" for="prod-image">Image URL</label>
-                        <input id="prod-image" name="image_url" type="url" class="admin-field__input"
-                               placeholder="https://...">
+                        <div style="display:flex;gap:8px;align-items:flex-start;">
+                            <input id="prod-image" name="image_url" type="url" class="admin-field__input"
+                                   placeholder="https://..." style="flex:1;">
+                            <div class="admin-image-preview" data-preview="image" aria-hidden="true"></div>
+                        </div>
                     </div>
 
                     <div class="admin-field">
@@ -209,33 +212,9 @@ $lang       = $pageData['locale'] ?? LANG;
 /**
  * Admin Products — CRUD operations via AJAX.
  */
+import { api, showAlert, showToast, withLoading, AdminModal, bindImagePreview, validateForm, validateField } from '/js/admin.js';
+
 const API_BASE = '/api/admin/products';
-
-// ── Helpers ─────────────────────────────────────────────────────
-async function api(method, url, body = null) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    const headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-    };
-
-    const res = await fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : null,
-        credentials: 'same-origin'
-    });
-    return res.json();
-}
-
-function showAlert(el, msg, type) {
-    const alert = document.querySelector(type === 'success' ? '[data-alert-success]' : '[data-alert-error]');
-    if (alert) {
-        alert.textContent = msg;
-        alert.hidden = false;
-        setTimeout(() => { alert.hidden = true; }, 5000);
-    }
-}
 
 // ── Toggle Form ─────────────────────────────────────────────────
 document.querySelectorAll('[data-toggle-form]').forEach(btn => {
@@ -263,6 +242,16 @@ document.querySelector('[data-cancel-form]')?.addEventListener('click', () => {
 document.querySelector('[data-product-form]')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
+    const submitBtn = form.querySelector('[data-btn-submit]');
+
+    // Validate all fields before submit
+    if (!validateForm(form)) {
+        const firstInvalid = form.querySelector('.admin-field--invalid input, .admin-field--invalid select, .admin-field--invalid textarea');
+        if (firstInvalid) firstInvalid.focus();
+        showAlert('Corrige los campos marcados en rojo', 'error');
+        return;
+    }
+
     const id = form.querySelector('[data-field-id]').value;
     const method = id ? 'PUT' : 'POST';
     const url = id ? `${API_BASE}/${id}` : API_BASE;
@@ -282,15 +271,17 @@ document.querySelector('[data-product-form]')?.addEventListener('submit', async 
         is_featured: form.querySelector('[name="is_featured"]').checked,
     };
 
-    const json = await api(method, url, JSON.stringify(data));
+    await withLoading(submitBtn, async () => {
+        const json = await api(method, url, data);
 
-    if (json.error) {
-        const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
-        showAlert(null, msg, 'error');
-    } else {
-        showAlert(null, id ? 'Producto actualizado' : 'Producto creado', 'success');
-        setTimeout(() => window.location.reload(), 1000);
-    }
+        if (json.error) {
+            const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
+            showAlert(msg, 'error');
+        } else {
+            showAlert(id ? 'Producto actualizado' : 'Producto creado', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        }
+    });
 });
 
 // ── Edit Product ────────────────────────────────────────────────
@@ -328,21 +319,45 @@ document.querySelectorAll('[data-edit-product]').forEach(btn => {
 });
 
 // ── Delete Product ──────────────────────────────────────────────
+const modal = new AdminModal();
+
 document.querySelectorAll('[data-delete-product]').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
         const id = btn.dataset.deleteProduct;
         const name = btn.dataset.name || 'este producto';
 
-        if (!confirm(`¿Eliminar "${name}"?`)) return;
+        modal.open('Eliminar producto', `¿Eliminar "${name}"?`, async () => {
+            modal.close();
+            const json = await api('DELETE', `${API_BASE}/${id}`);
 
-        const json = await api('DELETE', `${API_BASE}/${id}`);
-
-        if (json.error) {
-            showAlert(null, json.message || 'Error al eliminar', 'error');
-        } else {
-            showAlert(null, 'Producto eliminado', 'success');
-            setTimeout(() => window.location.reload(), 1000);
-        }
+            if (json.error) {
+                showAlert(json.message || 'Error al eliminar', 'error');
+            } else {
+                showAlert('Producto eliminado', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        });
     });
 });
+
+// ── Image Preview ───────────────────────────────────────────────
+const imageInput = document.querySelector('[name="image_url"]');
+const imagePreview = document.querySelector('[data-preview="image"]');
+if (imageInput && imagePreview) {
+    bindImagePreview(imageInput, imagePreview);
+}
+
+// ── Form Field Validation on Blur ───────────────────────────────
+const productForm = document.querySelector('[data-product-form]');
+if (productForm) {
+    productForm.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea').forEach(field => {
+        field.addEventListener('blur', () => validateField(field));
+        field.addEventListener('input', () => {
+            const wrapper = field.closest('.admin-field');
+            if (wrapper) {
+                wrapper.classList.remove('admin-field--invalid');
+            }
+        });
+    });
+}
 </script>

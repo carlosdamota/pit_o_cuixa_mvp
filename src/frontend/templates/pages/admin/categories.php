@@ -145,33 +145,9 @@ $lang       = $pageData['locale'] ?? LANG;
 /**
  * Admin Categories — CRUD via AJAX.
  */
+import { api, showAlert, showToast, withLoading, AdminModal, validateForm, validateField } from '/js/admin.js';
+
 const API_BASE = '/api/admin/categories';
-
-async function api(method, url, body = null) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    const headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-    };
-
-    const res = await fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : null,
-        credentials: 'same-origin'
-    });
-    return res.json();
-}
-
-function showAlert(msg, type) {
-    const sel = type === 'success' ? '[data-alert-success]' : '[data-alert-error]';
-    const el = document.querySelector(sel);
-    if (el) {
-        el.textContent = msg;
-        el.hidden = false;
-        setTimeout(() => { el.hidden = true; }, 5000);
-    }
-}
 
 // Toggle form
 document.querySelectorAll('[data-toggle-form]').forEach(btn => {
@@ -198,6 +174,16 @@ document.querySelector('[data-cancel-form="category"]')?.addEventListener('click
 document.querySelector('[data-category-form]')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
+    const submitBtn = form.querySelector('[data-btn-submit]');
+
+    // Validate all fields before submit
+    if (!validateForm(form)) {
+        const firstInvalid = form.querySelector('.admin-field--invalid input, .admin-field--invalid select');
+        if (firstInvalid) firstInvalid.focus();
+        showAlert('Corrige los campos marcados en rojo', 'error');
+        return;
+    }
+
     const id = form.querySelector('[data-field-id]').value;
     const method = id ? 'PUT' : 'POST';
     const url = id ? `${API_BASE}/${id}` : API_BASE;
@@ -210,15 +196,17 @@ document.querySelector('[data-category-form]')?.addEventListener('submit', async
         is_active: form.querySelector('[name="is_active"]').checked,
     };
 
-    const json = await api(method, url, JSON.stringify(data));
+    await withLoading(submitBtn, async () => {
+        const json = await api(method, url, data);
 
-    if (json.error) {
-        const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
-        showAlert(msg, 'error');
-    } else {
-        showAlert(id ? 'Categoría actualizada' : 'Categoría creada', 'success');
-        setTimeout(() => window.location.reload(), 1000);
-    }
+        if (json.error) {
+            const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
+            showAlert(msg, 'error');
+        } else {
+            showAlert(id ? 'Categoría actualizada' : 'Categoría creada', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        }
+    });
 });
 
 // Edit
@@ -239,20 +227,38 @@ document.querySelectorAll('[data-edit-category]').forEach(btn => {
 });
 
 // Delete
+const modal = new AdminModal();
+
 document.querySelectorAll('[data-delete-category]').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
         const id = btn.dataset.deleteCategory;
         const name = btn.dataset.name || 'esta categoría';
-        if (!confirm(`¿Eliminar "${name}"?`)) return;
 
-        const json = await api('DELETE', `${API_BASE}/${id}`);
+        modal.open('Eliminar categoría', `¿Eliminar "${name}"?`, async () => {
+            modal.close();
+            const json = await api('DELETE', `${API_BASE}/${id}`);
 
-        if (json.error) {
-            showAlert(json.message || 'Error al eliminar', 'error');
-        } else {
-            showAlert('Categoría eliminada', 'success');
-            setTimeout(() => window.location.reload(), 1000);
-        }
+            if (json.error) {
+                showAlert(json.message || 'Error al eliminar', 'error');
+            } else {
+                showAlert('Categoría eliminada', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        });
     });
 });
+
+// ── Form Field Validation on Blur ───────────────────────────────
+const catForm = document.querySelector('[data-category-form]');
+if (catForm) {
+    catForm.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select').forEach(field => {
+        field.addEventListener('blur', () => validateField(field));
+        field.addEventListener('input', () => {
+            const wrapper = field.closest('.admin-field');
+            if (wrapper) {
+                wrapper.classList.remove('admin-field--invalid');
+            }
+        });
+    });
+}
 </script>
