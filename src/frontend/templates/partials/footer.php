@@ -14,6 +14,9 @@
             <p class="footer__tagline"><?= __('site.tagline') ?></p>
             <p class="footer__hours"><?= __('footer.hours') ?></p>
             <p class="footer__address"><?= __('home.info.address') ?></p>
+            <p class="footer__phone">
+                <a href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"><?= __('home.info.phone') ?></a>
+            </p>
         </div>
         <div class="footer__copy">
             &copy; <?= date('Y') ?> <?= __('site.name') ?>. <?= __('footer.rights') ?>

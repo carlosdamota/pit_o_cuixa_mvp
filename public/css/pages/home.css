@@ -1,0 +1,152 @@
+/* ======================================================================
+   Pit o Cuixa — Home Landing (fullscreen index)
+
+   BEM block: .landing
+   Fullscreen yellow landing with logo + 3 big category buttons.
+   Mobile: vertical buttons filling the viewport height.
+   Desktop: horizontal buttons.
+   DS-002: Consistent BEM naming
+   DS-003: Mobile-first (360px minimum)
+   DS-005: Primary = landing background; Secondary = accent button
+   ====================================================================== */
+
+/* ── Entrance animation (provisional — refined later) ─────────────── */
+@keyframes landing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Block ────────────────────────────────────────────────────────── */
+.landing {
+  background-color: var(--color-primary);
+  /* Fill the viewport above the fold (header is 56px, sticky) */
+  min-height: calc(100dvh - 56px);
+  display: flex;
+}
+
+.landing__inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* ── Logo ─────────────────────────────────────────────────────────── */
+.landing__logo {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  animation: landing-fade-up 400ms ease-out both;
+}
+
+/* ── Nav: 3 big buttons ───────────────────────────────────────────── */
+.landing__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  flex: 1; /* buttons share the remaining viewport height */
+}
+
+.landing__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: var(--space-md) var(--space-lg);
+
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  text-align: center;
+
+  color: var(--color-surface-container-lowest);
+  background-color: var(--color-on-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+
+  /* Staggered entrance (provisional) */
+  animation: landing-fade-up 400ms ease-out both;
+}
+
+.landing__btn:nth-child(1) { animation-delay: 100ms; }
+.landing__btn:nth-child(2) { animation-delay: 200ms; }
+.landing__btn:nth-child(3) { animation-delay: 300ms; }
+
+.landing__btn:hover {
+  color: var(--color-surface-container-lowest);
+  transform: translateY(-2px);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 -6px 0 var(--color-secondary);
+}
+
+.landing__btn:focus-visible {
+  outline: 3px solid var(--color-on-surface);
+  outline-offset: 3px;
+}
+
+/* ── Accent variant (corporate red) ───────────────────────────────── */
+.landing__btn--accent {
+  background-color: var(--color-secondary);
+}
+
+.landing__btn--accent:hover {
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 -6px 0 var(--color-primary);
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .landing__logo,
+  .landing__btn {
+    animation: none;
+  }
+
+  .landing__btn:hover {
+    transform: none;
+  }
+}
+
+/* ── DS-003: Tablet+ ──────────────────────────────────────────────── */
+@media (min-width: 640px) {
+  .landing__logo {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+/* ── DS-003: Desktop — horizontal buttons ─────────────────────────── */
+@media (min-width: 1024px) {
+  .landing__inner {
+    padding: var(--space-xl) var(--space-xl);
+    gap: var(--space-2xl);
+  }
+
+  .landing__nav {
+    flex-direction: row;
+    gap: var(--space-lg);
+  }
+
+  .landing__btn {
+    min-height: 40dvh;
+    font-size: var(--font-size-3xl);
+  }
+}

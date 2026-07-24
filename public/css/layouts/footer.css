@@ -38,10 +38,16 @@
 }
 
 .footer__hours,
-.footer__address {
+.footer__address,
+.footer__phone {
   font-size: var(--font-size-sm);
   opacity: 0.8;
   margin: 0;
+}
+
+/* Footer bg is dark — links must inherit the light footer text color */
+.footer__phone a {
+  color: inherit;
 }
 
 .footer__copy {

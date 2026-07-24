@@ -38,6 +38,13 @@ return [
     'home.info.phone'  => 'Tel. +34 977 64 20 10',
     'home.info.hours'  => 'Abierto cada día de 11:00 a 23:00',
 
+    // ── Home Landing (fullscreen index) ──────────────────────────
+    'home.landing.title'     => 'Pit o Cuixa — Pollería en Torredembarra',
+    'home.landing.aria'      => '¿Qué te apetece?',
+    'home.landing.pollos'    => 'Pollos al ast',
+    'home.landing.combinados' => 'Platos combinados',
+    'home.landing.picapica'  => 'Picapica',
+
     // ── Menu Page ────────────────────────────────────────────────
     'menu.title'       => 'Carta — Pit o Cuixa',
     'menu.desc'        => 'Explora nuestra carta: pollo al ast, brochetas, hamburguesas, ensaladas y mucho más.',

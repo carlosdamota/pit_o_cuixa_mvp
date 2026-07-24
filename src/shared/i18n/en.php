@@ -38,6 +38,13 @@ return [
     'home.info.phone'  => 'Tel. +34 977 64 20 10',
     'home.info.hours'  => 'Open every day from 11:00 to 23:00',
 
+    // ── Home Landing (fullscreen index) ──────────────────────────
+    'home.landing.title'     => 'Pit o Cuixa — Rotisserie in Torredembarra',
+    'home.landing.aria'      => 'What are you craving?',
+    'home.landing.pollos'    => 'Rotisserie Chicken',
+    'home.landing.combinados' => 'Set Menus',
+    'home.landing.picapica'  => 'Nibbles',
+
     // ── Menu Page ────────────────────────────────────────────────
     'menu.title'       => 'Menu — Pit o Cuixa',
     'menu.desc'        => 'Explore our menu: rotisserie chicken, skewers, burgers, salads and more.',

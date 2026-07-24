@@ -96,6 +96,11 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/components/filter-bar.css">
     <link rel="stylesheet" href="/css/pages/error.css">
 
+    <!-- Home landing CSS (only on home page) -->
+    <?php if ($pageName === 'home'): ?>
+    <link rel="stylesheet" href="/css/pages/home.css">
+    <?php endif; ?>
+
     <!-- Admin CSS (only on admin pages) -->
     <?php if (str_starts_with($pageName, 'admin/')): ?>
     <link rel="stylesheet" href="/css/pages/admin.css">

@@ -158,4 +158,19 @@ export function initMenuFilter() {
 
     tabArray[nextIndex].focus();
   });
+
+  // ── Preselect category from URL (?cat=slug) ─────────────────
+  // Landing buttons link here with a preselected filter.
+  // Unknown slugs fall back silently to 'all'.
+  const catParam = new URLSearchParams(window.location.search).get('cat');
+
+  if (catParam && catParam !== 'all') {
+    const target = filterBar.querySelector(`[data-filter="${CSS.escape(catParam)}"]`);
+
+    if (target) {
+      setActiveTab(target);
+      activeCategory = catParam;
+      applyFilters();
+    }
+  }
 }
