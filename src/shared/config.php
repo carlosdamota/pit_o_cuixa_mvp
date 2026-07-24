@@ -84,7 +84,14 @@ final class Config
      */
     public static function dbPath(): string
     {
-        return self::get('DB_PATH', dirname(__DIR__, 2) . '/data/pitocuixa.db');
+        $path = self::get('DB_PATH', dirname(__DIR__, 2) . '/data/pitocuixa.db');
+
+        // Resolve relative paths to absolute using the project root
+        if (!empty($path) && $path[0] !== '/' && $path[0] !== '\\' && substr($path, 1, 1) !== ':') {
+            $path = dirname(__DIR__, 2) . '/' . ltrim($path, './\\');
+        }
+
+        return $path;
     }
 
     /**
@@ -112,11 +119,11 @@ final class Config
     }
 
     /**
-     * Default locale (es|en).
+     * Default locale (ca|es|en).
      */
     public static function defaultLocale(): string
     {
-        return self::get('DEFAULT_LOCALE', 'es');
+        return self::get('DEFAULT_LOCALE', 'ca');
     }
 
     /**
@@ -126,7 +133,15 @@ final class Config
      */
     public static function supportedLocales(): array
     {
-        return ['es', 'en'];
+        return ['ca', 'es', 'en'];
+    }
+
+    /**
+     * Canonical phone number (source of truth for i18n + JSON-LD).
+     */
+    public static function phone(): string
+    {
+        return '+34 977 64 20 10';
     }
 
     /**

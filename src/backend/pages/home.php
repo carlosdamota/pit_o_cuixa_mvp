@@ -43,7 +43,8 @@ class Home
             'canonical'   => \Config::siteUrl() . '/',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'es' => \Config::siteUrl() . '/',
+                'ca' => \Config::siteUrl() . '/',
+                'es' => \Config::siteUrl() . '/?lang=es',
                 'en' => \Config::siteUrl() . '/?lang=en',
             ],
         ];
