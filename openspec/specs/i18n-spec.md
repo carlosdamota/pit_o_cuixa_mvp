@@ -1,0 +1,1 @@
+<content from specs/i18n/spec.md>
