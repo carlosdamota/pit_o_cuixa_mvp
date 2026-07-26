@@ -76,37 +76,68 @@ class WebScraper{
             $carta = $carta->item(0); #Convierte de DOMNodeList a DOMElement
         }
 
-        //Aislamos los productos individuales
-        $products = $xpath->query(".//a", $carta);
-
         $data = [];
+        $category = "";
 
-        foreach($products as $p){
-            //link
-            $slug = basename($p->getAttribute('href'));
+        foreach($carta->childNodes as $c){
+            
+            //Ignoramos nodos no HTML
+            if(!($c instanceof \DOMElement)){
+                continue;
+            }
 
-            //datos
-            $name = trim($xpath->query(".//h3", $p)->item(0)?->textContent ?? '');
-            $price = trim($xpath->query(".//p[contains(text(),'€')]", $p)->item(0)->textContent ?? '');
-            $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $p)->item(0)->textContent ?? '');
-            $urL_image = $xpath->query(".//img", $p)->item(0)?->getAttribute('src') ?? '';
+            //Asignamos categoria normalizada
+            if($c->tagName === "div"){
+                $h2 = $xpath->query(".//h2", $c)->item(0);
+                $category = $this->mapCategory($h2->textContent);
+                continue;
+            }
 
-            //limpiamos el link de cualquier formato
-            $id_image = basename($urL_image);
-            $image = "https://res.cloudinary.com/lastpos/image/upload/" . $id_image;
+            if($c->tagName === "a"){
+                //link
+                $slug = basename($c->getAttribute('href'));
 
-            $data[] = [
-                'slug' => $slug,
-                'name_es' => $name,
-                'price' => $price,
-                'description' => $descr,
-                'image' => $image
-            ];
+                //datos
+                $name = trim($xpath->query(".//h3", $c)->item(0)?->textContent ?? '');
+                $price = trim($xpath->query(".//p[contains(text(),'€')]", $c)->item(0)->textContent ?? '');
+                $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $c)->item(0)->textContent ?? '');
+                $urL_image = $xpath->query(".//img", $c)->item(0)?->getAttribute('src') ?? '';
 
-        };
+                //limpiamos el link de cualquier formato
+                $id_image = basename($urL_image);
+                $image = "https://res.cloudinary.com/lastpos/image/upload/" . $id_image;
+
+                $data[] = [
+                    'slug' => $slug,
+                    'name_es' => $name,
+                    'price' => $price,
+                    'description' => $descr,
+                    'image' => $image,
+                    'category' => $category
+                ];
+            }
+        }
 
         return $data;
     }
+    
+    /**
+     * Mapeador de Categorias.
+     * @param string $category
+     * @return void
+     */
+    private function mapCategory(string $category) : string{
+        
+        $category = mb_strtolower(trim($category));
+    
+        return match($category){
+            'menu de pollo','menu diario llevar ( de lunes a viernes)','menu especial casal' => 'menus',
+            'platos principales','arroces y fideua por encargo min 24h' => 'platos',
+            'croquetas','ensaladas','patatas' => 'entrantes',
+            'bebidas' => 'bebidas',
+            'postre' => 'postres',
+            default => ''
+        };
+    }
 }
-
 ?>
