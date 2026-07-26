@@ -50,26 +50,56 @@ class WebScraper{
 
     /**
      * Procesador de datos html para convertirlos en JSON
-     * @param string $html
+     * @param string $url
      * @return array
      */
 
-    private function parseHtml(string $html) : array{
+    private function parseHtml(string $url) : array{
         
         //Ignoramos los warnings generados por fallos en el HTML
-        #libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
 
         //Instanciamos la clase DOM
-        #$dom = new \DOMDocument();
+        $dom = new \DOMDocument();
 
-        #$dom->loadHTML($html);
+        $dom->loadHTML($url);
+        $xpath = new \DOMXPath($dom);
 
-        #$xpath = new \DOMXPath($dom);
+        //Aislamos la sección donde esta toda la carta
+        $carta = $xpath->query("//*[contains(@class, 'md:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]')]");
 
-        #return [];
-        
-        echo $html;
-        exit;
+        //Bloque de control
+        if($carta->length !== 1){
+            throw new \RuntimeException("Error al obtener datos:\nDatos esperados: 1\n Datos encontrados: {carta->length}");
+        }
+        else{
+            $carta = $carta->item(0); #Convierte de DOMNodeList a DOMElement
+        }
+
+        //Aislamos los productos individuales
+        $products = $xpath->query(".//a", $carta);
+
+        $data = [];
+
+        foreach($products as $p){
+            //link
+            $slug = basename($p->getAttribute('href'));
+
+            //datos
+            $name = trim($xpath->query(".//h3", $p)->item(0)?->textContent ?? '');
+            $price = trim($xpath->query(".//p[contains(text(),'€')]", $p)->item(0)->textContent ?? '');
+            $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $p)->item(0)->textContent ?? '');
+
+            $data[] = [
+                'slug' => $slug,
+                'name_es' => $name,
+                'price' => $price,
+                'description' => $descr
+            ];
+
+        };
+
+        return $data;
     }
 }
 
