@@ -89,12 +89,18 @@ class WebScraper{
             $name = trim($xpath->query(".//h3", $p)->item(0)?->textContent ?? '');
             $price = trim($xpath->query(".//p[contains(text(),'€')]", $p)->item(0)->textContent ?? '');
             $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $p)->item(0)->textContent ?? '');
+            $urL_image = $xpath->query(".//img", $p)->item(0)?->getAttribute('src') ?? '';
+
+            //limpiamos el link de cualquier formato
+            $id_image = basename($urL_image);
+            $image = "https://res.cloudinary.com/lastpos/image/upload/" . $id_image;
 
             $data[] = [
                 'slug' => $slug,
                 'name_es' => $name,
                 'price' => $price,
-                'description' => $descr
+                'description' => $descr,
+                'image' => $image
             ];
 
         };
