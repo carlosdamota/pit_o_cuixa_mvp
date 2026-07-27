@@ -37,6 +37,12 @@ $baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
                 <?= __('nav.menu') ?>
             </a>
         </li>
+        <li class="header__desktop-item">
+            <a href="/faq"
+               class="header__link<?= $currentPage === 'faq' ? ' header__link--active' : '' ?>">
+                <?= __('nav.faq') ?>
+            </a>
+        </li>
         <li class="header__lang-item header__desktop-item">
             <form action="<?= htmlspecialchars($baseUri, ENT_QUOTES, 'UTF-8') ?>" method="get" class="header__lang-form">
                 <select name="lang" class="header__lang-select" aria-label="<?= __('lang.switch') ?>" onchange="this.form.submit()">

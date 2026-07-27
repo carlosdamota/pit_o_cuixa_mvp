@@ -79,9 +79,9 @@ $GLOBALS['_translations'] = array_merge($enStrings, $caStrings, $localeStrings);
  *
  * @param  string $key     Translation key (dot-notation: section.key)
  * @param  array  $params  Optional sprintf parameters
- * @return string
+ * @return string|array
  */
-function __(string $key, array $params = []): string
+function __(string $key, array $params = []): string|array
 {
     $text = $GLOBALS['_translations'][$key] ?? $key;
 
