@@ -106,6 +106,11 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/pages/faq.css">
     <?php endif; ?>
 
+    <!-- Menu slider CSS (only on menu page — includes fallback hero) -->
+    <?php if ($pageName === 'menu'): ?>
+    <link rel="stylesheet" href="/css/components/menu-slider.css">
+    <?php endif; ?>
+
     <!-- Admin CSS (only on admin pages) -->
     <?php if (str_starts_with($pageName, 'admin/')): ?>
     <link rel="stylesheet" href="/css/pages/admin.css">

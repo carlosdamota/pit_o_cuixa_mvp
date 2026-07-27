@@ -59,6 +59,17 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- ============================================================
+-- APP SETTINGS (key/value store for admin toggles)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+INSERT OR IGNORE INTO settings (key, value) VALUES ('menu_slider_enabled', '0');
+
+-- ============================================================
 -- INDEXES
 -- ============================================================
 

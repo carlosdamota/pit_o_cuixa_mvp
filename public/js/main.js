@@ -8,6 +8,7 @@
  */
 
 import { initMenuFilter } from './menu-filter.js';
+import { initMenuSlider } from './menu-slider.js';
 
 /**
  * Initialise mobile menu toggle.
@@ -79,6 +80,7 @@ function registerServiceWorker() {
 function init() {
   initMobileMenu();
   initMenuFilter();
+  initMenuSlider();
   registerServiceWorker();
 }
 
