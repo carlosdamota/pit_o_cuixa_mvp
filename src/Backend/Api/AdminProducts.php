@@ -22,6 +22,32 @@ use Pit\Cuixa\Backend\Db\Repositories\Product as ProductRepo;
 class AdminProducts
 {
     /**
+     * GET /api/admin/products — List products with pagination.
+     * Query params: page (1-based), limit (max 100).
+     */
+    public static function list(): void
+    {
+        Auth::requireToken();
+
+        $page  = max(1, (int) ($_GET['page'] ?? 1));
+        $limit = max(1, min(100, (int) ($_GET['limit'] ?? 20)));
+        $offset = ($page - 1) * $limit;
+
+        $repo     = new ProductRepo();
+        $products = $repo->all(null, $limit, $offset);
+        $total    = $repo->count();
+        $totalPages = (int) ceil($total / $limit);
+
+        Response::json([
+            'error'       => false,
+            'data'        => $products,
+            'page'        => $page,
+            'limit'       => $limit,
+            'total'       => $total,
+            'total_pages' => $totalPages,
+        ]);
+    }
+    /**
      * Validate input data for product create/update.
      *
      * @param  array $input
@@ -128,12 +154,26 @@ class AdminProducts
 
         $newId = (int) $pdo->lastInsertId();
 
-        // Fetch the created product
-        $repo  = new ProductRepo();
+        // Fetch the created product with category info
         $pdo2  = \Pit\Cuixa\Backend\Db\Connection::get();
-        $stmt2 = $pdo2->prepare('SELECT * FROM products WHERE id = :id');
+        $stmt2 = $pdo2->prepare(
+            'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.id = :id'
+        );
         $stmt2->execute([':id' => $newId]);
         $product = $stmt2->fetch();
+
+        // Serialize types for JSON
+        if ($product) {
+            $product['id']          = (int) $product['id'];
+            $product['category_id'] = (int) $product['category_id'];
+            $product['price']       = (float) $product['price'];
+            $product['sort_order']  = (int) $product['sort_order'];
+            $product['is_active']   = (bool) $product['is_active'];
+            $product['is_featured'] = (bool) $product['is_featured'];
+        }
 
         Response::json([
             'error' => false,
@@ -212,9 +252,29 @@ class AdminProducts
             ':is_featured'     => !empty($input['is_featured']) ? 1 : 0,
         ]);
 
+        // Fetch updated product with category info
+        $stmt2 = $pdo->prepare(
+            'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             WHERE p.id = :id'
+        );
+        $stmt2->execute([':id' => $id]);
+        $updated = $stmt2->fetch();
+
+        // Serialize types for JSON
+        if ($updated) {
+            $updated['id']          = (int) $updated['id'];
+            $updated['category_id'] = (int) $updated['category_id'];
+            $updated['price']       = (float) $updated['price'];
+            $updated['sort_order']  = (int) $updated['sort_order'];
+            $updated['is_active']   = (bool) $updated['is_active'];
+            $updated['is_featured'] = (bool) $updated['is_featured'];
+        }
+
         Response::json([
             'error' => false,
-            'data'  => ['id' => $id, 'updated' => true],
+            'data'  => $updated ?: ['id' => $id, 'updated' => true],
         ]);
     }
 

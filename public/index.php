@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // ── 1. Bootstrap ───────────────────────────────────────────────────────
-require_once __DIR__ . '/../src/shared/bootstrap.php';
+require_once __DIR__ . '/../src/Shared/bootstrap.php';
 
 use Pit\Cuixa\Backend\Router;
 use Pit\Cuixa\Backend\Http\Response;
@@ -22,12 +22,14 @@ use Pit\Cuixa\Backend\Api\AuthController;
 use Pit\Cuixa\Backend\Api\AdminProducts;
 use Pit\Cuixa\Backend\Api\AdminCategories;
 use Pit\Cuixa\Backend\Api\AdminIO;
+use Pit\Cuixa\Backend\Api\WebScraper;
 use Pit\Cuixa\Backend\Pages\Home;
 use Pit\Cuixa\Backend\Pages\Menu as MenuPage;
 use Pit\Cuixa\Backend\Pages\Admin\Login as AdminLogin;
 use Pit\Cuixa\Backend\Pages\Admin\Dashboard as AdminDashboard;
 use Pit\Cuixa\Backend\Pages\Admin\Products as AdminProductsPage;
 use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
+use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 
@@ -50,7 +52,7 @@ function renderPage(string $page, array $meta = [], array $data = [], int $code 
     // Validate page name to prevent Local File Inclusion
     // Allow alphanumeric, underscore, hyphen, and forward slash for subdirectories
     if (!preg_match('/^[a-z0-9_\/-]+$/i', $page)) {
-        \Pit\Cuixa\Backend\Http\Response::error('Invalid page', 400);
+        Response::error('Invalid page', 400);
         return;
     }
 
@@ -112,7 +114,15 @@ $router->add('POST', '/api/auth/logout', static function (array $params): void {
     AuthController::logout();
 });
 
+//Añadida ruta al Scraper
+$router->add('GET', '/api/scraper', static function(array $params): void{
+    $scraper = new WebScraper();
+
+    Response::json($scraper->scraper());
+});
+
 // Admin API CRUD
+$router->add('GET',    '/api/admin/products',       static function (array $params): void { AdminProducts::list(); });
 $router->add('POST',   '/api/admin/products',       static function (array $params): void { AdminProducts::create(); });
 $router->add('PUT',    '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::update((int) ($params['id'] ?? 0)); });
 $router->add('DELETE', '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::delete((int) ($params['id'] ?? 0)); });
@@ -158,6 +168,10 @@ $router->add('GET', '/admin/products', static function (array $params): void {
 
 $router->add('GET', '/admin/categories', static function (array $params): void {
     AdminCategoriesPage::render();
+});
+
+$router->add('GET', '/admin/import-export', static function (array $params): void {
+    AdminImportExportPage::render();
 });
 
 // ── 4d. 404 Fallback ──────────────────────────────────────────────────

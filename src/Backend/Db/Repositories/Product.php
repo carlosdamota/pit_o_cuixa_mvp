@@ -28,9 +28,10 @@ class Product
      *
      * @param  int|null $categoryId  Filter by category ID (null = all)
      * @param  int      $limit       Maximum rows to return (safety cap)
+     * @param  int      $offset      Offset for pagination
      * @return array<int, array<string, mixed>>
      */
-    public function all(?int $categoryId = null, int $limit = 100): array
+    public function all(?int $categoryId = null, int $limit = 100, int $offset = 0): array
     {
         $sql = 'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en
                 FROM products p
@@ -44,16 +45,42 @@ class Product
             $params[':category_id'] = $categoryId;
         }
 
-        $sql .= ' ORDER BY c.sort_order, p.sort_order LIMIT :limit';
+        $sql .= ' ORDER BY c.sort_order, p.sort_order LIMIT :limit OFFSET :offset';
 
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value, is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR);
         }
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
 
         return array_map([$this, 'serialize'], $stmt->fetchAll());
+    }
+
+    /**
+     * Count all active products, optionally filtered by category.
+     *
+     * @param  int|null $categoryId  Filter by category ID (null = all)
+     * @return int
+     */
+    public function count(?int $categoryId = null): int
+    {
+        $sql = 'SELECT COUNT(*) FROM products p WHERE p.is_active = 1';
+        $params = [];
+
+        if ($categoryId !== null) {
+            $sql .= ' AND p.category_id = :category_id';
+            $params[':category_id'] = $categoryId;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR);
+        }
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
     }
 
     /**

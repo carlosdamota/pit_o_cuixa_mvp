@@ -6,6 +6,10 @@
  *   - user: authenticated user row
  *   - products: array of product rows (bilingual)
  *   - categories: array of category rows
+ *   - total: total number of active products
+ *   - page: current page number
+ *   - limit: items per page
+ *   - total_pages: total pages
  *   - csrf_token: CSRF token
  *
  * @package Pit\Cuixa\Frontend\Templates\Pages\Admin
@@ -14,11 +18,14 @@
 $user       = $pageData['user'] ?? [];
 $products   = $pageData['products'] ?? [];
 $categories = $pageData['categories'] ?? [];
+$total      = $pageData['total'] ?? 0;
+$page       = $pageData['page'] ?? 1;
+$totalPages = $pageData['total_pages'] ?? 1;
 $csrfToken  = $pageData['csrf_token'] ?? '';
 $lang       = $pageData['locale'] ?? LANG;
 ?>
 <!-- ============================================================
-     Admin Products
+     Admin Products — Phase 3
      ============================================================ -->
 <div class="admin-layout">
     <?php require __DIR__ . '/../../partials/admin-nav.php'; ?>
@@ -26,7 +33,9 @@ $lang       = $pageData['locale'] ?? LANG;
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">Productos</h1>
-            <a href="/admin" class="admin-header__back">← Dashboard</a>
+            <div class="admin-header__actions">
+                <a href="/admin" class="admin-header__back">← Dashboard</a>
+            </div>
         </header>
 
         <!-- ── Alerts ────────────────────────────────────────────────── -->
@@ -34,105 +43,116 @@ $lang       = $pageData['locale'] ?? LANG;
         <div class="admin-alert admin-alert--error" data-alert-error hidden></div>
 
         <!-- ── Add Product Button ─────────────────────────────────────── -->
-        <button class="admin-btn admin-btn--primary" data-toggle-form="product">
+        <button class="admin-btn admin-btn--primary" data-create-btn aria-label="Crear nuevo producto">
             + Nuevo Producto
         </button>
 
-        <!-- ── Product Form ───────────────────────────────────────────── -->
-        <div class="admin-form-panel" data-form-panel="product" hidden>
-            <h2 class="admin-form-panel__title" data-form-title>Nuevo Producto</h2>
+        <!-- ── Drawer Overlay ─────────────────────────────────────────── -->
+        <div class="admin-drawer__overlay" data-drawer-overlay hidden></div>
 
-            <form class="admin-form" data-product-form method="POST">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
-                <input type="hidden" name="id" data-field-id value="">
-                <input type="hidden" name="_method" data-field-method value="POST">
+        <!-- ── Product Drawer ─────────────────────────────────────────── -->
+        <div class="admin-drawer" data-drawer role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+            <div class="admin-drawer__header">
+                <h2 class="admin-drawer__title" id="drawer-title" data-drawer-title>Nuevo Producto</h2>
+                <button class="admin-drawer__close" data-drawer-close aria-label="Cerrar">&times;</button>
+            </div>
 
-                <div class="admin-form__grid">
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-slug">Slug *</label>
-                        <input id="prod-slug" name="slug" class="admin-field__input" required
-                               pattern="[a-z0-9-]+" title="Minúsculas, números y guiones">
+            <div class="admin-drawer__body">
+                <form class="admin-form" data-product-form>
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="id" data-field-id value="">
+                    <input type="hidden" name="_method" data-field-method value="POST">
+
+                    <div class="admin-form__grid">
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-slug">Slug *</label>
+                            <input id="prod-slug" name="slug" class="admin-field__input" required
+                                   pattern="[a-z0-9-]+" title="Minúsculas, números y guiones">
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-category">Categoría *</label>
+                            <select id="prod-category" name="category_id" class="admin-field__select" required>
+                                <option value="">— Seleccionar —</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= (int) $cat['id'] ?>">
+                                        <?= htmlspecialchars($cat["name_{$lang}"] ?? $cat['name_es'], ENT_QUOTES, 'UTF-8') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-name-es">Nombre (ES) *</label>
+                            <input id="prod-name-es" name="name_es" class="admin-field__input" required>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-name-en">Name (EN) *</label>
+                            <input id="prod-name-en" name="name_en" class="admin-field__input" required>
+                        </div>
+
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-desc-es">Descripción (ES)</label>
+                            <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2"></textarea>
+                        </div>
+
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-desc-en">Description (EN)</label>
+                            <textarea id="prod-desc-en" name="description_en" class="admin-field__textarea" rows="2"></textarea>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-price">Precio (€)</label>
+                            <input id="prod-price" name="price" type="number" step="0.01" min="0"
+                                   class="admin-field__input" value="0">
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-image">Image URL</label>
+                            <div style="display:flex;gap:8px;align-items:flex-start;">
+                                <input id="prod-image" name="image_url" type="url" class="admin-field__input"
+                                       placeholder="https://..." style="flex:1;">
+                                <div class="admin-image-preview" data-preview="image" aria-hidden="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-shop-url">last.shop URL</label>
+                            <input id="prod-shop-url" name="last_shop_url" type="url" class="admin-field__input"
+                                   placeholder="https://last.shop/..."
+                                   title="Debe empezar con https://">
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-order">Orden</label>
+                            <input id="prod-order" name="sort_order" type="number" min="0"
+                                   class="admin-field__input" value="0">
+                        </div>
+
+                        <div class="admin-field admin-checkboxes">
+                            <label class="admin-checkbox">
+                                <input type="checkbox" name="is_active" value="1" checked>
+                                Activo
+                            </label>
+                            <label class="admin-checkbox">
+                                <input type="checkbox" name="is_featured" value="1">
+                                Destacado
+                            </label>
+                        </div>
                     </div>
+                </form>
+            </div>
 
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-category">Categoría *</label>
-                        <select id="prod-category" name="category_id" class="admin-field__select" required>
-                            <option value="">— Seleccionar —</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= (int) $cat['id'] ?>">
-                                    <?= htmlspecialchars($cat["name_{$lang}"] ?? $cat['name_es'], ENT_QUOTES, 'UTF-8') ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-name-es">Nombre (ES) *</label>
-                        <input id="prod-name-es" name="name_es" class="admin-field__input" required>
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-name-en">Name (EN) *</label>
-                        <input id="prod-name-en" name="name_en" class="admin-field__input" required>
-                    </div>
-
-                    <div class="admin-field admin-field--full">
-                        <label class="admin-field__label" for="prod-desc-es">Descripción (ES)</label>
-                        <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2"></textarea>
-                    </div>
-
-                    <div class="admin-field admin-field--full">
-                        <label class="admin-field__label" for="prod-desc-en">Description (EN)</label>
-                        <textarea id="prod-desc-en" name="description_en" class="admin-field__textarea" rows="2"></textarea>
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-price">Precio (€)</label>
-                        <input id="prod-price" name="price" type="number" step="0.01" min="0"
-                               class="admin-field__input" value="0">
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-image">Image URL</label>
-                        <input id="prod-image" name="image_url" type="url" class="admin-field__input"
-                               placeholder="https://...">
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-shop-url">last.shop URL</label>
-                        <input id="prod-shop-url" name="last_shop_url" type="url" class="admin-field__input"
-                               placeholder="https://last.shop/..."
-                               title="Debe empezar con https://">
-                    </div>
-
-                    <div class="admin-field">
-                        <label class="admin-field__label" for="prod-order">Orden</label>
-                        <input id="prod-order" name="sort_order" type="number" min="0"
-                               class="admin-field__input" value="0">
-                    </div>
-
-                    <div class="admin-field admin-checkboxes">
-                        <label class="admin-checkbox">
-                            <input type="checkbox" name="is_active" value="1" checked>
-                            Activo
-                        </label>
-                        <label class="admin-checkbox">
-                            <input type="checkbox" name="is_featured" value="1">
-                            Destacado
-                        </label>
-                    </div>
-                </div>
-
-                <div class="admin-form__actions">
-                    <button type="submit" class="admin-btn admin-btn--primary" data-btn-submit>Guardar</button>
-                    <button type="button" class="admin-btn admin-btn--ghost" data-cancel-form>Cancelar</button>
-                </div>
-            </form>
+            <div class="admin-drawer__footer">
+                <button type="button" class="admin-btn admin-btn--ghost" data-drawer-cancel>Cancelar</button>
+                <button type="button" class="admin-btn admin-btn--primary" data-btn-submit>Guardar</button>
+            </div>
         </div>
 
         <!-- ── Product List ───────────────────────────────────────────── -->
         <section class="admin-section">
-            <h2 class="admin-section__title">Todos los Productos (<?= count($products) ?>)</h2>
+            <h2 class="admin-section__title">Todos los Productos (<?= $total ?>)</h2>
 
             <div class="admin-table-wrap">
                 <table class="admin-table">
@@ -148,7 +168,7 @@ $lang       = $pageData['locale'] ?? LANG;
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-products-tbody>
                         <?php if ($products === []): ?>
                             <tr>
                                 <td colspan="8" class="admin-table__empty">
@@ -166,7 +186,7 @@ $lang       = $pageData['locale'] ?? LANG;
                                 }
                             }
                         ?>
-                            <tr>
+                            <tr data-product-id="<?= (int) $p['id'] ?>">
                                 <td><?= (int) $p['id'] ?></td>
                                 <td><?= htmlspecialchars($p['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($p['name_es'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -201,73 +221,112 @@ $lang       = $pageData['locale'] ?? LANG;
                     </tbody>
                 </table>
             </div>
+
+            <!-- ── Pagination ─────────────────────────────────────────── -->
+            <div class="admin-pagination" data-pagination
+                 data-total-pages="<?= $totalPages ?>"
+                 data-current-page="<?= $page ?>"
+                 data-total="<?= $total ?>">
+            </div>
         </section>
     </main>
 </div>
 
 <script type="module">
 /**
- * Admin Products — CRUD operations via AJAX.
+ * Admin Products — Phase 3: CRUD via AJAX with in-place DOM updates.
+ * Uses drawer, pagination, and keyboard shortcuts.
  */
+import {
+    api, showToast, withLoading, AdminModal, bindImagePreview,
+    validateForm, validateField, getCsrfToken,
+    Drawer, insertTableRow, removeTableRow, updateTableRow, toggleEmptyState,
+    renderPagination, paginationClickHandler, fetchPaginated, swapTableRows, setPageParam,
+    initKeyboardShortcuts
+} from '/js/admin.js';
+
 const API_BASE = '/api/admin/products';
+const TBODY = document.querySelector('[data-products-tbody]');
+const CATEGORIES = <?= json_encode(array_map(function($c) { return ['id' => (int)$c['id'], 'name_es' => $c['name_es'], 'name_en' => $c['name_en']]; }, $categories)) ?>;
+const LANG = '<?= $lang ?>';
 
-// ── Helpers ─────────────────────────────────────────────────────
-async function api(method, url, body = null) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    const headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-    };
-
-    const res = await fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : null,
-        credentials: 'same-origin'
-    });
-    return res.json();
-}
-
-function showAlert(el, msg, type) {
-    const alert = document.querySelector(type === 'success' ? '[data-alert-success]' : '[data-alert-error]');
-    if (alert) {
-        alert.textContent = msg;
-        alert.hidden = false;
-        setTimeout(() => { alert.hidden = true; }, 5000);
-    }
-}
-
-// ── Toggle Form ─────────────────────────────────────────────────
-document.querySelectorAll('[data-toggle-form]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const panel = document.querySelector('[data-form-panel="product"]');
-        if (panel) {
-            panel.hidden = !panel.hidden;
-            if (!panel.hidden) {
-                panel.querySelector('[data-form-title]').textContent = 'Nuevo Producto';
-                panel.querySelector('[data-field-method]').value = 'POST';
-                panel.querySelector('[data-btn-submit]').textContent = 'Guardar';
-                panel.querySelector('[data-product-form]').reset();
-                panel.querySelector('[data-field-id]').value = '';
-            }
-        }
-    });
+// ── Drawer ────────────────────────────────────────────────────────
+const drawer = new Drawer({
+    drawer: '[data-drawer]',
+    overlay: '[data-drawer-overlay]',
 });
 
-document.querySelector('[data-cancel-form]')?.addEventListener('click', () => {
-    const panel = document.querySelector('[data-form-panel="product"]');
-    if (panel) panel.hidden = true;
-});
+/** Get category name from ID */
+function catName(categoryId) {
+    const c = CATEGORIES.find(c => c.id === categoryId);
+    return c ? (c[`name_${LANG}`] || c.name_es) : '';
+}
 
-// ── Submit Form ─────────────────────────────────────────────────
-document.querySelector('[data-product-form]')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const id = form.querySelector('[data-field-id]').value;
-    const method = id ? 'PUT' : 'POST';
-    const url = id ? `${API_BASE}/${id}` : API_BASE;
+/** Escape HTML */
+function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
 
-    const data = {
+/** Build a product table row HTML from data */
+function buildRow(p) {
+    return `<tr data-product-id="${p.id}">
+        <td>${p.id}</td>
+        <td>${escHtml(p.slug)}</td>
+        <td>${escHtml(p.name_es)}</td>
+        <td>${escHtml(p.name_en)}</td>
+        <td>€${parseFloat(p.price).toFixed(2)}</td>
+        <td>${escHtml(catName(p.category_id))}</td>
+        <td>${p.is_active ? '✓' : '✗'}</td>
+        <td class="admin-table__actions">
+            <button class="admin-btn-sm" data-edit-product="${p.id}"
+                    data-slug="${escHtml(p.slug)}"
+                    data-name-es="${escHtml(p.name_es)}"
+                    data-name-en="${escHtml(p.name_en)}"
+                    data-desc-es="${escHtml(p.description_es || '')}"
+                    data-desc-en="${escHtml(p.description_en || '')}"
+                    data-price="${p.price}"
+                    data-category-id="${p.category_id}"
+                    data-image-url="${escHtml(p.image_url || '')}"
+                    data-last-shop-url="${escHtml(p.last_shop_url || '')}"
+                    data-sort-order="${p.sort_order || 0}"
+                    data-is-active="${p.is_active ? '1' : '0'}"
+                    data-is-featured="${p.is_featured ? '1' : '0'}">
+                Editar
+            </button>
+            <button class="admin-btn-sm admin-btn-sm--danger"
+                    data-delete-product="${p.id}"
+                    data-name="${escHtml(p.name_es)}">
+                Eliminar
+            </button>
+        </td>
+    </tr>`;
+}
+
+/** Build a product row from the form data (after create) */
+function buildRowFromForm(form) {
+    const data = getFormData(form);
+    return buildRow({
+        id: form.querySelector('[data-field-id]').value || Date.now(),
+        slug: data.slug,
+        name_es: data.name_es,
+        name_en: data.name_en,
+        description_es: data.description_es,
+        description_en: data.description_en,
+        price: data.price,
+        category_id: data.category_id,
+        image_url: data.image_url,
+        last_shop_url: data.last_shop_url,
+        sort_order: data.sort_order,
+        is_active: data.is_active,
+        is_featured: data.is_featured,
+    });
+}
+
+/** Collect form data into object */
+function getFormData(form) {
+    return {
         slug: form.querySelector('[name="slug"]').value,
         name_es: form.querySelector('[name="name_es"]').value,
         name_en: form.querySelector('[name="name_en"]').value,
@@ -281,68 +340,280 @@ document.querySelector('[data-product-form]')?.addEventListener('submit', async 
         is_active: form.querySelector('[name="is_active"]').checked,
         is_featured: form.querySelector('[name="is_featured"]').checked,
     };
+}
 
-    const json = await api(method, url, JSON.stringify(data));
+/** Fill form with product data for editing */
+function fillForm(btn) {
+    const form = document.querySelector('[data-product-form]');
+    if (!form) return;
 
-    if (json.error) {
-        const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
-        showAlert(null, msg, 'error');
-    } else {
-        showAlert(null, id ? 'Producto actualizado' : 'Producto creado', 'success');
-        setTimeout(() => window.location.reload(), 1000);
+    form.querySelector('[data-form-title]');
+    form.querySelector('[data-field-method]').value = 'PUT';
+    form.querySelector('[data-btn-submit]').textContent = 'Actualizar';
+    form.querySelector('[data-field-id]').value = btn.dataset.editProduct;
+
+    const fields = {
+        slug: 'slug',
+        name_es: 'nameEs',
+        name_en: 'nameEn',
+        description_es: 'descEs',
+        description_en: 'descEn',
+        price: 'price',
+        category_id: 'categoryId',
+        image_url: 'imageUrl',
+        last_shop_url: 'lastShopUrl',
+        sort_order: 'sortOrder',
+    };
+
+    for (const [name, dataKey] of Object.entries(fields)) {
+        const input = form.querySelector(`[name="${name}"]`);
+        if (input) input.value = btn.dataset[dataKey] || '';
+    }
+
+    form.querySelector('[name="is_active"]').checked = btn.dataset.isActive === '1';
+    form.querySelector('[name="is_featured"]').checked = btn.dataset.isFeatured === '1';
+}
+
+/** Reset form for create mode */
+function resetForm() {
+    const form = document.querySelector('[data-product-form]');
+    if (!form) return;
+
+    form.querySelector('[data-field-method]').value = 'POST';
+    form.querySelector('[data-btn-submit]').textContent = 'Guardar';
+    form.querySelector('[data-field-id]').value = '';
+    form.reset();
+    form.querySelector('[name="is_active"]').checked = true;
+
+    // Clear image preview if present
+    const previewEl = document.querySelector('[data-preview="image"]');
+    if (previewEl) {
+        previewEl.innerHTML = '';
+        previewEl.classList.remove('admin-image-preview--visible');
+    }
+}
+
+// ── Create Button ────────────────────────────────────────────────
+document.querySelector('[data-create-btn]')?.addEventListener('click', () => {
+    resetForm();
+    drawer.open('Nuevo Producto');
+});
+
+// ── Submit Form via Drawer Footer Button ──────────────────────────
+document.querySelector('[data-btn-submit]')?.addEventListener('click', async () => {
+    const form = document.querySelector('[data-product-form]');
+    if (!form) return;
+
+    // Validate
+    if (!validateForm(form)) {
+        const firstInvalid = form.querySelector('.admin-field--invalid input, .admin-field--invalid select, .admin-field--invalid textarea');
+        if (firstInvalid) firstInvalid.focus();
+        showToast('Corrige los campos marcados en rojo', 'error');
+        return;
+    }
+
+    const submitBtn = document.querySelector('[data-btn-submit]');
+    const id = form.querySelector('[data-field-id]').value;
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_BASE}/${id}` : API_BASE;
+    const data = getFormData(form);
+
+    await withLoading(submitBtn, async () => {
+        const json = await api(method, url, data);
+
+        if (json.error) {
+            const msg = json.errors ? json.errors.join('; ') : (json.message || 'Error');
+            showToast(msg, 'error');
+            return;
+        }
+
+        if (method === 'POST') {
+            // Create: append new row
+            const product = json.data;
+            const rowHtml = buildRow(product);
+            const row = insertTableRow(TBODY, rowHtml);
+
+            // Highlight the new row
+            row.style.animation = 'admin-row-in 250ms ease';
+
+            showToast('Producto creado', 'success');
+            drawer.close();
+
+            // Update section title count
+            updateCount();
+
+        } else {
+            // Update: update row in-place
+            const product = json.data;
+            const existingRow = TBODY.querySelector(`[data-product-id="${id}"]`);
+            if (existingRow) {
+                updateTableRow(existingRow, buildRow(product));
+            }
+            showToast('Producto actualizado', 'success');
+            drawer.close();
+        }
+    });
+});
+
+// ── Event Delegation for Edit/Delete ─────────────────────────────
+TBODY?.addEventListener('click', (e) => {
+    // Edit button
+    const editBtn = e.target.closest('[data-edit-product]');
+    if (editBtn) {
+        fillForm(editBtn);
+        drawer.open('Editar Producto');
+        return;
+    }
+
+    // Delete button
+    const deleteBtn = e.target.closest('[data-delete-product]');
+    if (deleteBtn) {
+        const id = deleteBtn.dataset.deleteProduct;
+        const name = deleteBtn.dataset.name || 'este producto';
+        const modal = new AdminModal();
+
+        modal.open('Eliminar producto', `¿Eliminar "${name}"?`, async () => {
+            modal.close();
+            const json = await api('DELETE', `${API_BASE}/${id}`);
+
+            if (json.error) {
+                showToast(json.message || 'Error al eliminar', 'error');
+            } else {
+                // Remove row with animation
+                const row = TBODY.querySelector(`[data-product-id="${id}"]`);
+                if (row) {
+                    await removeTableRow(row);
+                    toggleEmptyState(TBODY, 8, 'No hay productos. ¡Crea el primero!');
+                    updateCount();
+                }
+                showToast('Producto eliminado', 'success');
+            }
+        });
     }
 });
 
-// ── Edit Product ────────────────────────────────────────────────
-document.querySelectorAll('[data-edit-product]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const panel = document.querySelector('[data-form-panel="product"]');
-        panel.hidden = false;
+// ── Update Section Title Count ────────────────────────────────────
+function updateCount() {
+    const rows = TBODY.querySelectorAll('tr:not(.admin-table__empty)');
+    const title = document.querySelector('.admin-section__title');
+    if (title) {
+        title.textContent = `Todos los Productos (${rows.length})`;
+    }
+}
 
-        panel.querySelector('[data-form-title]').textContent = 'Editar Producto';
-        panel.querySelector('[data-field-method]').value = 'PUT';
-        panel.querySelector('[data-btn-submit]').textContent = 'Actualizar';
-        panel.querySelector('[data-field-id]').value = btn.dataset.editProduct;
+// ── Pagination ───────────────────────────────────────────────────
+const paginationContainer = document.querySelector('[data-pagination]');
+let currentPaginationPage = 1;
 
-        const fields = {
-            slug: 'slug',
-            name_es: 'nameEs',
-            name_en: 'nameEn',
-            description_es: 'descEs',
-            description_en: 'descEn',
-            price: 'price',
-            category_id: 'categoryId',
-            image_url: 'imageUrl',
-            last_shop_url: 'lastShopUrl',
-            sort_order: 'sortOrder',
-        };
+async function loadPage(page) {
+    const json = await fetchPaginated(API_BASE, page, 20);
+    if (json.error) {
+        showToast('Error al cargar página', 'error');
+        return;
+    }
 
-        for (const [name, dataKey] of Object.entries(fields)) {
-            const input = panel.querySelector(`[name="${name}"]`);
-            if (input) input.value = btn.dataset[dataKey] || '';
-        }
+    // Build rows from data
+    const rowsHtml = json.data.map(p => buildRow(p)).join('\n');
+    swapTableRows(TBODY, rowsHtml);
+    toggleEmptyState(TBODY, 8, 'No hay productos.');
 
-        panel.querySelector('[name="is_active"]').checked = btn.dataset.isActive === '1';
-        panel.querySelector('[name="is_featured"]').checked = btn.dataset.isFeatured === '1';
+    // Update pagination
+    currentPaginationPage = json.page;
+    renderPagination({
+        container: paginationContainer,
+        currentPage: json.page,
+        totalPages: json.total_pages,
+        total: json.total,
     });
+
+    // Update URL
+    setPageParam(json.page);
+
+    // Update count
+    const title = document.querySelector('.admin-section__title');
+    if (title) {
+        title.textContent = `Todos los Productos (${json.total})`;
+    }
+}
+
+if (paginationContainer) {
+    const totalPages = parseInt(paginationContainer.dataset.totalPages, 10);
+    const currentPage = parseInt(paginationContainer.dataset.currentPage, 10);
+    const totalItems = parseInt(paginationContainer.dataset.total, 10);
+    currentPaginationPage = currentPage;
+
+    if (totalPages > 0) {
+        renderPagination({
+            container: paginationContainer,
+            currentPage,
+            totalPages,
+            total: totalItems,
+        });
+
+        // Single delegated click handler
+        paginationContainer.addEventListener('click', (e) => {
+            const page = paginationClickHandler(paginationContainer, e);
+            if (page > 0) loadPage(page);
+        });
+    }
+}
+
+// Handle popstate (back/forward navigation)
+window.addEventListener('popstate', (e) => {
+    const page = e.state?.page || 1;
+    if (page !== currentPaginationPage && page > 0) {
+        loadPage(page);
+    }
 });
 
-// ── Delete Product ──────────────────────────────────────────────
-document.querySelectorAll('[data-delete-product]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-        const id = btn.dataset.deleteProduct;
-        const name = btn.dataset.name || 'este producto';
-
-        if (!confirm(`¿Eliminar "${name}"?`)) return;
-
-        const json = await api('DELETE', `${API_BASE}/${id}`);
-
-        if (json.error) {
-            showAlert(null, json.message || 'Error al eliminar', 'error');
-        } else {
-            showAlert(null, 'Producto eliminado', 'success');
-            setTimeout(() => window.location.reload(), 1000);
+// ── Keyboard Shortcuts ───────────────────────────────────────────
+initKeyboardShortcuts({
+    escape: () => {
+        const drawerEl = document.querySelector('[data-drawer]');
+        if (drawerEl && !drawerEl.hidden) {
+            drawer.close();
         }
-    });
+    },
+    submit: () => {
+        const drawerEl = document.querySelector('[data-drawer]');
+        if (drawerEl && !drawerEl.hidden) {
+            document.querySelector('[data-btn-submit]')?.click();
+        }
+    },
+    create: () => {
+        document.querySelector('[data-create-btn]')?.click();
+    },
+    help: () => {
+        showToast('Atajos: Esc=Cerrar, Ctrl+Enter=Guardar, Ctrl+N=Nuevo', 'info', 5000);
+    },
 });
+
+// ── Image Preview ───────────────────────────────────────────────
+const imageInput = document.querySelector('[name="image_url"]');
+const imagePreview = document.querySelector('[data-preview="image"]');
+if (imageInput && imagePreview) {
+    bindImagePreview(imageInput, imagePreview);
+}
+
+// ── Form Field Validation on Blur ───────────────────────────────
+const productForm = document.querySelector('[data-product-form]');
+if (productForm) {
+    productForm.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea').forEach(field => {
+        field.addEventListener('blur', () => validateField(field));
+        field.addEventListener('input', () => {
+            const wrapper = field.closest('.admin-field');
+            if (wrapper) {
+                wrapper.classList.remove('admin-field--invalid');
+            }
+        });
+    });
+}
+
+// ── Drawer close resets form validation state ────────────────────
+drawer.onClose = () => {
+    // Remove invalid states
+    document.querySelectorAll('.admin-field--invalid').forEach(el => {
+        el.classList.remove('admin-field--invalid');
+    });
+};
 </script>

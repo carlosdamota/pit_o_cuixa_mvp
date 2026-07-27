@@ -92,9 +92,20 @@ class AdminCategories
 
         $newId = (int) $pdo->lastInsertId();
 
+        // Fetch created category
+        $stmt2 = $pdo->prepare('SELECT * FROM categories WHERE id = :id');
+        $stmt2->execute([':id' => $newId]);
+        $category = $stmt2->fetch();
+
+        if ($category) {
+            $category['id']         = (int) $category['id'];
+            $category['sort_order'] = (int) $category['sort_order'];
+            $category['is_active']  = (bool) $category['is_active'];
+        }
+
         Response::json([
             'error' => false,
-            'data'  => ['id' => $newId],
+            'data'  => $category ?: ['id' => $newId],
         ], 201);
     }
 
@@ -154,9 +165,20 @@ class AdminCategories
             ':is_active'  => !empty($input['is_active']) ? 1 : 0,
         ]);
 
+        // Fetch updated category
+        $stmt2 = $pdo->prepare('SELECT * FROM categories WHERE id = :id');
+        $stmt2->execute([':id' => $id]);
+        $updated = $stmt2->fetch();
+
+        if ($updated) {
+            $updated['id']         = (int) $updated['id'];
+            $updated['sort_order'] = (int) $updated['sort_order'];
+            $updated['is_active']  = (bool) $updated['is_active'];
+        }
+
         Response::json([
             'error' => false,
-            'data'  => ['id' => $id, 'updated' => true],
+            'data'  => $updated ?: ['id' => $id, 'updated' => true],
         ]);
     }
 
