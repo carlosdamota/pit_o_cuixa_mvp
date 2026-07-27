@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // ── 1. Bootstrap ───────────────────────────────────────────────────────
-require_once __DIR__ . '/../src/Shared/bootstrap.php';
+require_once __DIR__ . '/../src/shared/bootstrap.php';
 
 use Pit\Cuixa\Backend\Router;
 use Pit\Cuixa\Backend\Http\Response;
