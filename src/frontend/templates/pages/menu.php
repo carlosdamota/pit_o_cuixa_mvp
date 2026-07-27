@@ -11,19 +11,66 @@
  * @package Pit\Cuixa\Frontend\Templates\Pages
  */
 
-$groups     = $pageData['groups']     ?? [];
-$catList    = $pageData['categories'] ?? [];
-$locale     = $pageData['locale']     ?? LANG;
+$groups      = $pageData['groups']      ?? [];
+$catList     = $pageData['categories']  ?? [];
+$locale      = $pageData['locale']      ?? LANG;
+$showSlider  = $pageData['show_slider']  ?? false;
+$sliderImages = $pageData['slider_images'] ?? [];
 ?>
 <!-- ============================================================
-     Page Header
+     Page Header — Slider or Fallback Hero
      ============================================================ -->
-<section class="menu-hero section">
+<?php if ($showSlider): ?>
+<section class="menu-slider section" data-menu-slider
+    role="region" aria-roledescription="carousel"
+    aria-label="<?= __('menu.slider.aria') ?>">
+    <div class="menu-slider__viewport" tabindex="0">
+        <div class="menu-slider__track">
+            <?php foreach ($sliderImages as $i => $img): ?>
+                <figure class="menu-slider__slide" role="group"
+                        aria-roledescription="slide"
+                        aria-label="<?= __('menu.slider.slide_n', [$i + 1, count($sliderImages)]) ?>">
+                    <img src="<?= htmlspecialchars($img, ENT_QUOTES) ?>"
+                         alt="<?= __('menu.slider.image_alt', [$i + 1]) ?>"
+                         loading="<?= $i === 0 ? 'eager' : 'lazy' ?>"
+                         decoding="async" width="1200" height="675">
+                </figure>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <div class="menu-slider__controls">
+        <button class="menu-slider__btn menu-slider__btn--prev"
+                data-slider-prev
+                type="button"
+                aria-label="<?= __('menu.slider.prev') ?>">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <button class="menu-slider__btn menu-slider__btn--next"
+                data-slider-next
+                type="button"
+                aria-label="<?= __('menu.slider.next') ?>">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+        </button>
+    </div>
+    <ol class="menu-slider__dots" aria-label="<?= __('menu.slider.dots') ?>">
+        <?php foreach ($sliderImages as $i => $_): ?>
+            <li class="menu-slider__dot<?= $i === 0 ? ' menu-slider__dot--active' : '' ?>">
+                <button type="button"
+                        data-slider-dot="<?= $i ?>"
+                        aria-label="<?= __('menu.slider.slide_n', [$i + 1, count($sliderImages)]) ?>"
+                        <?= $i === 0 ? 'aria-current="true"' : '' ?>></button>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+</section>
+<?php else: ?>
+<section class="menu-hero menu-hero--fallback section">
     <div class="container">
         <h1 class="section__title"><?= __('menu.heading') ?></h1>
         <p class="section__subtitle"><?= __('menu.subtitle') ?></p>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ============================================================
      Filter Bar (sticky category tabs)

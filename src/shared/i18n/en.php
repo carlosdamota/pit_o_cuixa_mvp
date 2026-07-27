@@ -134,4 +134,24 @@ return [
     'admin.view_site'       => 'View site',
     'admin.password'        => 'Password',
     'admin.username'        => 'Username',
+
+    // ── Admin: Settings ──────────────────────────────────────────
+    'admin.settings.nav'        => 'Settings',
+    'admin.settings.title'      => 'Settings',
+    'admin.settings.slider'     => 'Menu Image Slider',
+    'admin.settings.slider_label' => 'Enable image slider on the menu page',
+    'admin.settings.slider_hint' => 'When enabled, the menu page hero will show an image slider. Upload images to /img/menu-slider/ (JPG, PNG, WebP).',
+    'admin.settings.images'     => 'Available images',
+    'admin.settings.images_count' => '%d image(s) found in /img/menu-slider/',
+    'admin.settings.images_none' => 'No images found. Upload to /img/menu-slider/ to use the slider.',
+    'admin.settings.images_hint' => 'Images are shown in alphabetical order. Supported formats: JPG, PNG, WebP.',
+    'admin.settings.saved'      => 'Setting saved successfully.',
+
+    // ── Menu Slider ──────────────────────────────────────────────
+    'menu.slider.aria'     => 'Menu image slider',
+    'menu.slider.slide_n' => 'Slide %d of %d',
+    'menu.slider.image_alt' => 'Menu image %d',
+    'menu.slider.dots'    => 'Go to slide',
+    'menu.slider.prev'    => 'Previous slide',
+    'menu.slider.next'    => 'Next slide',
 ];

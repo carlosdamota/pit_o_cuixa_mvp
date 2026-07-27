@@ -134,4 +134,24 @@ return [
     'admin.view_site'       => 'Veure lloc',
     'admin.password'        => 'Contrasenya',
     'admin.username'        => 'Usuari',
+
+    // ── Admin: Settings ──────────────────────────────────────────
+    'admin.settings.nav'        => 'Ajustos',
+    'admin.settings.title'      => 'Ajustos',
+    'admin.settings.slider'     => 'Slider d\'imatges de la carta',
+    'admin.settings.slider_label' => 'Activar slider d\'imatges a la pàgina de carta',
+    'admin.settings.slider_hint' => 'En activar-lo, l\'heroi de la carta mostrarà un slider. Puja imatges a /img/menu-slider/ (JPG, PNG, WebP).',
+    'admin.settings.images'     => 'Imatges disponibles',
+    'admin.settings.images_count' => '%d imatge(es) trobada(es) a /img/menu-slider/',
+    'admin.settings.images_none' => 'No s\'han trobat imatges. Puja-les a /img/menu-slider/ per usar el slider.',
+    'admin.settings.images_hint' => 'Les imatges es mostren en ordre alfabètic. Formats: JPG, PNG, WebP.',
+    'admin.settings.saved'      => 'Ajust guardat correctament.',
+
+    // ── Menu Slider ──────────────────────────────────────────────
+    'menu.slider.aria'     => 'Slider d\'imatges de la carta',
+    'menu.slider.slide_n' => 'Diapositiva %d de %d',
+    'menu.slider.image_alt' => 'Imatge del menú %d',
+    'menu.slider.dots'    => 'Anar a diapositiva',
+    'menu.slider.prev'    => 'Diapositiva anterior',
+    'menu.slider.next'    => 'Següent diapositiva',
 ];

@@ -29,6 +29,8 @@ use Pit\Cuixa\Backend\Pages\Admin\Login as AdminLogin;
 use Pit\Cuixa\Backend\Pages\Admin\Dashboard as AdminDashboard;
 use Pit\Cuixa\Backend\Pages\Admin\Products as AdminProductsPage;
 use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
+use Pit\Cuixa\Backend\Pages\Admin\SettingsPage as AdminSettingsPage;
+use Pit\Cuixa\Backend\Api\AdminSettings;
 use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Faq;
 use Pit\Cuixa\Backend\Pages\Sitemap;
@@ -132,6 +134,8 @@ $router->add('PUT',    '/api/admin/categories/{id}', static function (array $par
 $router->add('DELETE', '/api/admin/categories/{id}', static function (array $params): void { AdminCategories::delete((int) ($params['id'] ?? 0)); });
 $router->add('POST',   '/api/admin/import',         static function (array $params): void { AdminIO::import(); });
 $router->add('GET',    '/api/admin/export',         static function (array $params): void { AdminIO::export(); });
+$router->add('GET',    '/api/admin/settings',       static function (array $params): void { AdminSettings::get(); });
+$router->add('PUT',    '/api/admin/settings',       static function (array $params): void { AdminSettings::update(); });
 
 // ── 4b. Sitemap and Robots (Phase 4) ──────────────────────────────────
 $router->add('GET', '/sitemap.xml', static function (array $params): void {
@@ -197,6 +201,10 @@ $router->add('GET', '/admin/categories', static function (array $params): void {
 
 $router->add('GET', '/admin/import-export', static function (array $params): void {
     AdminImportExportPage::render();
+});
+
+$router->add('GET', '/admin/settings', static function (array $params): void {
+    AdminSettingsPage::render();
 });
 
 // ── 4d. 404 Fallback ──────────────────────────────────────────────────
