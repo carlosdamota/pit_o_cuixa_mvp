@@ -3,7 +3,7 @@
 **Status**: ✅ COMPLETED  
 **Archived**: 2026-07-27  
 **PR**: https://github.com/carlosdamota/pit_o_cuixa_mvp/pull/6  
-**Branch**: `feature/ui-home-improvements` (merged to dev)
+**Branch**: `feature/ui-home-improvements`
 
 ---
 
@@ -11,9 +11,16 @@
 
 Implemented 4 capabilities for mobile-first PWA experience:
 1. **FAQ Page** — Dedicated `/faq` route with accordion Q&A, FAQPage JSON-LD, i18n (ca/es/en)
-2. **Mobile Navigation** — Redesigned hamburger menu with home category links + language selector
+2. **Mobile Navigation** — Redesigned hamburger menu styled like home page buttons (yellow background, dark buttons)
 3. **Category Slider** — Horizontal scrollable category pills on menu page (mobile only, <640px)
 4. **SEO Enhancements** — FAQPage JSON-LD, meta tags, sitemap updates with hreflang
+
+### Post-Archive Fixes
+- Fix `__()` return type to support arrays (for FAQ items)
+- Add FAQ link to desktop navigation
+- Add mobile menu toggle JavaScript (was missing)
+- Fix z-index layering (filter-bar vs header vs menu dropdown)
+- Redesign mobile menu dropdown to match home page button style
 
 ---
 
