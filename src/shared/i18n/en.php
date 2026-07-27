@@ -22,8 +22,43 @@ return [
     'nav.logout'       => 'Log out',
     'lang.switch'      => 'Change language',
     'lang.code'        => 'en',
+    'nav.faq'          => 'FAQ',
     'footer.rights'    => 'All rights reserved.',
     'footer.hours'     => 'Open: Mon-Sun 11:00–23:00',
+
+    // ── FAQ Page ─────────────────────────────────────────────────
+    'faq.title'      => 'Frequently Asked Questions',
+    'faq.desc'       => 'Answers to the most common questions about Pit o Cuixa.',
+    'faq.items'      => [
+        [
+            'q' => 'Do you do takeaway orders?',
+            'a' => 'Yes, you can order by phone at 977 64 20 10 and pick up in store. We do not offer delivery.',
+        ],
+        [
+            'q' => 'What are your opening hours?',
+            'a' => 'Open Monday to Sunday from 11:00 to 23:00. Closed only on special days (check our social media).',
+        ],
+        [
+            'q' => 'Do you have gluten-free options?',
+            'a' => 'Yes, we offer gluten-free set meals. Check our menu and ask our staff.',
+        ],
+        [
+            'q' => 'Do you accept credit cards?',
+            'a' => 'Yes, we accept Visa, Mastercard, cash, and Bizum.',
+        ],
+        [
+            'q' => 'Are there vegetarian options?',
+            'a' => 'Yes, we offer salads, patatas bravas and other vegetarian dishes. Ask about our daily options.',
+        ],
+        [
+            'q' => 'Can I reserve a table?',
+            'a' => 'We do not take reservations. Service is on a first-come, first-served basis, but we always do our best to serve you as quickly as possible.',
+        ],
+        [
+            'q' => 'Do you have a kids\' menu?',
+            'a' => 'Yes, we have options for little ones: half-portion chicken, fries, and nuggets.',
+        ],
+    ],
 
     // ── Home Page ────────────────────────────────────────────────
     'home.title'       => 'Pit o Cuixa — Rotisserie in Torredembarra',

@@ -30,6 +30,7 @@ use Pit\Cuixa\Backend\Pages\Admin\Dashboard as AdminDashboard;
 use Pit\Cuixa\Backend\Pages\Admin\Products as AdminProductsPage;
 use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
 use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
+use Pit\Cuixa\Backend\Pages\Faq;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 
@@ -151,6 +152,30 @@ $router->add('GET', '/', static function (array $params): void {
 // Menu page
 $router->add('GET', '/menu', static function (array $params): void {
     MenuPage::render();
+});
+
+// FAQ page
+$router->add('GET', '/faq', static function (array $params): void {
+    Faq::render();
+});
+
+// FAQ page with locale prefix (e.g. /es/faq, /en/faq)
+$router->add('GET', '/{lang}/faq', static function (array $params): void {
+    $lang = $params['lang'] ?? '';
+
+    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+        // Override locale for this request
+        $_GET['lang'] = $lang;
+
+        // Reload translations with the requested locale
+        $GLOBALS['_translations'] = array_merge(
+            require __DIR__ . '/../src/shared/i18n/en.php',
+            require __DIR__ . '/../src/shared/i18n/ca.php',
+            require __DIR__ . '/../src/shared/i18n/' . $lang . '.php'
+        );
+    }
+
+    Faq::render();
 });
 
 // Admin pages

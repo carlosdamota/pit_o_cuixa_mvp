@@ -81,6 +81,17 @@ class Sitemap
             ],
         ];
 
+        // ── FAQ page ────────────────────────────────────────────────
+        $pages[] = [
+            'loc' => $siteUrl . '/faq',
+            'alternates' => [
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/faq'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/es/faq'],
+                ['hreflang' => 'en', 'href' => $siteUrl . '/en/faq'],
+                ['hreflang' => 'x-default', 'href' => $siteUrl . '/faq'],
+            ],
+        ];
+
         // ── Active products (if they have individual URLs) ────────────
         try {
             $repo = new Product();

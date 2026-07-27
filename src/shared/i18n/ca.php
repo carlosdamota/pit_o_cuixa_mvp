@@ -22,8 +22,43 @@ return [
     'nav.logout'       => 'Tancar sessió',
     'lang.switch'      => 'Canviar idioma',
     'lang.code'        => 'ca',
+    'nav.faq'          => 'FAQ',
     'footer.rights'    => 'Tots els drets reservats.',
     'footer.hours'     => 'Horari: Dll-Dg 11:00–23:00',
+
+    // ── FAQ Page ─────────────────────────────────────────────────
+    'faq.title'      => 'Preguntes freqüents',
+    'faq.desc'       => 'Respostes a les preguntes més comunes sobre Pit o Cuixa.',
+    'faq.items'      => [
+        [
+            'q' => 'Feu comandes per emportar?',
+            'a' => 'Sí, pots demanar per telèfon al 977 64 20 10 i recollir a la botiga. No tenim servei a domicili.',
+        ],
+        [
+            'q' => 'Quin és l\'horari?',
+            'a' => 'Obert de dilluns a diumenge d\'11:00 a 23:00. Tancats només en dies assenyalats (consulta les nostres xarxes).',
+        ],
+        [
+            'q' => 'Teniu opcions sense gluten?',
+            'a' => 'Sí, disposem de plats combinats sense gluten. Consulta la nostra carta i pregunta al personal.',
+        ],
+        [
+            'q' => 'Accepteu targetes de crèdit?',
+            'a' => 'Sí, acceptem Visa, Mastercard i efectiu. També admetem bizum.',
+        ],
+        [
+            'q' => 'Hi ha opcions vegetarianes?',
+            'a' => 'Sí, oferim amanides, patates braves i altres plats vegetarians. Pregunta per les nostres opcions del dia.',
+        ],
+        [
+            'q' => 'Es pot reservar taula?',
+            'a' => 'No tenim servei de reserves. El servei és per ordre d\'arribada, però sempre procurem atendre\'t el més aviat possible.',
+        ],
+        [
+            'q' => 'Oferiu menú infantil?',
+            'a' => 'Sí, tenim opcions per als més petits: mitja ració de pollastre, patates fregides i nuggets.',
+        ],
+    ],
 
     // ── Home Page ────────────────────────────────────────────────
     'home.title'       => 'Pit o Cuixa — Pollería a Torredembarra',
