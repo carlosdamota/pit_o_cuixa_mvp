@@ -1,0 +1,97 @@
+/* ======================================================================
+   Pit o Cuixa — WhatsApp Floating Button
+   
+   Fixed-position CTA button in bottom-right corner.
+   Links to WhatsApp number for quick ordering.
+   
+   WF-001: WhatsApp CTA — floating button visible on all pages
+   WF-002: Fixed bottom-right positioning
+   WF-003: WhatsApp brand green (#25D366)
+   WF-004: z-index stacking between overlay (200) and modal (300)
+   WF-005: Hover/focus tooltip with opacity transition
+   WF-006: Keyboard-accessible tooltip (focus-visible)
+   WF-007: Zero CLS contribution (fixed position)
+   WF-008: Responsive safe zone
+   ====================================================================== */
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: var(--z-whatsapp);
+
+  /* WF-008: Prevent horizontal overflow on narrow viewports */
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.whatsapp-float__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: #25D366;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+  text-decoration: none;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.whatsapp-float__link:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.whatsapp-float__link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  transform: scale(1.1);
+}
+
+.whatsapp-float__icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.whatsapp-float__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #fff;
+}
+
+/* WF-005, WF-006: Tooltip visible on hover and keyboard focus */
+.whatsapp-float__tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-on-surface);
+  color: #fff;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.whatsapp-float__link:hover .whatsapp-float__tooltip,
+.whatsapp-float__link:focus-visible .whatsapp-float__tooltip {
+  opacity: 1;
+}
+
+/* Visually-hidden fallback text when SVG fails to load */
+.whatsapp-float__fallback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
