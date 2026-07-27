@@ -215,9 +215,9 @@ export class AdminModal {
  *
  * @param {string}  message   Toast text
  * @param {string}  [type]    'success' | 'error' | 'info' (default 'info')
- * @param {number}  [duration]  Auto-dismiss in ms (default 4000). Pass 0 for manual close only.
+ * @param {number}  [duration]  Auto-dismiss in ms. Default: 4000 for success/info, 0 (manual) for error.
  */
-export function showToast(message, type = 'info', duration = 4000) {
+export function showToast(message, type = 'info', duration = type === 'error' ? 0 : 4000) {
   const region = getToastRegion();
 
   const toast = document.createElement('div');
@@ -320,18 +320,23 @@ export async function withLoading(btn, asyncFn) {
  *
  * @param {HTMLInputElement} inputEl  The image_url input element
  * @param {HTMLElement}      previewEl  The preview container element
+ * @param {string}           [altText]  Alt text for the image (default: empty)
  */
-export function bindImagePreview(inputEl, previewEl) {
+export function bindImagePreview(inputEl, previewEl, altText = '') {
   if (!inputEl || !previewEl) return;
 
   const img = document.createElement('img');
   img.className = 'admin-image-preview__img';
-  img.alt = '';
+  img.alt = altText;
   img.loading = 'lazy';
 
   const placeholder = document.createElement('span');
   placeholder.className = 'admin-image-preview__placeholder';
   placeholder.textContent = '?';
+
+  const errorMsg = document.createElement('div');
+  errorMsg.className = 'admin-image-preview__error';
+  errorMsg.textContent = 'No se pudo cargar la imagen';
 
   let currentUrl = '';
 
@@ -355,14 +360,16 @@ export function bindImagePreview(inputEl, previewEl) {
     const testImg = new Image();
     testImg.onload = () => {
       img.src = url;
+      img.alt = altText;
       previewEl.innerHTML = '';
       previewEl.appendChild(img);
       previewEl.classList.add('admin-image-preview--visible');
     };
     testImg.onerror = () => {
-      // Keep placeholder on error
+      // Show placeholder + error message
       previewEl.innerHTML = '';
       previewEl.appendChild(placeholder);
+      previewEl.appendChild(errorMsg);
       previewEl.classList.add('admin-image-preview--visible');
     };
     testImg.src = url;
