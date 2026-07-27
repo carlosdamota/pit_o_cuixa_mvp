@@ -22,8 +22,43 @@ return [
     'nav.logout'       => 'Log out',
     'lang.switch'      => 'Change language',
     'lang.code'        => 'en',
+    'nav.faq'          => 'FAQ',
     'footer.rights'    => 'All rights reserved.',
     'footer.hours'     => 'Open: Mon-Sun 11:00–23:00',
+
+    // ── FAQ Page ─────────────────────────────────────────────────
+    'faq.title'      => 'Frequently Asked Questions',
+    'faq.desc'       => 'Answers to the most common questions about Pit o Cuixa.',
+    'faq.items'      => [
+        [
+            'q' => 'Do you do takeaway orders?',
+            'a' => 'Yes, you can order by phone at 977 64 20 10 and pick up in store. We do not offer delivery.',
+        ],
+        [
+            'q' => 'What are your opening hours?',
+            'a' => 'Open Monday to Sunday from 11:00 to 23:00. Closed only on special days (check our social media).',
+        ],
+        [
+            'q' => 'Do you have gluten-free options?',
+            'a' => 'Yes, we offer gluten-free set meals. Check our menu and ask our staff.',
+        ],
+        [
+            'q' => 'Do you accept credit cards?',
+            'a' => 'Yes, we accept Visa, Mastercard, cash, and Bizum.',
+        ],
+        [
+            'q' => 'Are there vegetarian options?',
+            'a' => 'Yes, we offer salads, patatas bravas and other vegetarian dishes. Ask about our daily options.',
+        ],
+        [
+            'q' => 'Can I reserve a table?',
+            'a' => 'We do not take reservations. Service is on a first-come, first-served basis, but we always do our best to serve you as quickly as possible.',
+        ],
+        [
+            'q' => 'Do you have a kids\' menu?',
+            'a' => 'Yes, we have options for little ones: half-portion chicken, fries, and nuggets.',
+        ],
+    ],
 
     // ── Home Page ────────────────────────────────────────────────
     'home.title'       => 'Pit o Cuixa — Rotisserie in Torredembarra',
@@ -99,4 +134,24 @@ return [
     'admin.view_site'       => 'View site',
     'admin.password'        => 'Password',
     'admin.username'        => 'Username',
+
+    // ── Admin: Settings ──────────────────────────────────────────
+    'admin.settings.nav'        => 'Settings',
+    'admin.settings.title'      => 'Settings',
+    'admin.settings.slider'     => 'Menu Image Slider',
+    'admin.settings.slider_label' => 'Enable image slider on the menu page',
+    'admin.settings.slider_hint' => 'When enabled, the menu page hero will show an image slider. Upload images to /img/menu-slider/ (JPG, PNG, WebP).',
+    'admin.settings.images'     => 'Available images',
+    'admin.settings.images_count' => '%d image(s) found in /img/menu-slider/',
+    'admin.settings.images_none' => 'No images found. Upload to /img/menu-slider/ to use the slider.',
+    'admin.settings.images_hint' => 'Images are shown in alphabetical order. Supported formats: JPG, PNG, WebP.',
+    'admin.settings.saved'      => 'Setting saved successfully.',
+
+    // ── Menu Slider ──────────────────────────────────────────────
+    'menu.slider.aria'     => 'Menu image slider',
+    'menu.slider.slide_n' => 'Slide %d of %d',
+    'menu.slider.image_alt' => 'Menu image %d',
+    'menu.slider.dots'    => 'Go to slide',
+    'menu.slider.prev'    => 'Previous slide',
+    'menu.slider.next'    => 'Next slide',
 ];
