@@ -17,6 +17,9 @@
             <p class="footer__phone">
                 <a href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"><?= __('home.info.phone') ?></a>
             </p>
+            <p class="footer__nav">
+                <a href="/faq" class="footer__link"><?= __('nav.faq') ?></a>
+            </p>
         </div>
         <div class="footer__copy">
             &copy; <?= date('Y') ?> <?= __('site.name') ?>. <?= __('footer.rights') ?>

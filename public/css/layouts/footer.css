@@ -50,6 +50,22 @@
   color: inherit;
 }
 
+.footer__nav {
+  margin-top: var(--space-sm);
+}
+
+.footer__link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.footer__link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
 .footer__copy {
   font-size: var(--font-size-xs);
   opacity: 0.6;
