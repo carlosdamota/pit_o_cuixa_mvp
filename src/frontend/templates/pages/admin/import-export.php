@@ -105,14 +105,49 @@ $lang      = $pageData['locale'] ?? LANG;
 import { showAlert, showToast, withLoading } from '/js/admin.js';
 
 // ── Import ──────────────────────────────────────────────────────
-const importForm = document.getElementById('import-form');
-const importBtn  = document.getElementById('import-btn');
-const progress   = document.getElementById('import-progress');
-const statusEl   = progress?.querySelector('[data-import-status]');
-const countEl    = progress?.querySelector('[data-import-count]');
+const importForm  = document.getElementById('import-form');
+const importBtn   = document.getElementById('import-btn');
+const fileInput   = importForm?.querySelector('[name="csv_file"]');
+const progress    = document.getElementById('import-progress');
+const statusEl    = progress?.querySelector('[data-import-status]');
+const countEl     = progress?.querySelector('[data-import-count]');
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+// Validate file on change
+fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+        showToast('El archivo supera el límite de 5MB', 'error');
+        fileInput.value = ''; // Clear invalid file
+        return;
+    }
+
+    // Check file type
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        showToast('Solo se aceptan archivos CSV', 'error');
+        fileInput.value = ''; // Clear invalid file
+        return;
+    }
+});
 
 importForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const file = fileInput?.files[0];
+    if (!file) {
+        showToast('Selecciona un archivo CSV', 'error');
+        return;
+    }
+
+    // Double-check size before submit
+    if (file.size > MAX_FILE_SIZE) {
+        showToast('El archivo supera el límite de 5MB', 'error');
+        return;
+    }
 
     const formData = new FormData(importForm);
 
