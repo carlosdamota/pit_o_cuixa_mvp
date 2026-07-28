@@ -9,7 +9,7 @@
 .filter-bar {
   position: sticky;
   top: 0;
-  z-index: var(--z-header);
+  z-index: calc(var(--z-header) - 10);
   background-color: var(--color-surface-container-lowest);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -84,6 +84,18 @@
 
 .filter-bar__tabs::-webkit-scrollbar {
   display: none;
+}
+
+/* PC-007: Mobile — horizontal scroll snap for category pills */
+@media (max-width: 639px) {
+  .filter-bar__tabs {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .filter-bar__tab {
+    scroll-snap-align: start;
+  }
 }
 
 /* ── No-Results Message ─────────────────────────────────────── */

@@ -22,8 +22,43 @@ return [
     'nav.logout'       => 'Cerrar sesión',
     'lang.switch'      => 'Cambiar idioma',
     'lang.code'        => 'es',
+    'nav.faq'          => 'FAQ',
     'footer.rights'    => 'Todos los derechos reservados.',
     'footer.hours'     => 'Horario: Lun-Dom 11:00–23:00',
+
+    // ── FAQ Page ─────────────────────────────────────────────────
+    'faq.title'      => 'Preguntas frecuentes',
+    'faq.desc'       => 'Respuestas a las preguntas más comunes sobre Pit o Cuixa.',
+    'faq.items'      => [
+        [
+            'q' => '¿Hacéis pedidos para llevar?',
+            'a' => 'Sí, puedes pedir por teléfono al 977 64 20 10 y recoger en tienda. No tenemos servicio a domicilio.',
+        ],
+        [
+            'q' => '¿Cuál es el horario?',
+            'a' => 'Abierto de lunes a domingo de 11:00 a 23:00. Cerrados solo en días señalados ( consulta nuestras redes).',
+        ],
+        [
+            'q' => '¿Tenéis opciones sin gluten?',
+            'a' => 'Sí, disponemos de platos combinados sin gluten. Consulta nuestra carta y pregunta al personal.',
+        ],
+        [
+            'q' => '¿Aceptáis tarjetas de crédito?',
+            'a' => 'Sí, aceptamos Visa, Mastercard y efectivo. También admitimos bizum.',
+        ],
+        [
+            'q' => '¿Hay opciones vegetarianas?',
+            'a' => 'Sí, ofrecemos ensaladas, patatas bravas y otros platos vegetarianos. Pregunta por nuestras opciones del día.',
+        ],
+        [
+            'q' => '¿Se puede reservar mesa?',
+            'a' => 'No tenemos servicio de reservas. El servicio es por orden de llegada, pero siempre procuramos atenderte lo antes posible.',
+        ],
+        [
+            'q' => '¿Ofrecéis menú infantil?',
+            'a' => 'Sí, tenemos opciones para los más pequeños: media ración de pollo, patatas fritas y nuggets.',
+        ],
+    ],
 
     // ── Home Page ────────────────────────────────────────────────
     'home.title'       => 'Pit o Cuixa — Pollería en Torredembarra',
@@ -99,4 +134,24 @@ return [
     'admin.view_site'       => 'Ver sitio',
     'admin.password'        => 'Contraseña',
     'admin.username'        => 'Usuario',
+
+    // ── Admin: Settings ──────────────────────────────────────────
+    'admin.settings.nav'        => 'Ajustes',
+    'admin.settings.title'      => 'Ajustes',
+    'admin.settings.slider'     => 'Slider de imágenes del menú',
+    'admin.settings.slider_label' => 'Activar slider de imágenes en la página de carta',
+    'admin.settings.slider_hint' => 'Al activarlo, el héroe de la carta mostrará un slider. Sube imágenes a /img/menu-slider/ (JPG, PNG, WebP).',
+    'admin.settings.images'     => 'Imágenes disponibles',
+    'admin.settings.images_count' => '%d imagen(es) encontrada(s) en /img/menu-slider/',
+    'admin.settings.images_none' => 'No se encontraron imágenes. Súbelas a /img/menu-slider/ para usar el slider.',
+    'admin.settings.images_hint' => 'Las imágenes se muestran en orden alfabético. Formatos: JPG, PNG, WebP.',
+    'admin.settings.saved'      => 'Ajuste guardado correctamente.',
+
+    // ── Menu Slider ──────────────────────────────────────────────
+    'menu.slider.aria'     => 'Slider de imágenes de la carta',
+    'menu.slider.slide_n' => 'Diapositiva %d de %d',
+    'menu.slider.image_alt' => 'Imagen del menú %d',
+    'menu.slider.dots'    => 'Ir a diapositiva',
+    'menu.slider.prev'    => 'Diapositiva anterior',
+    'menu.slider.next'    => 'Siguiente diapositiva',
 ];

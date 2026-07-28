@@ -42,6 +42,12 @@ $userDisplay = $user['display_name'] ?? $user['username'] ?? '';
                 Importar / Exportar
             </a>
         </li>
+        <li class="admin-nav__item">
+            <a href="/admin/settings"
+               class="admin-nav__link <?= str_starts_with($currentPath, '/admin/settings') ? 'admin-nav__link--active' : '' ?>">
+                <?= __('admin.settings.nav') ?>
+            </a>
+        </li>
     </ul>
 
     <div class="admin-nav__footer">

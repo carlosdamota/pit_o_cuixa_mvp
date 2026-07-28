@@ -1,0 +1,233 @@
+/**
+ * Pit o Cuixa — Menu Slider + Fallback Hero Styles
+ *
+ * BEM component for the image slider (`menu-slider`) and the
+ * CSS-only decorative fallback (`menu-hero--fallback`).
+ *
+ * Slider uses `translateX()` + `transition: 0.4s ease` — no JS animation lib.
+ * @media (prefers-reduced-motion: reduce) → instant transitions + no autoplay.
+ *
+ * @package Pit\Cuixa\Frontend\Styles\Components
+ */
+
+/* ================================================================
+   FALLBACK HERO (CSS-only decorative gradient)
+   ================================================================ */
+
+.menu-hero--fallback {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f7e721 0%, #f5a623 50%, #e88d1a 100%);
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-2xl, 4rem) var(--spacing-md, 1rem);
+}
+
+.menu-hero--fallback::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.menu-hero--fallback .section__title {
+    position: relative;
+    z-index: 1;
+    color: var(--color-text-dark, #1a1a1a);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-weight: 800;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.menu-hero--fallback .section__subtitle {
+    position: relative;
+    z-index: 1;
+    color: var(--color-text-dark, #1a1a1a);
+    font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+    opacity: 0.8;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ================================================================
+   SLIDER COMPONENT
+   ================================================================ */
+
+.menu-slider {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface, #1a1a1a);
+    aspect-ratio: 16 / 9;
+    max-height: 70vh;
+    width: 100%;
+}
+
+.menu-slider__viewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: none;
+    touch-action: pan-y;          /* Allow vertical scroll, capture horizontal */
+    -webkit-overflow-scrolling: touch;
+}
+
+.menu-slider__viewport:focus-visible {
+    box-shadow: inset 0 0 0 3px var(--color-accent, #f7e721);
+}
+
+.menu-slider__track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s ease;
+    will-change: transform;
+}
+
+.menu-slider__slide {
+    flex: 0 0 100%;
+    height: 100%;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-slider__slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ── Controls (prev / next buttons) ─────────────────────────── */
+
+.menu-slider__controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;       /* Allow click-through to slides */
+    z-index: 2;
+    padding: 0 var(--spacing-xs, 0.25rem);
+}
+
+.menu-slider__btn {
+    pointer-events: auto;       /* Re-enable pointer on buttons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.menu-slider__btn:hover,
+.menu-slider__btn:focus-visible {
+    background: rgba(0, 0, 0, 0.75);
+    opacity: 1;
+}
+
+.menu-slider__btn:focus-visible {
+    outline: 2px solid var(--color-accent, #f7e721);
+    outline-offset: 2px;
+}
+
+/* ── Dots ────────────────────────────────────────────────────── */
+
+.menu-slider__dots {
+    position: absolute;
+    bottom: var(--spacing-md, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+}
+
+.menu-slider__dot button {
+    display: block;
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-slider__dot button:hover,
+.menu-slider__dot button:focus-visible {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.menu-slider__dot button:focus-visible {
+    outline: 2px solid var(--color-accent, #f7e721);
+    outline-offset: 2px;
+}
+
+.menu-slider__dot--active button,
+.menu-slider__dot button[aria-current="true"] {
+    background: #fff;
+    border-color: #fff;
+}
+
+/* ================================================================
+   REDUCED MOTION
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .menu-slider__track {
+        transition: none;       /* Instant slide changes */
+    }
+
+    .menu-slider__btn {
+        transition: none;
+    }
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 768px) {
+    .menu-slider {
+        aspect-ratio: 4 / 3;   /* Taller on mobile */
+        max-height: 60vh;
+    }
+
+    .menu-slider__btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    .menu-hero--fallback {
+        min-height: 180px;
+        padding: var(--spacing-xl, 2.5rem) var(--spacing-sm, 0.75rem);
+    }
+}
