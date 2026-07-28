@@ -163,23 +163,19 @@ $router->add('GET', '/faq', static function (array $params): void {
     Faq::render();
 });
 
-// FAQ page with locale prefix (e.g. /es/faq, /en/faq)
+// FAQ page with locale prefix (e.g. /ca/faq, /es/faq, /en/faq)
 $router->add('GET', '/{lang}/faq', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
     if (in_array($lang, ['ca', 'es', 'en'], true)) {
-        // Override locale for this request
-        $_GET['lang'] = $lang;
-
-        // Reload translations with the requested locale
-        $GLOBALS['_translations'] = array_merge(
-            require __DIR__ . '/../src/shared/i18n/en.php',
-            require __DIR__ . '/../src/shared/i18n/ca.php',
-            require __DIR__ . '/../src/shared/i18n/' . $lang . '.php'
-        );
+        // Redirect so the request re-enters bootstrap locale resolution,
+        // ensuring LANG constant matches translations.
+        Response::redirect('/faq?lang=' . $lang, 302);
+        return;
     }
 
-    Faq::render();
+    // Unrecognised locale prefix — delegate to 404
+    Response::error('Not Found', 404);
 });
 
 // Admin pages
