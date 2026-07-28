@@ -23,8 +23,6 @@ class Categories
     public static function render(): void
     {
         $user   = Auth::requireSession();
-        $repo   = new CategoryRepo();
-        $categories = $repo->all();
 
         // Also fetch all categories (including inactive) for management
         $pdo        = \Pit\Cuixa\Backend\Db\Connection::get();

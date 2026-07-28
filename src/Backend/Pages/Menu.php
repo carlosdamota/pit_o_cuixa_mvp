@@ -14,6 +14,7 @@ namespace Pit\Cuixa\Backend\Pages;
 
 use Pit\Cuixa\Backend\Db\Repositories\Product;
 use Pit\Cuixa\Backend\Db\Repositories\Category;
+use Pit\Cuixa\Backend\Db\Repositories\Settings;
 
 class Menu
 {
@@ -28,6 +29,17 @@ class Menu
         $categories = $catRepo->all();
         $products   = $prodRepo->all();
         $lang       = LANG;
+
+        // ── Slider logic ─────────────────────────────────────────────
+        Settings::ensureSchema();
+        $sliderEnabled = Settings::get('menu_slider_enabled', '0');
+        $sliderImages  = [];
+
+        if ($sliderEnabled === '1') {
+            $sliderImages = self::discoverSliderImages();
+        }
+
+        $showSlider = ($sliderEnabled === '1') && count($sliderImages) > 0;
 
         // Build grouped structure for the template
         $groups = [];
@@ -120,8 +132,33 @@ class Menu
             'groups'            => $groups,
             'categories'        => $filterCategories,
             'locale'            => $lang,
+            'show_slider'       => $showSlider,
+            'slider_images'     => $sliderImages,
         ];
 
         \renderPage('menu', $meta, $data);
+    }
+
+    /**
+     * Discover and sort images in /img/menu-slider/.
+     * Only includes .jpg, .jpeg, .png, .webp files.
+     *
+     * @return array<int, string> Sorted list of public URL paths
+     */
+    private static function discoverSliderImages(): array
+    {
+        $pattern = __DIR__ . '/../../../public/img/menu-slider/*.{jpg,jpeg,png,webp}';
+        $files   = glob($pattern, GLOB_BRACE);
+
+        if (!is_array($files) || $files === []) {
+            return [];
+        }
+
+        sort($files, SORT_STRING);
+
+        return array_map(
+            static fn(string $path): string => '/img/menu-slider/' . rawurlencode(basename($path)),
+            $files
+        );
     }
 }

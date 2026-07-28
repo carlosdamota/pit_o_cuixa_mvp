@@ -79,7 +79,6 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  min-width: max-content;
 }
 
 .filter-bar__tabs::-webkit-scrollbar {

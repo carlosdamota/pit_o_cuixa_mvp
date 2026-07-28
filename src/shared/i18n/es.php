@@ -134,4 +134,24 @@ return [
     'admin.view_site'       => 'Ver sitio',
     'admin.password'        => 'Contraseña',
     'admin.username'        => 'Usuario',
+
+    // ── Admin: Settings ──────────────────────────────────────────
+    'admin.settings.nav'        => 'Ajustes',
+    'admin.settings.title'      => 'Ajustes',
+    'admin.settings.slider'     => 'Slider de imágenes del menú',
+    'admin.settings.slider_label' => 'Activar slider de imágenes en la página de carta',
+    'admin.settings.slider_hint' => 'Al activarlo, el héroe de la carta mostrará un slider. Sube imágenes a /img/menu-slider/ (JPG, PNG, WebP).',
+    'admin.settings.images'     => 'Imágenes disponibles',
+    'admin.settings.images_count' => '%d imagen(es) encontrada(s) en /img/menu-slider/',
+    'admin.settings.images_none' => 'No se encontraron imágenes. Súbelas a /img/menu-slider/ para usar el slider.',
+    'admin.settings.images_hint' => 'Las imágenes se muestran en orden alfabético. Formatos: JPG, PNG, WebP.',
+    'admin.settings.saved'      => 'Ajuste guardado correctamente.',
+
+    // ── Menu Slider ──────────────────────────────────────────────
+    'menu.slider.aria'     => 'Slider de imágenes de la carta',
+    'menu.slider.slide_n' => 'Diapositiva %d de %d',
+    'menu.slider.image_alt' => 'Imagen del menú %d',
+    'menu.slider.dots'    => 'Ir a diapositiva',
+    'menu.slider.prev'    => 'Diapositiva anterior',
+    'menu.slider.next'    => 'Siguiente diapositiva',
 ];

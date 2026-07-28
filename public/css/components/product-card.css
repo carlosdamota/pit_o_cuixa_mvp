@@ -1,44 +1,75 @@
 /* ======================================================================
-   Pit o Cuixa — Product Card Component
+   Pit o Cuixa — Modern Full-Bleed Overlay Product Card Component
    
    BEM block: .product-card
-   DS-002: Consistent BEM naming
-   Part of: product-group__grid (responsive grid)
+   Full-bleed image background with dark gradient overlay and brand-signature
+   primary yellow glow (#f7e721) for maximum visual identity and contrast.
    ====================================================================== */
 
 .product-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-surface-container-lowest);
+  justify-content: flex-end;
+  min-height: 240px;
+  background-color: #1a1c1e;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  /* Brand identity: border & subtle glow using primary yellow (#f7e721) */
+  border: 1px solid rgba(247, 231, 33, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 15px rgba(247, 231, 33, 0.15);
   overflow: hidden;
-  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
 .product-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: rgba(247, 231, 33, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(247, 231, 33, 0.35);
+  transform: translateY(-4px);
 }
 
-/* ── Image ──────────────────────────────────────────────────── */
+/* ── Full-Bleed Image & Dark Gradient Overlay ───────────────── */
 .product-card__image-wrap {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  height: 100%;
+  z-index: 0;
   overflow: hidden;
-  background-color: var(--color-surface-container-low);
+  background-color: #1a1c1e;
 }
 
 .product-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-normal);
+  transition: transform 0.4s ease;
 }
 
 .product-card:hover .product-card__image {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+/* Dark gradient overlay for guaranteed text contrast over any image */
+.product-card__image-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 12, 0.94) 0%,
+    rgba(15, 15, 18, 0.65) 55%,
+    rgba(20, 20, 25, 0.25) 100%
+  );
+  transition: opacity var(--transition-normal);
+}
+
+.product-card:hover .product-card__image-wrap::after {
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 12, 0.97) 0%,
+    rgba(15, 15, 18, 0.72) 55%,
+    rgba(20, 20, 25, 0.3) 100%
+  );
 }
 
 .product-card__image-placeholder {
@@ -47,40 +78,45 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--color-primary), #fff3b0);
+  background: linear-gradient(135deg, #2d3748, #1a202c);
 }
 
 .product-card__placeholder-icon {
   font-size: 2.5rem;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
-/* ── Body ────────────────────────────────────────────────────── */
+/* ── Body (Overlay Text Content) ────────────────────────────── */
 .product-card__body {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   padding: var(--space-md);
-  flex: 1;
+  margin-top: auto;
+  color: #ffffff;
 }
 
 .product-card__title {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
   margin: 0;
   line-height: var(--line-height-tight);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 .product-card__desc {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  color: #cbd5e1;
   line-height: var(--line-height-normal);
   margin: 0;
-  /* Clamp to 3 lines on desktop */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* ── Footer (price + CTA) ────────────────────────────────────── */
@@ -89,67 +125,98 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
-  margin-top: auto;
-  padding-top: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
 }
 
 .product-card__price {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-secondary);
+  color: #f7e721;
   white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
 .product-card__cta {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-xs) var(--space-md);
+  padding: 8px 16px;
   background-color: var(--color-primary);
-  color: var(--color-on-surface);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  color: #1a1c1e;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   border-radius: var(--radius-full);
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .product-card__cta:hover {
-  background-color: #e6d41e;
-  color: var(--color-on-surface);
-  opacity: 0.9;
+  background-color: #ffffff;
+  color: #1a1c1e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .product-card__cta:focus-visible {
-  outline: 2px solid var(--color-on-surface);
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
-/* ── Grid container (used in both home featured and menu groups) ── */
+/* ── Grid container ── */
 .featured__grid,
 .product-group__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
-/* DS-003: Tablet — 2 columns */
+/* ── Tablet & Desktop responsive adjustments ── */
 @media (min-width: 640px) {
+  .product-card {
+    min-height: 280px;
+  }
+
+  .product-card__body {
+    padding: var(--space-lg);
+    gap: var(--space-sm);
+  }
+
+  .product-card__title {
+    font-size: var(--font-size-xl);
+  }
+
+  .product-card__desc {
+    font-size: var(--font-size-sm);
+    -webkit-line-clamp: 3;
+  }
+
+  .product-card__cta {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs) var(--space-md);
+  }
+
   .featured__grid,
   .product-group__grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
   }
 }
 
-/* DS-003: Desktop — 3 columns */
+/* Desktop — 3 columns */
 @media (min-width: 1024px) {
+  .product-card {
+    min-height: 320px;
+  }
+
   .featured__grid,
   .product-group__grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* DS-003: Wide desktop — 4 columns */
+/* Wide desktop — 4 columns */
 @media (min-width: 1280px) {
   .product-group__grid {
     grid-template-columns: repeat(4, 1fr);

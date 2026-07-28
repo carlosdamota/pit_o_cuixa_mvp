@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS categories (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     slug        TEXT    NOT NULL UNIQUE,
+    name_ca     TEXT    NOT NULL DEFAULT '',
     name_es     TEXT    NOT NULL,
     name_en     TEXT    NOT NULL,
     sort_order  INTEGER NOT NULL DEFAULT 0,
@@ -44,8 +45,10 @@ CREATE TABLE IF NOT EXISTS products (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     category_id     INTEGER NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
     slug            TEXT    NOT NULL UNIQUE,
+    name_ca         TEXT    NOT NULL DEFAULT '',
     name_es         TEXT    NOT NULL,
     name_en         TEXT    NOT NULL,
+    description_ca  TEXT    NOT NULL DEFAULT '',
     description_es  TEXT    NOT NULL DEFAULT '',
     description_en  TEXT    NOT NULL DEFAULT '',
     price           REAL    NOT NULL DEFAULT 0.00,
@@ -57,6 +60,17 @@ CREATE TABLE IF NOT EXISTS products (
     created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
 );
+
+-- ============================================================
+-- APP SETTINGS (key/value store for admin toggles)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+INSERT OR IGNORE INTO settings (key, value) VALUES ('menu_slider_enabled', '0');
 
 -- ============================================================
 -- INDEXES
