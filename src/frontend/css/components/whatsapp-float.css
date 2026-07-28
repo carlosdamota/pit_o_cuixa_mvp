@@ -16,8 +16,8 @@
 
 .whatsapp-float {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 60px;
+  right: 40px;
   z-index: var(--z-whatsapp);
 
   /* WF-008: Prevent horizontal overflow on narrow viewports */
@@ -52,15 +52,14 @@
 
 .whatsapp-float__icon {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 56px;
+  height: 56px;
 }
 
-.whatsapp-float__icon svg {
+.whatsapp-float__icon img {
   display: block;
   width: 100%;
   height: 100%;
-  fill: #fff;
 }
 
 /* WF-005, WF-006: Tooltip visible on hover and keyboard focus */
