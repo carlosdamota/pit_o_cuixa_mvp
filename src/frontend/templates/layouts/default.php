@@ -94,6 +94,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/layouts/footer.css">
     <link rel="stylesheet" href="/css/components/product-card.css">
     <link rel="stylesheet" href="/css/components/filter-bar.css">
+    <link rel="stylesheet" href="/css/components/whatsapp-float.css">
     <link rel="stylesheet" href="/css/pages/error.css">
 
     <!-- Home landing CSS (only on home page) -->
@@ -175,6 +176,9 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 
     <!-- ── Footer ──────────────────────────────────────────────────── -->
     <?php require __DIR__ . '/../partials/footer.php'; ?>
+
+    <!-- ── WhatsApp Floating Button ──────────────────────────────────── -->
+    <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/main.js"></script>
