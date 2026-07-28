@@ -151,6 +151,13 @@
   }
 }
 
+/* ── Remove footer margin on fullscreen landing ──────────────────── */
+/* The footer's default margin-top adds unwanted space after a
+   fullscreen landing.  :has() is well supported as of 2024+. */
+body:has(.landing) .footer {
+  margin-top: 0;
+}
+
 /* ── Call Button (above logo) ────────────────────────────────────── */
 .landing__call {
   display: inline-flex;
