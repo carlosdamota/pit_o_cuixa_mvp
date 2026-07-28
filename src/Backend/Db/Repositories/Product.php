@@ -33,7 +33,7 @@ class Product
      */
     public function all(?int $categoryId = null, int $limit = 100, int $offset = 0): array
     {
-        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en
+        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
                 FROM products p
                 JOIN categories c ON p.category_id = c.id
                 WHERE p.is_active = 1';
@@ -92,7 +92,7 @@ class Product
     public function bySlug(string $slug): ?array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en
+            'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
              FROM products p
              JOIN categories c ON p.category_id = c.id
              WHERE p.slug = :slug AND p.is_active = 1'

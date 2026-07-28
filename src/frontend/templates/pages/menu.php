@@ -113,7 +113,13 @@ $sliderImages = $pageData['slider_images'] ?? [];
     <?php foreach ($groups as $group):
         $category = $group['category'];
         $lang     = $locale;
-        $catName  = $category["name_{$lang}"] ?? '';
+        $catName  = !empty($category["name_{$lang}"])
+            ? $category["name_{$lang}"]
+            : (!empty($category['name_ca'])
+                ? $category['name_ca']
+                : (!empty($category['name_es'])
+                    ? $category['name_es']
+                    : ($category['name_en'] ?? '')));
         $catSlug  = $category['slug'] ?? '';
     ?>
         <section class="product-group" data-category="<?= htmlspecialchars($catSlug, ENT_QUOTES, 'UTF-8') ?>">
