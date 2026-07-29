@@ -87,14 +87,18 @@
 .header__menu--open {
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   top: 56px;
   left: 0;
   right: 0;
+  width: 100vw;
+  height: calc(100vh - 56px);
   background-color: var(--color-surface-container-lowest);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-sm) 0;
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-md) var(--space-lg);
+  z-index: calc(var(--z-header) + 20);
+  overflow-y: auto;
 }
 
 .header__link {
