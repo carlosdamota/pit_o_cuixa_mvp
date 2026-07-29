@@ -37,6 +37,30 @@
   box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
 }
 
+/* Mobile responsive compacting */
+@media (max-width: 767px) {
+  .menu-hero,
+  .menu-slider {
+    display: none !important;
+  }
+
+  .channel-switcher {
+    margin-top: 8px !important;
+    margin-bottom: 12px !important;
+    padding: 3px;
+    border-radius: 12px;
+  }
+
+  .channel-switcher__btn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    gap: 4px;
+    border-radius: 9px;
+  }
+}
+
 /* Accordion Component */
 .accordion-list {
   display: flex;
