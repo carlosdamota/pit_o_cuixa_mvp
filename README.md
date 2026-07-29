@@ -236,6 +236,42 @@ Todas las páginas incluyen:
 - Geolocalización (Torredembarra, Tarragona)
 - Sitemap XML dinámico
 
+### 🚀 Despliegue en Producción (Dinahosting)
+
+En **Dinahosting**, el servidor web (Apache + Varnish / Nginx) utiliza por defecto la carpeta `httpdocs/` como raíz del sitio.
+
+#### 📋 Pasos paso a paso para Dinahosting
+
+1. **Configurar la carpeta raíz (*Document Root*)**:
+   - Entra al panel de Dinahosting → **Hosting** → **Ajustes Web** → **Carpeta raíz**.
+   - Cambia la carpeta de inicio de `httpdocs` a `httpdocs/public` (o apunta a la carpeta `/public` de tu proyecto).
+   - > ⚠️ **CRÍTICO DE SEGURIDAD**: La carpeta `src/`, `.env` y `data/` NUNCA deben ser accesibles directamente vía URL.
+
+2. **Seleccionar Versión de PHP**:
+   - En Dinahosting → **Hosting** → **Servidores/Servicios** → **PHP**.
+   - Selecciona **PHP 8.2** o superior y confirma que la extensión `pdo_sqlite` esté habilitada.
+
+3. **Subir el código y configurar `.env`**:
+   - Sube el repositorio mediante Git (`git pull`) o SFTP.
+   - Copia `.env.example` como `.env` en la raíz del servidor y ajusta:
+     ```env
+     APP_ENV=prod
+     SITE_URL=https://pitocuixa.es
+     DB_PATH=/datos/data/pitocuixa.db
+     ```
+
+4. **Inicializar/Migrar base de datos y sincronizar CSS**:
+   - Accede por SSH a Dinahosting y ejecuta:
+     ```bash
+     php scripts/migrate.php   # Ejecuta las migraciones pendientes en la BD
+     php scripts/sync-css.php  # Sincroniza los estilos fuente a public/css/
+     ```
+
+5. **Permisos de escritura**:
+   - Asigna permisos `775` a las carpetas `data/` (para la base de datos SQLite) y `public/uploads/products/` (para imágenes del catálogo).
+
+---
+
 ### CI / CD
 
 GitHub Actions ejecuta `php -l` en cada Pull Request y push a `main`.
