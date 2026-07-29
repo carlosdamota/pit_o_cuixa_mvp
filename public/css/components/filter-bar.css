@@ -81,6 +81,10 @@
   scrollbar-width: none;
 }
 
+.filter-bar__tabs[hidden] {
+  display: none !important;
+}
+
 .filter-bar__tabs::-webkit-scrollbar {
   display: none;
 }
