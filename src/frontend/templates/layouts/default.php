@@ -87,31 +87,32 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <link rel="apple-touch-icon" href="/img/apple-touch-icon.svg">
 
-    <!-- ── CSS ──────────────────────────────────────────────────────── -->
-    <link rel="stylesheet" href="/css/tokens.css">
-    <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/layouts/header.css">
-    <link rel="stylesheet" href="/css/layouts/footer.css">
-    <link rel="stylesheet" href="/css/components/product-card.css">
-    <link rel="stylesheet" href="/css/components/filter-bar.css">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css">
-    <link rel="stylesheet" href="/css/pages/error.css">
+    <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
+    <?php $v = '?v=1.1.0'; ?>
+    <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/base.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/layouts/header.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/layouts/footer.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/product-card.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/filter-bar.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/pages/error.css<?= $v ?>">
 
     <!-- Home landing CSS (only on home page) -->
     <?php if ($pageName === 'home'): ?>
-    <link rel="stylesheet" href="/css/pages/home.css">
+    <link rel="stylesheet" href="/css/pages/home.css<?= $v ?>">
     <?php endif; ?>
 
     <!-- FAQ page CSS (only on FAQ page) -->
     <?php if ($pageName === 'faq'): ?>
-    <link rel="stylesheet" href="/css/pages/faq.css">
+    <link rel="stylesheet" href="/css/pages/faq.css<?= $v ?>">
     <?php endif; ?>
 
     <!-- Menu slider CSS & Accordion CSS (only on menu page — includes fallback hero) -->
     <?php if ($pageName === 'menu'): ?>
-    <link rel="stylesheet" href="/css/components/menu-slider.css">
-    <link rel="stylesheet" href="/css/components/accordion.css">
-    <script type="module" src="/js/accordion.js"></script>
+    <link rel="stylesheet" href="/css/components/menu-slider.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/accordion.css<?= $v ?>">
+    <script type="module" src="/js/accordion.js<?= $v ?>"></script>
     <?php endif; ?>
 
     <!-- Admin CSS (only on admin pages) -->
