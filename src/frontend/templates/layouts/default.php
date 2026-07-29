@@ -88,7 +88,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="apple-touch-icon" href="/img/apple-touch-icon.svg">
 
     <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
-    <?php $v = '?v=1.1.0'; ?>
+    <?php $v = '?v=1.2.0'; ?>
     <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">
     <link rel="stylesheet" href="/css/base.css<?= $v ?>">
     <link rel="stylesheet" href="/css/layouts/header.css<?= $v ?>">
