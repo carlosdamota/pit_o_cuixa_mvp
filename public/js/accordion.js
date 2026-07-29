@@ -19,7 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('channel-switcher__btn--active');
       btn.setAttribute('aria-pressed', 'true');
 
-      // Update views
+      // Update views and filter tabs
+      const filterTabs = document.querySelector('[data-filter-tabs]');
+
       channelViews.forEach((view) => {
         if (view.dataset.channelView === target) {
           view.hidden = false;
@@ -27,6 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
           view.hidden = true;
         }
       });
+
+      if (filterTabs) {
+        // Show category tabs only for Delivery channel, hide for Local
+        filterTabs.hidden = (target !== 'delivery');
+      }
     });
   });
 

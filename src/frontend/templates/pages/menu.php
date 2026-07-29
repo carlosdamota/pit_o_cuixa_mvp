@@ -88,7 +88,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                 role="tab"
                 aria-selected="true"
                 aria-pressed="true">
-            🍽️ Carta en Local (Restaurante)
+            🍽️ Carta en Local
         </button>
         <button class="channel-switcher__btn"
                 data-channel-target="delivery"
@@ -96,7 +96,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                 role="tab"
                 aria-selected="false"
                 aria-pressed="false">
-            🛵 Para Llevar / Domicilio
+            🛵 Para Llevar
         </button>
     </div>
 </div>
@@ -107,7 +107,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 <nav class="filter-bar" data-filter-bar aria-label="<?= __('menu.heading') ?>">
     <div class="filter-bar__inner container">
         <div class="filter-bar__search">
-            <label for="menu-search" class="visually-hidden"><?= __('menu.search.label') ?></label>
             <input type="search"
                    id="menu-search"
                    class="filter-bar__search-input"
@@ -115,7 +114,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                    placeholder="<?= __('menu.search.placeholder') ?>">
         </div>
 
-        <div class="filter-bar__tabs">
+        <div class="filter-bar__tabs" data-filter-tabs hidden>
             <button class="filter-bar__tab filter-bar__tab--active"
                     data-filter="all"
                     type="button"
