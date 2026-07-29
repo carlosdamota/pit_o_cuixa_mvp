@@ -102,11 +102,45 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 </div>
 
 <!-- ============================================================
+     Filter Bar (sticky category tabs & search input)
+     ============================================================ -->
+<nav class="filter-bar" data-filter-bar aria-label="<?= __('menu.heading') ?>">
+    <div class="filter-bar__inner container">
+        <div class="filter-bar__search">
+            <label for="menu-search" class="visually-hidden"><?= __('menu.search.label') ?></label>
+            <input type="search"
+                   id="menu-search"
+                   class="filter-bar__search-input"
+                   data-menu-search
+                   placeholder="<?= __('menu.search.placeholder') ?>">
+        </div>
+
+        <div class="filter-bar__tabs">
+            <button class="filter-bar__tab filter-bar__tab--active"
+                    data-filter="all"
+                    type="button"
+                    aria-pressed="true">
+                <?= __('menu.filter.all') ?>
+            </button>
+
+            <?php foreach ($catList as $cat): ?>
+                <button class="filter-bar__tab"
+                        data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
+                        type="button"
+                        aria-pressed="false">
+                    <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================
      CHANNEL 1: Carta en Local (Restaurante) — Accordions
      ============================================================ -->
-<div class="container section" data-channel-view="dine_in">
+<div class="container section" data-channel-view="dine_in" data-menu-products>
     <?php if ($dineInMenus !== []): ?>
-        <section style="margin-bottom:var(--space-xl, 32px);">
+        <section style="margin-bottom:var(--space-xl, 32px);" data-category="all">
             <h2 class="section__title" style="font-size:1.5rem;margin-bottom:16px;text-align:left;">
                 🗂️ Menús del Día y Promociones
             </h2>
@@ -119,8 +153,10 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     $includes = $mData['includes'] ?? '';
                     $sections = $mData['sections'] ?? [];
                     $isOpen = ($index === 0);
+                    $mSearchText = mb_strtolower($mName . ' ' . $mDesc . ' ' . $badge . ' ' . $includes);
                 ?>
-                    <article class="accordion-item accordion-item--featured <?= $isOpen ? 'accordion-item--open' : '' ?>">
+                    <article class="accordion-item accordion-item--featured <?= $isOpen ? 'accordion-item--open' : '' ?>"
+                             data-search-text="<?= htmlspecialchars($mSearchText, ENT_QUOTES, 'UTF-8') ?>">
                         <button class="accordion-header" data-accordion-toggle aria-expanded="<?= $isOpen ? 'true' : 'false' ?>">
                             <div class="accordion-header__title-wrap">
                                 <span class="accordion-header__title"><?= htmlspecialchars($mName, ENT_QUOTES, 'UTF-8') ?></span>
@@ -176,10 +212,12 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
             <?php foreach ($dineInGroups as $catIndex => $group):
                 $category = $group['category'];
                 $catName  = $category["name_{$locale}"] ?? $category['name_es'];
+                $catSlug  = $category['slug'] ?? '';
                 $catProducts = $group['products'];
                 $isOpenCat = ($catIndex === 0 && $dineInMenus === []);
             ?>
-                <article class="accordion-item <?= $isOpenCat ? 'accordion-item--open' : '' ?>">
+                <article class="accordion-item <?= $isOpenCat ? 'accordion-item--open' : '' ?>"
+                         data-category="<?= htmlspecialchars($catSlug, ENT_QUOTES, 'UTF-8') ?>">
                     <button class="accordion-header" data-accordion-toggle aria-expanded="<?= $isOpenCat ? 'true' : 'false' ?>">
                         <div class="accordion-header__title-wrap">
                             <span class="accordion-header__title"><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></span>
@@ -193,13 +231,23 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                             <?php foreach ($catProducts as $p):
                                 $pName = $p["name_{$locale}"] ?? $p['name_es'];
                                 $pDesc = $p["description_{$locale}"] ?? $p['description_es'];
+                                $pSearchText = mb_strtolower($pName . ' ' . $pDesc);
+                                $imgUrl = $p['image_url'] ?? '';
                             ?>
-                                <div class="listview-item">
-                                    <div class="listview-item__info">
-                                        <span class="listview-item__name"><?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?></span>
-                                        <?php if ($pDesc !== ''): ?>
-                                            <span class="listview-item__desc"><?= htmlspecialchars($pDesc, ENT_QUOTES, 'UTF-8') ?></span>
+                                <div class="listview-item" data-search-text="<?= htmlspecialchars($pSearchText, ENT_QUOTES, 'UTF-8') ?>">
+                                    <div class="listview-item__left">
+                                        <?php if (!empty($imgUrl)): ?>
+                                            <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                                 alt="<?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?>"
+                                                 class="listview-item__img"
+                                                 loading="lazy" width="52" height="52">
                                         <?php endif; ?>
+                                        <div class="listview-item__info">
+                                            <span class="listview-item__name"><?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?></span>
+                                            <?php if ($pDesc !== ''): ?>
+                                                <span class="listview-item__desc"><?= htmlspecialchars($pDesc, ENT_QUOTES, 'UTF-8') ?></span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                     <span class="listview-item__price"><?= number_format((float)$p['price'], 2) ?> €</span>
                                 </div>
@@ -216,38 +264,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
      CHANNEL 2: Para Llevar / Domicilio (Grid por Categorías)
      ============================================================ -->
 <div data-channel-view="delivery" hidden>
-    <!-- Filter Bar (sticky category tabs) -->
-    <nav class="filter-bar" data-filter-bar aria-label="<?= __('menu.heading') ?>">
-        <div class="filter-bar__inner container">
-            <div class="filter-bar__search">
-                <label for="menu-search" class="visually-hidden"><?= __('menu.search.label') ?></label>
-                <input type="search"
-                       id="menu-search"
-                       class="filter-bar__search-input"
-                       data-menu-search
-                       placeholder="<?= __('menu.search.placeholder') ?>">
-            </div>
-
-            <div class="filter-bar__tabs">
-                <button class="filter-bar__tab filter-bar__tab--active"
-                        data-filter="all"
-                        type="button"
-                        aria-pressed="true">
-                    <?= __('menu.filter.all') ?>
-                </button>
-
-                <?php foreach ($catList as $cat): ?>
-                    <button class="filter-bar__tab"
-                            data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
-                            type="button"
-                            aria-pressed="false">
-                        <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
-                    </button>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </nav>
-
     <!-- Product Groups -->
     <div class="menu-products section" data-menu-products>
         <?php foreach ($groups as $group):

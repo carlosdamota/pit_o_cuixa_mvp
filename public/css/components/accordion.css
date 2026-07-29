@@ -182,12 +182,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid var(--color-border-light, #f1f5f9);
 }
 
 .listview-item:last-child {
   border-bottom: none;
+}
+
+.listview-item__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.listview-item__img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  flex-shrink: 0;
+  background-color: var(--color-surface, #f8f9fa);
 }
 
 .listview-item__info {

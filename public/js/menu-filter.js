@@ -22,18 +22,16 @@
  */
 export function initMenuFilter() {
   const filterBar = document.querySelector('[data-filter-bar]');
-  const productsContainer = document.querySelector('[data-menu-products]');
   const searchInput = document.querySelector('[data-menu-search]');
   const noResults = document.getElementById('search-no-results');
 
-  if (!filterBar || !productsContainer) {
+  if (!filterBar) {
     return; // Not on the menu page — skip
   }
 
   const tabs = filterBar.querySelectorAll('[data-filter]');
-  const groups = productsContainer.querySelectorAll('[data-category]');
 
-  if (tabs.length === 0 || groups.length === 0) {
+  if (tabs.length === 0) {
     return;
   }
 
@@ -44,38 +42,50 @@ export function initMenuFilter() {
   // ── Apply filters (category AND search) ─────────────────────
   function applyFilters() {
     let anyVisible = false;
+    const blocks = document.querySelectorAll('[data-category]');
 
-    groups.forEach((group) => {
-      const category = group.getAttribute('data-category');
-      const categoryMatch = activeCategory === 'all' || category === activeCategory;
-
-      if (!categoryMatch) {
-        group.style.display = 'none';
+    blocks.forEach((block) => {
+      // Don't filter hidden channel views
+      const channelView = block.closest('[data-channel-view]');
+      if (channelView && channelView.hidden) {
         return;
       }
 
-      // Category matches — show group (may be hidden by search below)
-      group.style.display = '';
+      const category = block.getAttribute('data-category');
+      const categoryMatch = activeCategory === 'all' || category === activeCategory;
 
-      const cards = group.querySelectorAll('.product-card');
-      let hasVisibleCard = false;
+      if (!categoryMatch) {
+        block.style.display = 'none';
+        return;
+      }
 
-      cards.forEach((card) => {
-        const searchText = card.getAttribute('data-search-text') || '';
+      // Category matches — show block
+      block.style.display = '';
+
+      const items = block.querySelectorAll('.product-card, .listview-item, .accordion-item--featured');
+      if (items.length === 0) {
+        anyVisible = true;
+        return;
+      }
+
+      let hasVisibleItem = false;
+
+      items.forEach((item) => {
+        const searchText = item.getAttribute('data-search-text') || item.textContent.toLowerCase();
         const searchMatch = searchQuery.length < 2 || searchText.includes(searchQuery);
 
         if (searchMatch) {
-          card.style.display = '';
-          hasVisibleCard = true;
+          item.style.display = '';
+          hasVisibleItem = true;
           anyVisible = true;
         } else {
-          card.style.display = 'none';
+          item.style.display = 'none';
         }
       });
 
-      // Hide group if no cards survived the search
-      if (!hasVisibleCard) {
-        group.style.display = 'none';
+      // Hide block if no inner items matched search
+      if (!hasVisibleItem && searchQuery.length >= 2) {
+        block.style.display = 'none';
       }
     });
 
