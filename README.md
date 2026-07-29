@@ -60,28 +60,58 @@ Si el problema persiste, pídele ayuda a una persona técnica.
 
 ## 👩‍💻 Guía para personas técnicas
 
-Esta sección es para los **4 miembros con perfil técnico** que trabajan directamente con el código.
+Esta sección es para los **miembros del equipo técnico** que trabajan directamente con el código.
 
-### Requisitos previos
+### ⚡ Inicio rápido (Quick Path)
 
-- **PHP 8.2** o superior (con extensión `pdo_sqlite`)
-- **SQLite 3** (incluido con PHP)
-- **Git**
+1. **Clonar e instalar dependencias**:
+   ```bash
+   git clone <url-del-repositorio>
+   cd pit-o-cuixa
+   cp .env.example .env
+   ```
+2. **Inicializar base de datos y sincronizar estilos CSS**:
+   ```bash
+   php scripts/setup.php       # Crea la base de datos SQLite y tablas iniciales
+   php scripts/sync-css.php    # Sincroniza estilos desde src/frontend/css → public/css
+   ```
+3. **Arrancar servidor local**:
+   ```bash
+   php -S 0.0.0.0:8000 -t public
+   ```
+   Abre `http://localhost:8000` en tu navegador.
 
-### Instalación
+---
 
-```bash
-git clone <url-del-repositorio>
-cd pit-o-cuixa
-cp .env.example .env
-# Ajusta los valores en .env (ver tabla de configuración)
-php scripts/setup.php
-php -S 0.0.0.0:8000 -t public
-```
+### 🎨 Arquitectura de CSS y `scripts/sync-css.php`
 
-Abre `http://localhost:8000` y ya deberías ver la web funcionando.
+En este proyecto, **los archivos CSS fuente no se modifican directamente en `public/`**.
 
-### Configuración
+| Aspecto | `src/frontend/css/` (Fuente) | `public/css/` (Público) |
+|---------|------------------------------|-------------------------|
+| **Propósito** | Código fuente mantenido por desarrolladores | Archivos estáticos servidos al navegador |
+| **Acceso Web** | Privado (fuera de la raíz del servidor web) | Público (Document Root servido por Nginx/Apache) |
+| **Modificación** | **Editar SIEMPRE aquí** | Nunca editar directamente (se sobrescribe) |
+
+#### ¿Por qué usamos `php scripts/sync-css.php`?
+
+1. **Seguridad y Separación de Arquitectura (Clean Architecture)**:
+   El servidor web solo tiene acceso a la carpeta `public/`. Las tripas del backend (`src/`) y la base de datos están fuera de la raíz web para prevenir la exposición accidental de código fuente.
+
+2. **Cero Dependencias (Sin Node/NPM/Webpack)**:
+   En lugar de requerir `npm install`, Node.js o herramientas de compilación pesadas, `sync-css.php` es un sincronizador ultra-rápido nativo en PHP que compara marcas de tiempo (`filemtime`) y copia únicamente los archivos modificados desde `src/frontend/css/` hacia `public/css/`.
+
+3. **Control de Versiones de Assets (Cache Buster)**:
+   Al compilar/sincronizar los estilos a la carpeta pública, las vistas inyectan `?v=X.Y.Z` para garantizar que los navegadores invaliden la caché HTTP y muestren los cambios al instante sin necesidad de forzar refrescos manuales.
+
+> 💡 **Regla de Oro**: Tras crear o editar cualquier archivo CSS en `src/frontend/css/`, ejecuta siempre:
+> ```bash
+> php scripts/sync-css.php
+> ```
+
+---
+
+### Configuración de Entorno
 
 | Variable | Por defecto | Significado |
 |----------|-------------|-------------|
@@ -95,32 +125,33 @@ Abre `http://localhost:8000` y ya deberías ver la web funcionando.
 
 ```
 pit-o-cuixa/
-├── public/           # Raíz web — el servidor apunta aquí
+├── public/           # Raíz web pública — el servidor web apunta exclusivamente aquí
+│   ├── css/          # Estilos generados (sincronizados desde src/frontend/css)
+│   └── js/           # Scripts JS públicos (ES Modules)
 ├── src/
-│   ├── backend/      # Lógica del servidor: API, admin, BD
-│   ├── frontend/     # Plantillas, CSS, JS
-│   └── shared/       # Configuración, traducciones (ES/EN)
-├── db/               # Esquema SQL y datos iniciales
-├── data/             # Base de datos SQLite (se crea con setup.php)
-├── scripts/          # Herramientas: setup.php, import/export CSV
-└── openspec/         # Documentación técnica
+│   ├── backend/      # Lógica del servidor: API controllers, Repositorios PDO SQLite
+│   ├── frontend/     # Fuentes CSS, plantillas PHP (SSR), maquetación
+│   └── shared/       # Configuración global, helper i18n
+├── db/               # Migraciones SQL (001, 002, 003, 004) y esquema base
+├── data/             # Base de datos SQLite activa (creada por setup.php)
+├── scripts/          # Automatización: setup.php, sync-css.php, migrate.php
+└── openspec/         # Especificaciones técnicas de desarrollo
 ```
 
 ### Stack técnico
 
 | Componente | Tecnología |
 |------------|-----------|
-| **Lenguaje** | PHP 8.x (`strict_types=1`) |
-| **Frontend** | HTML + CSS vanilla + JavaScript (ES Modules) |
-| **Base de datos** | SQLite con WAL |
+| **Lenguaje** | PHP 8.2+ (`strict_types=1`) |
+| **Frontend** | HTML5 semántico + CSS Vanilla (Design Tokens) + JavaScript (ES Modules) |
+| **Base de datos** | SQLite con WAL (Write-Ahead Logging) |
 | **Servidor** | Apache con `mod_rewrite` o PHP built-in server |
-| **Estilos** | Design System con variables CSS (tokens), BEM |
-| **CSS** | `src/frontend/css/` → servido desde `public/css/` |
-| **JS** | `src/frontend/js/` → servido desde `public/js/` (ES Modules) |
-| **Plantillas** | PHP embebido en HTML (SSR) |
-| **Traducciones** | Arrays PHP en `src/shared/i18n/{es,en}.php` + helper `__()` |
+| **Estilos** | Design System con tokens CSS, BEM y Responsive Mobile-First |
+| **Sincronizador CSS**| Script PHP nativo (`scripts/sync-css.php`) |
+| **Plantillas** | SSR con PHP embebido en componentes HTML |
+| **Traducciones** | Arrays PHP en `src/shared/i18n/{es,en,ca}.php` + helper `__()` |
 | **CI** | GitHub Actions: `php -l` syntax check en cada PR |
-| **Dependencias** | Ninguna — PHP vanilla, sin frameworks |
+| **Dependencias** | Cero dependencias externas (sin Composer ni Node) |
 
 ### Arquitectura
 
