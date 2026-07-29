@@ -347,9 +347,13 @@ function fillForm(btn) {
     const form = document.querySelector('[data-product-form]');
     if (!form) return;
 
-    form.querySelector('[data-form-title]');
+    const drawerTitle = document.querySelector('[data-drawer-title]');
+    if (drawerTitle) drawerTitle.textContent = 'Editar Producto';
+
+    const submitBtn = document.querySelector('[data-btn-submit]');
+    if (submitBtn) submitBtn.textContent = 'Actualizar';
+
     form.querySelector('[data-field-method]').value = 'PUT';
-    form.querySelector('[data-btn-submit]').textContent = 'Actualizar';
     form.querySelector('[data-field-id]').value = btn.dataset.editProduct;
 
     const fields = {
@@ -379,8 +383,13 @@ function resetForm() {
     const form = document.querySelector('[data-product-form]');
     if (!form) return;
 
+    const drawerTitle = document.querySelector('[data-drawer-title]');
+    if (drawerTitle) drawerTitle.textContent = 'Nuevo Producto';
+
+    const submitBtn = document.querySelector('[data-btn-submit]');
+    if (submitBtn) submitBtn.textContent = 'Guardar';
+
     form.querySelector('[data-field-method]').value = 'POST';
-    form.querySelector('[data-btn-submit]').textContent = 'Guardar';
     form.querySelector('[data-field-id]').value = '';
     form.reset();
     form.querySelector('[name="is_active"]').checked = true;
