@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pit o Cuixa — Products API Controller
+ * Pit o Cuixa — WebScraper API Controller
  *
  * Public read-only API endpoints for products and categories.
  * Every response uses the uniform JSON envelope.
@@ -95,7 +95,8 @@ class WebScraper{
 
             if($c->tagName === "a"){
                 //link
-                $slug = basename($c->getAttribute('href'));
+                $link = $c->getAttribute('href');
+                $slug = basename($link);
 
                 //datos
                 $name = trim($xpath->query(".//h3", $c)->item(0)?->textContent ?? '');
@@ -111,8 +112,9 @@ class WebScraper{
                     'slug' => $slug,
                     'name_es' => $name,
                     'price' => $price,
-                    'description' => $descr,
-                    'image' => $image,
+                    'description_es' => $descr,
+                    'image_url' => $image,
+                    'last_shop_url' => $link,
                     'category' => $category
                 ];
             }
