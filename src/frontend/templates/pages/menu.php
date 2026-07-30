@@ -35,6 +35,7 @@ $isDeliveryMode = ($requestedMode === 'delivery' || $requestedMode === 'domicili
              height="675">
     </div>
 </section>
+<?php endif; ?>
 
 
 <?php
