@@ -162,15 +162,25 @@ class Product
     }
 
     /**
-     * Return all active products, optionally filtered by category.
+     * Return products, optionally filtered by category and/or channel.
+     *
+     * The fourth parameter is kept backward-compatible so existing calls can pass either
+     * a boolean for the active-state filter or a channel string for channel filtering.
      *
      * @param  int|null $categoryId  Filter by category ID (null = all)
      * @param  int      $limit       Maximum rows to return (safety cap)
      * @param  int      $offset      Offset for pagination
+     * @param  bool|string|null $onlyActive
+     * @param  string|null $channel  Filter by channel ('dine_in' | 'delivery' | null)
      * @return array<int, array<string, mixed>>
      */
-    public function all(?int $categoryId = null, int $limit = 100, int $offset = 0, bool $onlyActive = true): array
+    public function all(?int $categoryId = null, int $limit = 100, int $offset = 0, bool|string|null $onlyActive = true, ?string $channel = null): array
     {
+        if (is_string($onlyActive) && $onlyActive !== '') {
+            $channel = $onlyActive;
+            $onlyActive = true;
+        }
+
         $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
                 FROM products p
                 JOIN categories c ON p.category_id = c.id
@@ -267,7 +277,7 @@ class Product
      */
     public function byCategory(int $categoryId, ?string $channel = null): array
     {
-        return $this->all($categoryId, 100, 0, $channel);
+        return $this->all($categoryId, 100, 0, true, $channel);
     }
 
     /**
