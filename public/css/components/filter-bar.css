@@ -23,8 +23,16 @@
   padding-bottom: var(--space-sm);
 }
 
-/* ── Search Row ─────────────────────────────────────────────── */
+/* ── Top Row (Search + Channel Switcher) ─────────────────────── */
+.filter-bar__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 8px);
+}
+
 .filter-bar__search {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
 }

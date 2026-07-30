@@ -199,6 +199,7 @@ $lang       = $pageData['locale'] ?? LANG;
                             <th>Categoría</th>
                             <th>Canal</th>
                             <th>Tipo</th>
+                            <th>Clics</th>
                             <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
@@ -206,7 +207,7 @@ $lang       = $pageData['locale'] ?? LANG;
                     <tbody data-products-tbody>
                         <?php if ($products === []): ?>
                             <tr>
-                                <td colspan="9" class="admin-table__empty">
+                                <td colspan="10" class="admin-table__empty">
                                     No hay productos. ¡Crea el primero!
                                 </td>
                             </tr>
@@ -235,6 +236,7 @@ $lang       = $pageData['locale'] ?? LANG;
                                 <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><small><?= htmlspecialchars($channelStr, ENT_QUOTES, 'UTF-8') ?></small></td>
                                 <td><small><?= htmlspecialchars($typeStr, ENT_QUOTES, 'UTF-8') ?></small></td>
+                                <td>🔥 <?= (int) ($p['clicks_count'] ?? 0) ?></td>
                                 <td><?= !empty($p['is_active']) ? '✓' : '✗' ?></td>
                                 <td class="admin-table__actions">
                                     <button class="admin-btn-sm" data-edit-product="<?= (int) $p['id'] ?>"

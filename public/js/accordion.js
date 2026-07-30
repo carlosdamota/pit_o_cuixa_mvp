@@ -37,7 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ── Accordion List (Toggle Open / Close) ───────────────────────
+  // ── Auto-activate Channel from URL parameter (?mode=...) or SessionStorage ──
+  const urlParams = new URLSearchParams(window.location.search);
+  const modeParam = urlParams.get('mode') || sessionStorage.getItem('pitocuixa_order_mode');
+
+  if (modeParam) {
+    const isDelivery = (modeParam === 'delivery' || modeParam === 'domicilio');
+    const targetChannel = isDelivery ? 'delivery' : 'dine_in';
+    const targetBtn = document.querySelector(`[data-channel-target="${targetChannel}"]`);
+
+    if (targetBtn && !targetBtn.classList.contains('channel-switcher__btn--active')) {
+      targetBtn.click();
+    }
+  }
+
+  // ── Accordion List (Toggle Open / Close — Single Open Mode) ────
   document.addEventListener('click', (e) => {
     const header = e.target.closest('[data-accordion-toggle]');
     if (!header) return;
@@ -55,9 +69,22 @@ document.addEventListener('DOMContentLoaded', () => {
       content.hidden = true;
       item.classList.remove('accordion-item--open');
     } else {
+      // Close all other open accordion items in the channel view / page
+      const container = item.closest('[data-channel-view]') || document;
+      container.querySelectorAll('.accordion-item--open').forEach((openItem) => {
+        if (openItem !== item) {
+          const openHeader = openItem.querySelector('[data-accordion-toggle]');
+          const openContent = openItem.querySelector('.accordion-content');
+          if (openHeader) openHeader.setAttribute('aria-expanded', 'false');
+          if (openContent) openContent.hidden = true;
+          openItem.classList.remove('accordion-item--open');
+        }
+      });
+
       header.setAttribute('aria-expanded', 'true');
       content.hidden = false;
       item.classList.add('accordion-item--open');
     }
   });
 });
+

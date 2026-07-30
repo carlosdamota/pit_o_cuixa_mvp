@@ -11,66 +11,31 @@
  * @package Pit\Cuixa\Frontend\Templates\Pages
  */
 
-$groups      = $pageData['groups']      ?? [];
-$catList     = $pageData['categories']  ?? [];
-$locale      = $pageData['locale']      ?? LANG;
-$showSlider  = $pageData['show_slider']  ?? false;
+$groups       = $pageData['groups']       ?? [];
+$catList      = $pageData['categories']   ?? [];
+$locale       = $pageData['locale']       ?? LANG;
+$showSlider   = $pageData['show_slider']   ?? false;
 $sliderImages = $pageData['slider_images'] ?? [];
+
+// Mode requested from onboarding drag & drop: 'local' (dine_in) vs 'delivery'
+$requestedMode  = $_GET['mode'] ?? '';
+$isDeliveryMode = ($requestedMode === 'delivery' || $requestedMode === 'domicilio');
 ?>
 <!-- ============================================================
-     Page Header — Slider or Fallback Hero
+     Page Header — Presentation Hero Banner
      ============================================================ -->
-<?php if ($showSlider): ?>
-<section class="menu-slider section" data-menu-slider
-    role="region" aria-roledescription="carousel"
-    aria-label="<?= __('menu.slider.aria') ?>">
-    <div class="menu-slider__viewport" tabindex="0">
-        <div class="menu-slider__track">
-            <?php foreach ($sliderImages as $i => $img): ?>
-                <figure class="menu-slider__slide" role="group"
-                        aria-roledescription="slide"
-                        aria-label="<?= __('menu.slider.slide_n', [$i + 1, count($sliderImages)]) ?>">
-                    <img src="<?= htmlspecialchars($img, ENT_QUOTES) ?>"
-                         alt="<?= __('menu.slider.image_alt', [$i + 1]) ?>"
-                         loading="<?= $i === 0 ? 'eager' : 'lazy' ?>"
-                         decoding="async" width="1200" height="675">
-                </figure>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <div class="menu-slider__controls">
-        <button class="menu-slider__btn menu-slider__btn--prev"
-                data-slider-prev
-                type="button"
-                aria-label="<?= __('menu.slider.prev') ?>">
-            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-        </button>
-        <button class="menu-slider__btn menu-slider__btn--next"
-                data-slider-next
-                type="button"
-                aria-label="<?= __('menu.slider.next') ?>">
-            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-        </button>
-    </div>
-    <ol class="menu-slider__dots" aria-label="<?= __('menu.slider.dots') ?>">
-        <?php foreach ($sliderImages as $i => $_): ?>
-            <li class="menu-slider__dot<?= $i === 0 ? ' menu-slider__dot--active' : '' ?>">
-                <button type="button"
-                        data-slider-dot="<?= $i ?>"
-                        aria-label="<?= __('menu.slider.slide_n', [$i + 1, count($sliderImages)]) ?>"
-                        <?= $i === 0 ? 'aria-current="true"' : '' ?>></button>
-            </li>
-        <?php endforeach; ?>
-    </ol>
-</section>
-<?php else: ?>
-<section class="menu-hero menu-hero--fallback section">
-    <div class="container">
-        <h1 class="section__title"><?= __('menu.heading') ?></h1>
-        <p class="section__subtitle"><?= __('menu.subtitle') ?></p>
+<section class="menu-hero menu-hero--presentation section">
+    <div class="menu-hero__image-wrapper">
+        <img src="/img/menu-slider/presentatione.webp"
+             alt="<?= __('site.name') ?> — Presentation"
+             class="menu-hero__img"
+             loading="eager"
+             decoding="async"
+             width="1200"
+             height="675">
     </div>
 </section>
-<?php endif; ?>
+
 
 <?php
 $dineInGroups = $pageData['dine_in_groups'] ?? [];
@@ -78,48 +43,54 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 ?>
 
 <!-- ============================================================
-     Channel Switcher (Local vs Delivery)
-     ============================================================ -->
-<div class="container" style="margin-top:var(--space-md, 24px);">
-    <div class="channel-switcher" role="tablist" aria-label="Canales de carta">
-        <button class="channel-switcher__btn channel-switcher__btn--active"
-                data-channel-target="dine_in"
-                type="button"
-                role="tab"
-                aria-selected="true"
-                aria-pressed="true">
-            🍽️ Carta en Local
-        </button>
-        <button class="channel-switcher__btn"
-                data-channel-target="delivery"
-                type="button"
-                role="tab"
-                aria-selected="false"
-                aria-pressed="false">
-            🛵 Para Llevar
-        </button>
-    </div>
-</div>
-
-<!-- ============================================================
-     Filter Bar (sticky category tabs & search input)
+     Filter Bar (sticky channel switcher, search & category tabs)
      ============================================================ -->
 <nav class="filter-bar" data-filter-bar aria-label="<?= __('menu.heading') ?>">
     <div class="filter-bar__inner container">
-        <div class="filter-bar__search">
-            <input type="search"
-                   id="menu-search"
-                   class="filter-bar__search-input"
-                   data-menu-search
-                   placeholder="<?= __('menu.search.placeholder') ?>">
+        <div class="filter-bar__top">
+            <div class="filter-bar__search">
+                <input type="search"
+                       id="menu-search"
+                       class="filter-bar__search-input"
+                       data-menu-search
+                       placeholder="<?= __('menu.search.placeholder') ?>">
+            </div>
+
+            <div class="channel-switcher" role="tablist" aria-label="Canales de carta">
+                <button class="channel-switcher__btn<?= !$isDeliveryMode ? ' channel-switcher__btn--active' : '' ?>"
+                        data-channel-target="dine_in"
+                        type="button"
+                        role="tab"
+                        aria-selected="<?= !$isDeliveryMode ? 'true' : 'false' ?>"
+                        aria-pressed="<?= !$isDeliveryMode ? 'true' : 'false' ?>">
+                    <span class="channel-switcher__icon">🍽️</span>
+                    <span class="channel-switcher__label">Local</span>
+                </button>
+                <button class="channel-switcher__btn<?= $isDeliveryMode ? ' channel-switcher__btn--active' : '' ?>"
+                        data-channel-target="delivery"
+                        type="button"
+                        role="tab"
+                        aria-selected="<?= $isDeliveryMode ? 'true' : 'false' ?>"
+                        aria-pressed="<?= $isDeliveryMode ? 'true' : 'false' ?>">
+                    <span class="channel-switcher__icon">🛵</span>
+                    <span class="channel-switcher__label">Llevar</span>
+                </button>
+            </div>
         </div>
 
-        <div class="filter-bar__tabs" data-filter-tabs hidden>
+        <div class="filter-bar__tabs" data-filter-tabs<?= $isDeliveryMode ? '' : ' hidden' ?>>
             <button class="filter-bar__tab filter-bar__tab--active"
                     data-filter="all"
                     type="button"
                     aria-pressed="true">
                 <?= __('menu.filter.all') ?>
+            </button>
+
+            <button class="filter-bar__tab"
+                    data-filter="popular"
+                    type="button"
+                    aria-pressed="false">
+                <?= __('menu.filter.popular') ?>
             </button>
 
             <?php foreach ($catList as $cat): ?>
@@ -137,7 +108,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 <!-- ============================================================
      CHANNEL 1: Carta en Local (Restaurante) — Accordions
      ============================================================ -->
-<div class="container section" data-channel-view="dine_in" data-menu-products>
+<div class="container section" data-channel-view="dine_in" data-menu-products<?= $isDeliveryMode ? ' hidden' : '' ?>>
     <?php if ($dineInMenus !== []): ?>
         <section style="margin-bottom:var(--space-xl, 32px);" data-category="all">
             <h2 class="section__title" style="font-size:1.5rem;margin-bottom:16px;text-align:left;">
@@ -262,7 +233,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 <!-- ============================================================
      CHANNEL 2: Para Llevar / Domicilio (Grid por Categorías)
      ============================================================ -->
-<div data-channel-view="delivery" hidden>
+<div data-channel-view="delivery"<?= $isDeliveryMode ? '' : ' hidden' ?>>
     <!-- Product Groups -->
     <div class="menu-products section" data-menu-products>
         <?php foreach ($groups as $group):
@@ -302,3 +273,77 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
         <?php endif; ?>
     </div>
 </div>
+
+<!-- ============================================================
+     Delivery Area Map Section (Above Footer) & Local SEO JSON-LD
+     ============================================================ -->
+<section class="delivery-map-section" aria-labelledby="delivery-map-heading">
+    <div class="container">
+        <header class="delivery-map-section__header">
+            <h2 id="delivery-map-heading" class="delivery-map-section__title">
+                🛵 <?= __('menu.map.title') ?>
+            </h2>
+            <p class="delivery-map-section__subtitle">
+                <?= __('menu.map.subtitle') ?>
+            </p>
+        </header>
+
+        <div class="delivery-map-card">
+            <!-- Leaflet Interactive Canvas Container -->
+            <div id="delivery-map" class="delivery-map-container" role="region" aria-label="<?= __('menu.map.title') ?>"></div>
+
+            <!-- Town Badges Bar -->
+            <div class="delivery-map-towns">
+                <p class="delivery-map-towns__label"><?= __('menu.map.towns_label') ?></p>
+                <ul class="delivery-map-towns__list">
+                    <li class="delivery-map-towns__tag delivery-map-towns__tag--hub">📍 Torredembarra</li>
+                    <li class="delivery-map-towns__tag">🛵 Altafulla</li>
+                    <li class="delivery-map-towns__tag">🛵 Creixell</li>
+                    <li class="delivery-map-towns__tag">🛵 La Móra</li>
+                    <li class="delivery-map-towns__tag">🛵 Pobla de Montornès</li>
+                    <li class="delivery-map-towns__tag">🛵 La Riera de Gaià</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="delivery-map-note">
+            <?= __('menu.map.delivery_note') ?>
+        </div>
+    </div>
+</section>
+
+<!-- ── Local SEO JSON-LD: FoodEstablishment Delivery Coverage ────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FoodEstablishment",
+  "name": "Pit o Cuixa",
+  "telephone": "+34977642010",
+  "areaServed": [
+    {
+      "@type": "AdministrativeArea",
+      "name": "Torredembarra"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Altafulla"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Creixell"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "La Móra"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Pobla de Montornès"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "La Riera de Gaià"
+    }
+  ]
+}
+</script>

@@ -108,11 +108,13 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/pages/faq.css<?= $v ?>">
     <?php endif; ?>
 
-    <!-- Menu slider CSS & Accordion CSS (only on menu page — includes fallback hero) -->
+    <!-- Menu slider CSS, Accordion CSS & Delivery Map CSS (only on menu page) -->
     <?php if ($pageName === 'menu'): ?>
     <link rel="stylesheet" href="/css/components/menu-slider.css<?= $v ?>">
     <link rel="stylesheet" href="/css/components/accordion.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/delivery-map.css<?= $v ?>">
     <script type="module" src="/js/accordion.js<?= $v ?>"></script>
+    <script type="module" src="/js/delivery-map.js<?= $v ?>"></script>
     <?php endif; ?>
 
     <!-- Admin CSS (only on admin pages) -->
@@ -169,19 +171,21 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 </head>
 <body>
 
-    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <!-- ── Header (hidden on home page) ────────────────────────────── -->
+    <?php if ($pageName !== 'home'): ?>
     <?php require __DIR__ . '/../partials/header.php'; ?>
+    <?php endif; ?>
 
     <!-- ── Main Content ─────────────────────────────────────────────── -->
     <main class="main" role="main">
         <?= $content ?? '' ?>
     </main>
 
-    <!-- ── Footer ──────────────────────────────────────────────────── -->
+    <!-- ── Footer & Floating WhatsApp (hidden on home page) ─────────── -->
+    <?php if ($pageName !== 'home'): ?>
     <?php require __DIR__ . '/../partials/footer.php'; ?>
-
-    <!-- ── WhatsApp Floating Button ──────────────────────────────────── -->
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
+    <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/main.js"></script>

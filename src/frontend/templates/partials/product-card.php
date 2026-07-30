@@ -39,6 +39,7 @@ $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.')
 $imageUrl    = $product['image_url']   ?? null;
 $orderUrl    = $product['last_shop_url'] ?? '#';
 $slug        = $product['slug']        ?? '';
+$productId   = (int) ($product['id']   ?? 0);
 
 // Build search corpus from both locales (lowercased, space-separated)
 $searchText = strtolower(
@@ -49,6 +50,7 @@ $searchText = strtolower(
 );
 ?>
 <article class="product-card"
+         data-product-id="<?= $productId ?>"
          data-product-slug="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
          data-search-text="<?= htmlspecialchars($searchText, ENT_QUOTES, 'UTF-8') ?>">
     <div class="product-card__image-wrap">
@@ -79,6 +81,8 @@ $searchText = strtolower(
             <?php if ($orderUrl && $orderUrl !== '#'): ?>
                 <a href="<?= htmlspecialchars($orderUrl, ENT_QUOTES, 'UTF-8') ?>"
                    class="product-card__cta"
+                   data-track-click
+                   data-product-id="<?= $productId ?>"
                    target="_blank"
                    rel="noopener noreferrer">
                     <?= __('menu.order.cta') ?>

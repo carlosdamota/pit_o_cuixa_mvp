@@ -11,6 +11,35 @@
  */
 
 /* ================================================================
+   PRESENTATION HERO (Static single image banner)
+   ================================================================ */
+
+.menu-hero--presentation {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--color-surface, #1a1a1a);
+    padding: 0;
+}
+
+.menu-hero__image-wrapper {
+    width: 100%;
+    max-height: 450px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-hero__img {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ================================================================
    FALLBACK HERO (CSS-only decorative gradient)
    ================================================================ */
 

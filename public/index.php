@@ -35,6 +35,7 @@ use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Faq;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
+use Pit\Cuixa\Backend\Pages\LlmsTxt;
 
 // ── 2. Determine request path and method ───────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -96,6 +97,16 @@ $router->add('GET', '/api/products', static function (array $params): void {
     Products::list($categoryId, $limit);
 });
 
+$router->add('GET', '/api/products/popular', static function (array $params): void {
+    $limit = min((int) ($_GET['limit'] ?? 5), 50);
+    Products::popular($limit);
+});
+
+$router->add('POST', '/api/products/{id}/click', static function (array $params): void {
+    $productId = (int) ($params['id'] ?? 0);
+    Products::recordClick($productId);
+});
+
 $router->add('GET', '/api/products/{slug}', static function (array $params): void {
     Products::show($params['slug'] ?? '');
 });
@@ -144,6 +155,10 @@ $router->add('GET', '/sitemap.xml', static function (array $params): void {
 
 $router->add('GET', '/robots.txt', static function (array $params): void {
     Robots::render();
+});
+
+$router->add('GET', '/llms.txt', static function (array $params): void {
+    LlmsTxt::render();
 });
 
 // ── 4c. HTML Page Routes ──────────────────────────────────────────────

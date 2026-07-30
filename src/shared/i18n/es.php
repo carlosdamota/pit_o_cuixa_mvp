@@ -79,6 +79,9 @@ return [
     'home.landing.pollos'    => 'Pollos al ast',
     'home.landing.combinados' => 'Platos combinados',
     'home.landing.picapica'  => 'Picapica',
+    'home.onboarding.in_local'  => 'En local',
+    'home.onboarding.delivery'  => 'A domicilio',
+    'home.onboarding.drag_hint' => 'Arrastra tu opción al local para empezar',
 
     // ── Menu Page ────────────────────────────────────────────────
     'menu.title'       => 'Carta — Pit o Cuixa',
@@ -86,13 +89,17 @@ return [
     'menu.heading'     => 'Nuestra carta',
     'menu.subtitle'    => 'Todo hecho al momento con ingredientes de primera calidad.',
     'menu.filter.all'  => 'Todo',
-    'menu.filter.all'  => 'Todo',
+    'menu.filter.popular' => '🔥 Más vendidos',
     'menu.order.cta'   => 'Pedir en last.shop',
     'menu.price.from'  => 'Desde %s',
     'menu.no_products' => 'No hay productos disponibles en esta categoría.',
     'menu.search.label' => 'Buscar productos',
     'menu.search.placeholder' => 'Buscar productos...',
     'menu.search.no_results' => 'No se encontraron productos',
+    'menu.map.title'       => 'Zona de reparto a domicilio',
+    'menu.map.subtitle'    => 'Llegamos recién hechos y bien calientes a tu puerta.',
+    'menu.map.towns_label' => 'Cobertura directa:',
+    'menu.map.delivery_note' => '🛵 Reparto disponible en Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès y La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price'    => '%s €',

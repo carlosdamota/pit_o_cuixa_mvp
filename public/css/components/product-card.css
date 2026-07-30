@@ -49,16 +49,16 @@
   transform: scale(1.08);
 }
 
-/* Dark gradient overlay for guaranteed text contrast over any image */
+/* Soft, subtle gradient at the bottom only for text legibility without darkening images */
 .product-card__image-wrap::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(10, 10, 12, 0.94) 0%,
-    rgba(15, 15, 18, 0.65) 55%,
-    rgba(20, 20, 25, 0.25) 100%
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.15) 35%,
+    transparent 65%
   );
   transition: opacity var(--transition-normal);
 }
@@ -66,9 +66,9 @@
 .product-card:hover .product-card__image-wrap::after {
   background: linear-gradient(
     to top,
-    rgba(10, 10, 12, 0.97) 0%,
-    rgba(15, 15, 18, 0.72) 55%,
-    rgba(20, 20, 25, 0.3) 100%
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.2) 35%,
+    transparent 65%
   );
 }
 
