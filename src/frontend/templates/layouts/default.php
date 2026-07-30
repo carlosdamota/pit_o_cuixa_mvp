@@ -87,29 +87,34 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <link rel="apple-touch-icon" href="/img/apple-touch-icon.svg">
 
-    <!-- ── CSS ──────────────────────────────────────────────────────── -->
-    <link rel="stylesheet" href="/css/tokens.css">
-    <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/layouts/header.css">
-    <link rel="stylesheet" href="/css/layouts/footer.css">
-    <link rel="stylesheet" href="/css/components/product-card.css">
-    <link rel="stylesheet" href="/css/components/filter-bar.css">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css">
-    <link rel="stylesheet" href="/css/pages/error.css">
+    <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
+    <?php $v = '?v=1.2.0'; ?>
+    <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/base.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/layouts/header.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/layouts/footer.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/product-card.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/filter-bar.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/pages/error.css<?= $v ?>">
 
     <!-- Home landing CSS (only on home page) -->
     <?php if ($pageName === 'home'): ?>
-    <link rel="stylesheet" href="/css/pages/home.css">
+    <link rel="stylesheet" href="/css/pages/home.css<?= $v ?>">
     <?php endif; ?>
 
     <!-- FAQ page CSS (only on FAQ page) -->
     <?php if ($pageName === 'faq'): ?>
-    <link rel="stylesheet" href="/css/pages/faq.css">
+    <link rel="stylesheet" href="/css/pages/faq.css<?= $v ?>">
     <?php endif; ?>
 
-    <!-- Menu slider CSS (only on menu page — includes fallback hero) -->
+    <!-- Menu slider CSS, Accordion CSS & Delivery Map CSS (only on menu page) -->
     <?php if ($pageName === 'menu'): ?>
-    <link rel="stylesheet" href="/css/components/menu-slider.css">
+    <link rel="stylesheet" href="/css/components/menu-slider.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/accordion.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/delivery-map.css<?= $v ?>">
+    <script type="module" src="/js/accordion.js<?= $v ?>"></script>
+    <script type="module" src="/js/delivery-map.js<?= $v ?>"></script>
     <?php endif; ?>
 
     <!-- Admin CSS (only on admin pages) -->
@@ -166,19 +171,21 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 </head>
 <body>
 
-    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <!-- ── Header (hidden on home page) ────────────────────────────── -->
+    <?php if ($pageName !== 'home'): ?>
     <?php require __DIR__ . '/../partials/header.php'; ?>
+    <?php endif; ?>
 
     <!-- ── Main Content ─────────────────────────────────────────────── -->
     <main class="main" role="main">
         <?= $content ?? '' ?>
     </main>
 
-    <!-- ── Footer ──────────────────────────────────────────────────── -->
+    <!-- ── Footer & Floating WhatsApp (hidden on home page) ─────────── -->
+    <?php if ($pageName !== 'home'): ?>
     <?php require __DIR__ . '/../partials/footer.php'; ?>
-
-    <!-- ── WhatsApp Floating Button ──────────────────────────────────── -->
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
+    <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/main.js"></script>

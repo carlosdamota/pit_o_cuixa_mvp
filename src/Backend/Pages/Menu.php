@@ -26,9 +26,10 @@ class Menu
         $catRepo  = new Category();
         $prodRepo = new Product();
 
-        $categories = $catRepo->all();
-        $products   = $prodRepo->all();
-        $lang       = LANG;
+        $categories       = $catRepo->all();
+        $dineInProducts   = $prodRepo->all(null, 200, 0, 'dine_in');
+        $deliveryProducts = $prodRepo->all(null, 200, 0, 'delivery');
+        $lang             = LANG;
 
         // ── Slider logic ─────────────────────────────────────────────
         Settings::ensureSchema();
@@ -41,13 +42,21 @@ class Menu
 
         $showSlider = ($sliderEnabled === '1') && count($sliderImages) > 0;
 
-        // Build grouped structure for the template
+        // Extract Dine-In Menus (type = 'menu')
+        $dineInMenus = array_values(
+            array_filter(
+                $dineInProducts,
+                fn(array $p): bool => ($p['type'] ?? 'simple') === 'menu'
+            )
+        );
+
+        // Build Delivery grouped structure for template
         $groups = [];
         foreach ($categories as $category) {
             $catProducts = array_values(
                 array_filter(
-                    $products,
-                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id']
+                    $deliveryProducts,
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
                 )
             );
 
@@ -56,6 +65,26 @@ class Menu
             }
 
             $groups[] = [
+                'category' => $category,
+                'products' => $catProducts,
+            ];
+        }
+
+        // Build Dine-In grouped structure for template (simple items)
+        $dineInGroups = [];
+        foreach ($categories as $category) {
+            $catProducts = array_values(
+                array_filter(
+                    $dineInProducts,
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
+                )
+            );
+
+            if ($catProducts === []) {
+                continue;
+            }
+
+            $dineInGroups[] = [
                 'category' => $category,
                 'products' => $catProducts,
             ];
@@ -130,6 +159,8 @@ class Menu
 
         $data = [
             'groups'            => $groups,
+            'dine_in_groups'    => $dineInGroups,
+            'dine_in_menus'     => $dineInMenus,
             'categories'        => $filterCategories,
             'locale'            => $lang,
             'show_slider'       => $showSlider,

@@ -47,6 +47,44 @@ function initMobileMenu() {
 }
 
 /**
+ * Initialise custom language selector dropdown.
+ */
+function initLangDropdown() {
+  const dropdown = document.querySelector('[data-lang-dropdown]');
+  if (!dropdown) return;
+
+  const toggle = dropdown.querySelector('[data-lang-toggle]');
+  const menu = dropdown.querySelector('[data-lang-menu]');
+  if (!toggle || !menu) return;
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', !isOpen);
+    if (isOpen) {
+      menu.setAttribute('hidden', '');
+    } else {
+      menu.removeAttribute('hidden');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('hidden', '');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('hidden', '');
+      toggle.focus();
+    }
+  });
+}
+
+/**
  * Register the service worker for PWA offline support.
  * Only registers over HTTPS or localhost.
  */
@@ -79,6 +117,7 @@ function registerServiceWorker() {
  */
 function init() {
   initMobileMenu();
+  initLangDropdown();
   initMenuFilter();
   initMenuSlider();
   registerServiceWorker();
@@ -90,3 +129,4 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
