@@ -11,13 +11,6 @@
 /* Download from: https://fonts.google.com/specimen/Quicksand */
 /* For now, use system fallback until font files are added */
 
-/* @font-face {
-    font-family: 'Quicksand';
-    src: url('/fonts/quicksand-v1.woff2') format('woff2');
-    font-weight: 400 700;
-    font-display: swap;
-} */
-
 /* ── CSS Reset ──────────────────────────────────────────────────────── */
 *,
 *::before,
@@ -128,8 +121,7 @@ table {
 /* Enhancements at larger breakpoints handled per component */
 
 /* ── Utility Classes ────────────────────────────────────────────────── */
-.sr-only,
-.visually-hidden {
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;

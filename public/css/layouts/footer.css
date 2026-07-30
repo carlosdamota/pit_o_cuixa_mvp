@@ -38,8 +38,7 @@
 }
 
 .footer__hours,
-.footer__address,
-.footer__phone {
+.footer__address {
   font-size: var(--font-size-sm);
   opacity: 0.8;
   margin: 0;

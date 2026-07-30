@@ -26,9 +26,10 @@ class Menu
         $catRepo  = new Category();
         $prodRepo = new Product();
 
-        $categories = $catRepo->all();
-        $products   = $prodRepo->all();
-        $lang       = LANG;
+        $categories       = $catRepo->all();
+        $dineInProducts   = $prodRepo->all(null, 200, 0, 'dine_in');
+        $deliveryProducts = $prodRepo->all(null, 200, 0, 'delivery');
+        $lang             = LANG;
 
         // ── Slider logic ─────────────────────────────────────────────
         Settings::ensureSchema();
@@ -41,13 +42,21 @@ class Menu
 
         $showSlider = ($sliderEnabled === '1') && count($sliderImages) > 0;
 
-        // Build grouped structure for the template
+        // Extract Dine-In Menus (type = 'menu')
+        $dineInMenus = array_values(
+            array_filter(
+                $dineInProducts,
+                fn(array $p): bool => ($p['type'] ?? 'simple') === 'menu'
+            )
+        );
+
+        // Build Delivery grouped structure for template
         $groups = [];
         foreach ($categories as $category) {
             $catProducts = array_values(
                 array_filter(
-                    $products,
-                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id']
+                    $deliveryProducts,
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
                 )
             );
 
@@ -61,13 +70,33 @@ class Menu
             ];
         }
 
+        // Build Dine-In grouped structure for template (simple items)
+        $dineInGroups = [];
+        foreach ($categories as $category) {
+            $catProducts = array_values(
+                array_filter(
+                    $dineInProducts,
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
+                )
+            );
+
+            if ($catProducts === []) {
+                continue;
+            }
+
+            $dineInGroups[] = [
+                'category' => $category,
+                'products' => $catProducts,
+            ];
+        }
+
         // Flat list of categories for the filter bar (localised)
         $filterCategories = array_map(
             function (array $cat) use ($lang): array {
                 return [
                     'id'    => (int) $cat['id'],
                     'slug'  => $cat['slug'],
-                    'name'  => $cat["name_{$lang}"],
+                    'name'  => self::translateField($cat, 'name', $lang),
                 ];
             },
             $categories
@@ -80,7 +109,7 @@ class Menu
         foreach ($groups as $group) {
             $menuSection = [
                 '@type' => 'MenuSection',
-                'name'  => $group['category']["name_{$lang}"],
+                'name'  => self::translateField($group['category'], 'name', $lang),
                 'description' => '',
             ];
 
@@ -88,8 +117,8 @@ class Menu
             foreach ($group['products'] as $product) {
                 $sectionItems[] = [
                     '@type' => 'MenuItem',
-                    'name'  => $product["name_{$lang}"],
-                    'description' => $product["description_{$lang}"],
+                    'name'  => self::translateField($product, 'name', $lang),
+                    'description' => self::translateField($product, 'description', $lang),
                     'offers' => [
                         '@type' => 'Offer',
                         'price' => number_format((float) $product['price'], 2, '.', ''),
@@ -130,6 +159,8 @@ class Menu
 
         $data = [
             'groups'            => $groups,
+            'dine_in_groups'    => $dineInGroups,
+            'dine_in_menus'     => $dineInMenus,
             'categories'        => $filterCategories,
             'locale'            => $lang,
             'show_slider'       => $showSlider,
@@ -160,5 +191,23 @@ class Menu
             static fn(string $path): string => '/img/menu-slider/' . rawurlencode(basename($path)),
             $files
         );
+    }
+
+    private static function translateField(array $row, string $field, string $lang): string
+    {
+        $keys = [
+            "{$field}_{$lang}",
+            "{$field}_es",
+            "{$field}_en",
+            "{$field}_ca",
+        ];
+
+        foreach ($keys as $key) {
+            if (isset($row[$key]) && $row[$key] !== '') {
+                return (string) $row[$key];
+            }
+        }
+
+        return '';
     }
 }

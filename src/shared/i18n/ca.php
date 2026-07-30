@@ -416,6 +416,9 @@ return [
     'home.landing.pollos'    => 'Pollos a l\'ast',
     'home.landing.combinados' => 'Plats combinats',
     'home.landing.picapica'  => 'Pica-pica',
+    'home.onboarding.in_local'  => 'Al local',
+    'home.onboarding.delivery'  => 'A domicili',
+    'home.onboarding.drag_hint' => 'Arrossega la teva opció al local per començar',
 
     // ── Menu Page ────────────────────────────────────────────────
     'menu.title'       => 'Carta — Pit o Cuixa',
@@ -423,13 +426,17 @@ return [
     'menu.heading'     => 'La nostra carta',
     'menu.subtitle'    => 'Tot fet al moment amb ingredients de primera qualitat.',
     'menu.filter.all'  => 'Tot',
-    'menu.filter.all'  => 'Tot',
+    'menu.filter.popular' => '🔥 Més venuts',
     'menu.order.cta'   => 'Demanar a last.shop',
     'menu.price.from'  => 'Des de %s',
     'menu.no_products' => 'No hi ha productes disponibles en aquesta categoria.',
     'menu.search.label' => 'Cerca productes',
     'menu.search.placeholder' => 'Cerca productes...',
     'menu.search.no_results' => 'No s\'han trobat productes',
+    'menu.map.title'       => 'Zona de repartiment a domicili',
+    'menu.map.subtitle'    => 'Arribem acabats de fer i ben calents a la teva porta.',
+    'menu.map.towns_label' => 'Cobertura directa:',
+    'menu.map.delivery_note' => '🛵 Repartiment disponible a Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès i La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price'    => '%s €',

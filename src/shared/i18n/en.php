@@ -418,6 +418,9 @@ return [
     'home.landing.pollos'    => 'Rotisserie Chicken',
     'home.landing.combinados' => 'Set Menus',
     'home.landing.picapica'  => 'Nibbles',
+    'home.onboarding.in_local'  => 'Eat-in',
+    'home.onboarding.delivery'  => 'Delivery',
+    'home.onboarding.drag_hint' => 'Drag your option to the store to start',
 
     // ── Menu Page ────────────────────────────────────────────────
     'menu.title'       => 'Menu — Pit o Cuixa',
@@ -425,13 +428,17 @@ return [
     'menu.heading'     => 'Our menu',
     'menu.subtitle'    => 'Everything made to order with top-quality ingredients.',
     'menu.filter.all'  => 'All',
-    'menu.filter.all'  => 'All',
+    'menu.filter.popular' => '🔥 Best Sellers',
     'menu.order.cta'   => 'Order at last.shop',
     'menu.price.from'  => 'From %s',
     'menu.no_products' => 'No products available in this category.',
     'menu.search.label' => 'Search products',
     'menu.search.placeholder' => 'Search products...',
     'menu.search.no_results' => 'No products found',
+    'menu.map.title'       => 'Home Delivery Area',
+    'menu.map.subtitle'    => 'Freshly prepared and delivered piping hot to your doorstep.',
+    'menu.map.towns_label' => 'Direct delivery coverage:',
+    'menu.map.delivery_note' => '🛵 Delivery available in Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès, and La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price'    => '€%s',

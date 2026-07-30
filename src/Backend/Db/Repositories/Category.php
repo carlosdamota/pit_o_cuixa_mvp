@@ -24,6 +24,27 @@ class Category
     }
 
     /**
+     * Conversion de Slug a ID para la correcta insercion en la DB
+     * 
+     * @return array
+     */
+
+    public function MapSlug() : array{
+
+        $stmt = $this->pdo->query(
+            'SELECT id, slug FROM categories'
+        );
+
+        $mapSlug = [];
+
+        foreach($stmt ->fetchAll() as $r){
+            $mapSlug[$r['slug']] = (int) $r['id'];
+        }
+
+        return $mapSlug;
+    }
+
+    /**
      * Return all active categories ordered by sort_order.
      *
      * @return array<int, array<string, mixed>>

@@ -73,6 +73,47 @@ class Products
     }
 
     /**
+     * GET /api/products/popular
+     *
+     * Query param: ?limit= (optional, max 50, default 5)
+     */
+    public static function popular(int $limit = 5): void
+    {
+        $repo     = new ProductRepo();
+        $products = $repo->popular($limit);
+
+        Response::json([
+            'data'  => array_map([self::class, 'localize'], $products),
+            'error' => false,
+        ]);
+    }
+
+    /**
+     * POST /api/products/{id}/click
+     */
+    public static function recordClick(int $productId): void
+    {
+        if ($productId <= 0) {
+            Response::error('Invalid product ID', 400);
+            return;
+        }
+
+        $repo    = new ProductRepo();
+        $success = $repo->incrementClick($productId);
+
+        if (!$success) {
+            Response::error('Product not found or inactive', 404);
+            return;
+        }
+
+        Response::json([
+            'data'    => ['success' => true, 'product_id' => $productId],
+            'error'   => false,
+            'message' => 'Click recorded',
+        ]);
+    }
+
+    /**
      * Localise a product row to the current locale.
      *
      * @param  array<string, mixed> $product  Raw DB row
@@ -96,6 +137,7 @@ class Products
             'category_name'   => $product["category_name_{$lang}"],
             'is_featured'     => (bool) $product['is_featured'],
             'sort_order'      => (int) $product['sort_order'],
+            'clicks_count'    => (int) ($product['clicks_count'] ?? 0),
         ];
     }
 
