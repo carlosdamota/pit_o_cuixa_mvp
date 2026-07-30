@@ -141,8 +141,8 @@ class WebScraper{
             'croquetas','ensaladas','patatas' => 'entrantes',
             'bebidas' => 'bebidas',
             'postre' => 'postres',
-            'portes' => 'portes',
-            default => ''
+            'portes','portes-fuera' => 'portes',
+            default => 'otros'
         };
     }
 }
