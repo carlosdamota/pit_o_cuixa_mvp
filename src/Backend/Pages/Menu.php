@@ -96,7 +96,7 @@ class Menu
                 return [
                     'id'    => (int) $cat['id'],
                     'slug'  => $cat['slug'],
-                    'name'  => $cat["name_{$lang}"],
+                    'name'  => self::translateField($cat, 'name', $lang),
                 ];
             },
             $categories
@@ -109,7 +109,7 @@ class Menu
         foreach ($groups as $group) {
             $menuSection = [
                 '@type' => 'MenuSection',
-                'name'  => $group['category']["name_{$lang}"],
+                'name'  => self::translateField($group['category'], 'name', $lang),
                 'description' => '',
             ];
 
@@ -117,8 +117,8 @@ class Menu
             foreach ($group['products'] as $product) {
                 $sectionItems[] = [
                     '@type' => 'MenuItem',
-                    'name'  => $product["name_{$lang}"],
-                    'description' => $product["description_{$lang}"],
+                    'name'  => self::translateField($product, 'name', $lang),
+                    'description' => self::translateField($product, 'description', $lang),
                     'offers' => [
                         '@type' => 'Offer',
                         'price' => number_format((float) $product['price'], 2, '.', ''),
@@ -191,5 +191,23 @@ class Menu
             static fn(string $path): string => '/img/menu-slider/' . rawurlencode(basename($path)),
             $files
         );
+    }
+
+    private static function translateField(array $row, string $field, string $lang): string
+    {
+        $keys = [
+            "{$field}_{$lang}",
+            "{$field}_es",
+            "{$field}_en",
+            "{$field}_ca",
+        ];
+
+        foreach ($keys as $key) {
+            if (isset($row[$key]) && $row[$key] !== '') {
+                return (string) $row[$key];
+            }
+        }
+
+        return '';
     }
 }
