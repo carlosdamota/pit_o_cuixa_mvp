@@ -33,6 +33,9 @@ use Pit\Cuixa\Backend\Pages\Admin\SettingsPage as AdminSettingsPage;
 use Pit\Cuixa\Backend\Api\AdminSettings;
 use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Faq;
+use Pit\Cuixa\Backend\Pages\Privacy;
+use Pit\Cuixa\Backend\Pages\Cookies;
+use Pit\Cuixa\Backend\Pages\Terms;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 
@@ -175,6 +178,57 @@ $router->add('GET', '/{lang}/faq', static function (array $params): void {
     }
 
     // Unrecognised locale prefix — delegate to 404
+    Response::error('Not Found', 404);
+});
+
+// Privacy page
+$router->add('GET', '/privacy', static function (array $params): void {
+    Privacy::render();
+});
+
+// Privacy page with locale prefix
+$router->add('GET', '/{lang}/privacy', static function (array $params): void {
+    $lang = $params['lang'] ?? '';
+
+    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+        Response::redirect('/privacy?lang=' . $lang, 302);
+        return;
+    }
+
+    Response::error('Not Found', 404);
+});
+
+// Cookies page
+$router->add('GET', '/cookies', static function (array $params): void {
+    Cookies::render();
+});
+
+// Cookies page with locale prefix
+$router->add('GET', '/{lang}/cookies', static function (array $params): void {
+    $lang = $params['lang'] ?? '';
+
+    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+        Response::redirect('/cookies?lang=' . $lang, 302);
+        return;
+    }
+
+    Response::error('Not Found', 404);
+});
+
+// Terms page
+$router->add('GET', '/terms', static function (array $params): void {
+    Terms::render();
+});
+
+// Terms page with locale prefix
+$router->add('GET', '/{lang}/terms', static function (array $params): void {
+    $lang = $params['lang'] ?? '';
+
+    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+        Response::redirect('/terms?lang=' . $lang, 302);
+        return;
+    }
+
     Response::error('Not Found', 404);
 });
 

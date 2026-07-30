@@ -22,6 +22,20 @@
             </p>
         </div>
         <div class="footer__copy">
+            <nav class="footer__legals">
+                <a href="/privacy" class="footer__link">
+                    <?= __('footer.privacy') ?>
+                </a>
+
+                <a href="/cookies" class="footer__link">
+                    <?= __('footer.cookies') ?>
+                </a>
+
+                <a href="/terms" class="footer__link">
+                    <?= __('footer.terms') ?>
+                </a>
+            </nav>
+            
             &copy; <?= date('Y') ?> <?= __('site.name') ?>. <?= __('footer.rights') ?>
         </div>
     </div>

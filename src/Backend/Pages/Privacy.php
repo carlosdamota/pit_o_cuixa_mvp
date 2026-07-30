@@ -1,0 +1,44 @@
+<?php
+/**
+ * Pit o Cuixa — Privacy Page Controller
+ *
+ * SSR: renders the Privacy Policy page.
+ *
+ * @package Pit\Cuixa\Backend\Pages
+ */
+
+declare(strict_types=1);
+
+namespace Pit\Cuixa\Backend\Pages;
+
+class Privacy
+{
+    /**
+     * Render the Privacy Policy page.
+     */
+    public static function render(): void
+    {
+        $siteUrl = \Config::siteUrl();
+
+        // URL canónica según el idioma
+        $canonicalPath = LANG === 'ca' ? '/privacy' : '/' . LANG . '/privacy';
+
+        $meta = [
+            'title'       => __('privacy.title'),
+            'description' => __('privacy.desc'),
+            'canonical'   => $siteUrl . $canonicalPath,
+            'og_image'    => '/img/og-image.jpg',
+            'langs'       => [
+                'ca' => $siteUrl . '/privacy',
+                'es' => $siteUrl . '/es/privacy',
+                'en' => $siteUrl . '/en/privacy',
+            ],
+        ];
+
+        $data = [
+            'locale' => LANG,
+        ];
+
+        \renderPage('privacy', $meta, $data);
+    }
+}
