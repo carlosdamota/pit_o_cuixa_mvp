@@ -15,6 +15,7 @@ VALUES
 ('platos', 'Platos principales', 'Main dishes', 'Plats principals', 2, 1),
 ('entrantes', 'Entrantes', 'Starters', 'Entrants', 3, 1),
 ('bebidas', 'Bebidas', 'Drinks', 'Begudes', 4, 1),
-('postres', 'Postres', 'Desserts', 'Postres', 5, 1);
+('postres', 'Postres', 'Desserts', 'Postres', 5, 1),
+('portes', 'Portes', 'Delivery Charges', 'Portes', 6,1);
 
 COMMIT;

@@ -65,6 +65,8 @@ class WebScraper{
         $dom->loadHTML($url);
         $xpath = new \DOMXPath($dom);
 
+        $counter = 1;
+
         //Aislamos la sección donde esta toda la carta
         $carta = $xpath->query("//*[contains(@class, 'md:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]')]");
 
@@ -115,7 +117,8 @@ class WebScraper{
                     'description_es' => $descr,
                     'image_url' => $image,
                     'last_shop_url' => $link,
-                    'category' => $category
+                    'category' => $category,
+                    'sort_order' => $counter++
                 ];
             }
         }
@@ -138,6 +141,7 @@ class WebScraper{
             'croquetas','ensaladas','patatas' => 'entrantes',
             'bebidas' => 'bebidas',
             'postre' => 'postres',
+            'portes' => 'portes',
             default => ''
         };
     }
