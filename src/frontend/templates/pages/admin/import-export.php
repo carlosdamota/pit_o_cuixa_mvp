@@ -102,12 +102,12 @@ $lang      = $pageData['locale'] ?? LANG;
 /**
  * Admin Import/Export — Upload CSV and download exports.
  */
-import { showAlert, showToast, withLoading } from '/js/admin.js';
+import { showAlert, showToast, withLoading, getCsrfToken } from '/js/admin.js';
 
 // ── Import ──────────────────────────────────────────────────────
 const importForm  = document.getElementById('import-form');
 const importBtn   = document.getElementById('import-btn');
-const fileInput   = importForm?.querySelector('[name="csv_file"]');
+const fileInput   = importForm?.querySelector('[name="file"]');
 const progress    = document.getElementById('import-progress');
 const statusEl    = progress?.querySelector('[data-import-status]');
 const countEl     = progress?.querySelector('[data-import-count]');
@@ -149,7 +149,8 @@ importForm?.addEventListener('submit', async (e) => {
         return;
     }
 
-    const formData = new FormData(importForm);
+    const formData = new FormData();
+    formData.append('file', file);
 
     // Show progress region
     if (progress) progress.hidden = false;
@@ -160,6 +161,9 @@ importForm?.addEventListener('submit', async (e) => {
         try {
             const res = await fetch('/api/admin/import', {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': getCsrfToken(),
+                },
                 body: formData,
                 credentials: 'same-origin',
             });

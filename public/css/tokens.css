@@ -82,6 +82,7 @@
   /* ── Z-index ─────────────────────────────────────────────────────── */
   --z-header: 100;
   --z-overlay: 200;
+  --z-whatsapp: 250;
   --z-modal: 300;
 
   /* ── Breakpoints (min-width, mobile-first) ──────────────────────── */

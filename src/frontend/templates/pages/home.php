@@ -1,42 +1,181 @@
 <?php
 /**
- * Pit o Cuixa — Home Page Template
+ * Pit o Cuixa — Onboarding Home Page Template
  *
- * Fullscreen index landing: company logo + 3 big category buttons
- * linking to /menu with a preselected filter (?cat=).
- * Variables passed via $pageData from renderPage():
- *   - locale: current language code
+ * Fullscreen fixed index landing with dominant yellow oval background arc
+ * and interactive drag & drop mode selector with animated walking chicken logo using /img/icons/favicon.png.
  *
  * @package Pit\Cuixa\Frontend\Templates\Pages
  */
 
-// Explicit lang suffix so non-default locales survive the navigation
-// (CA is the default locale and needs no param).
+$baseUri = $_SERVER['REQUEST_URI'] ?? '/';
+$baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
+$langSeparator = (strpos($baseUri, '?') !== false) ? '&' : '?';
 $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
 ?>
 <!-- ============================================================
-     Landing Index (fullscreen)
+     Landing Onboarding (fullscreen fixed 100dvh)
      ============================================================ -->
-<section class="landing">
-    <div class="landing__inner">
-        <img class="landing__logo"
-             src="/img/apple-touch-icon.svg"
-             width="180"
-             height="180"
-             alt="<?= __('site.name') ?>">
+<section class="landing landing--onboarding">
+    <!-- Dominant yellow oval background arc (~75% height) -->
+    <div class="onboarding__bg-yellow" aria-hidden="true">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="none">
+            <path d="M 0,0 L 500,0 L 500,380 C 370,500 130,500 0,380 Z" fill="var(--color-primary)"/>
+        </svg>
+    </div>
 
-        <h1 class="visually-hidden"><?= __('home.landing.title') ?></h1>
+    <div class="onboarding__container">
 
-        <nav class="landing__nav" aria-label="<?= __('home.landing.aria') ?>">
-            <a class="landing__btn" data-animate href="/menu?cat=pollos<?= $langSuffix ?>">
-                <?= __('home.landing.pollos') ?>
+        <!-- ── Top Phone Call Button ──────────────────────────────────── -->
+        <header class="onboarding__top">
+            <a class="onboarding__call-btn" href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"
+               aria-label="<?= __('home.info.phone') ?>">
+                <svg class="onboarding__call-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>
+                </svg>
+                <span class="onboarding__call-text"><?= \Config::phone() ?></span>
             </a>
-            <a class="landing__btn landing__btn--accent" data-animate href="/menu?cat=menus<?= $langSuffix ?>">
-                <?= __('home.landing.combinados') ?>
+        </header>
+
+        <!-- ── Animated Brand Logo: Walking Chicken typing "PIT o CUIXA" ── -->
+        <div class="onboarding__brand" aria-label="Pit o Cuixa">
+            <div class="onboarding__anim-brand">
+                <!-- Walking Chicken (Flipped scaleX(-1) to face right) -->
+                <div class="onboarding__anim-chicken">
+                    <img src="/img/icons/favicon.png" width="54" height="54" alt="Pollo Pit o Cuixa">
+                </div>
+
+                <!-- Gradient Letter-by-Letter Text -->
+                <div class="onboarding__anim-text">
+                    <span class="anim-letter letter-1">P</span>
+                    <span class="anim-letter letter-2">I</span>
+                    <span class="anim-letter letter-3">T</span>
+                    <span class="anim-space">&nbsp;</span>
+                    <span class="anim-letter letter-4 anim-letter--small">o</span>
+                    <span class="anim-space">&nbsp;</span>
+                    <span class="anim-letter letter-5">C</span>
+                    <span class="anim-letter letter-6">U</span>
+                    <span class="anim-letter letter-7">I</span>
+                    <span class="anim-letter letter-8">X</span>
+                    <span class="anim-letter letter-9">A</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Drag & Drop Interactive Section ───────────────────────── -->
+        <div class="onboarding__drag-section" id="drag-section">
+
+            <!-- Draggable Item Left: Cutlery ("en local") -->
+            <div class="onboarding__drag-item onboarding__drag-item--left"
+                 id="drag-local"
+                 draggable="true"
+                 data-mode="local"
+                 role="button"
+                 tabindex="0"
+                 aria-grabbed="false"
+                 aria-label="<?= __('home.onboarding.in_local') ?>">
+                <div class="onboarding__drag-circle">
+                    <img src="/img/icons/en_local.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
+                </div>
+                <span class="onboarding__drag-label"><?= __('home.onboarding.in_local') ?></span>
+            </div>
+
+            <!-- Draggable Item Right: Motorcycle ("a domicilio") -->
+            <div class="onboarding__drag-item onboarding__drag-item--right"
+                 id="drag-delivery"
+                 draggable="true"
+                 data-mode="delivery"
+                 role="button"
+                 tabindex="0"
+                 aria-grabbed="false"
+                 aria-label="<?= __('home.onboarding.delivery') ?>">
+                <div class="onboarding__drag-circle">
+                    <img src="/img/icons/a_domicilio.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
+                </div>
+                <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
+            </div>
+
+            <!-- Animated Flowing Arrows SVG pointing down to lowered target -->
+            <svg class="onboarding__funnel-svg" viewBox="0 0 300 240" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                    <marker id="arrowhead-left" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
+                    </marker>
+                    <marker id="arrowhead-right" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
+                    </marker>
+
+                    <linearGradient id="arrow-gradient-left" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
+                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
+                    </linearGradient>
+                    <linearGradient id="arrow-gradient-right" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
+                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Left guide arrow pointing to lower target center (140, 170) -->
+                <path class="onboarding__arrow-path onboarding__arrow-path--left"
+                      d="M 60 30 Q 90 110 140 170"
+                      stroke="url(#arrow-gradient-left)" stroke-width="3.5" fill="none"
+                      marker-end="url(#arrowhead-left)" />
+
+                <!-- Right guide arrow pointing to lower target center (160, 170) -->
+                <path class="onboarding__arrow-path onboarding__arrow-path--right"
+                      d="M 240 30 Q 210 110 160 170"
+                      stroke="url(#arrow-gradient-right)" stroke-width="3.5" fill="none"
+                      marker-end="url(#arrowhead-right)" />
+            </svg>
+
+            <!-- Drop Zone Target: Local Circle Icon -->
+            <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
+                <div class="onboarding__target-ring"></div>
+                <div class="onboarding__target-inner">
+                    <img src="/img/icons/local.webp" width="64" height="64" alt="<?= __('site.name') ?>">
+                </div>
+                <span class="onboarding__target-label"><?= __('site.name') ?></span>
+            </div>
+
+            <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p>
+        </div>
+
+        <!-- ── Bottom Footer Area ─────────────────────────────────────── -->
+        <footer class="onboarding__footer">
+            <!-- FAQ Button (left) -->
+            <a href="/faq<?= $langSuffix ?>" class="onboarding__faq-btn" aria-label="<?= __('nav.faq') ?>" title="<?= __('nav.faq') ?>">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <path d="M12 7a2 2 0 0 1 2 2c0 1-1.5 1.5-2 2"/>
+                    <circle cx="12" cy="14" r="0.5" fill="currentColor"/>
+                </svg>
             </a>
-            <a class="landing__btn" data-animate href="/menu?cat=picapica<?= $langSuffix ?>">
-                <?= __('home.landing.picapica') ?>
-            </a>
-        </nav>
+
+            <!-- Language Flag Icon Buttons (right) -->
+            <div class="onboarding__lang-group" role="navigation" aria-label="<?= __('lang.switch') ?>">
+                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=ca', ENT_QUOTES, 'UTF-8') ?>"
+                   class="onboarding__lang-btn<?= LANG === 'ca' ? ' onboarding__lang-btn--active' : '' ?>"
+                   title="Català">
+                    <img src="/img/icons/favicon_CAT.webp" width="22" height="22" alt="Català">
+                </a>
+                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=es', ENT_QUOTES, 'UTF-8') ?>"
+                   class="onboarding__lang-btn<?= LANG === 'es' ? ' onboarding__lang-btn--active' : '' ?>"
+                   title="Castellano">
+                    <img src="/img/icons/favicon_ES.webp" width="22" height="22" alt="Castellano">
+                </a>
+                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=en', ENT_QUOTES, 'UTF-8') ?>"
+                   class="onboarding__lang-btn<?= LANG === 'en' ? ' onboarding__lang-btn--active' : '' ?>"
+                   title="English">
+                    <img src="/img/icons/favicon_UK.webp" width="22" height="22" alt="English">
+                </a>
+                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=uk', ENT_QUOTES, 'UTF-8') ?>"
+                   class="onboarding__lang-btn<?= LANG === 'uk' ? ' onboarding__lang-btn--active' : '' ?>"
+                   title="Українська">
+                    <img src="/img/icons/favicon_UKR.webp" width="22" height="22" alt="Українська">
+                </a>
+            </div>
+        </footer>
+
     </div>
 </section>
+<script type="module" src="/js/home-onboarding.js?v=1.2.0"></script>

@@ -1,0 +1,262 @@
+/* Pit o Cuixa — Accordion & Channel Switcher Styles */
+
+.channel-switcher {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs, 8px);
+  margin-bottom: var(--space-md, 24px);
+  padding: 4px;
+  background-color: var(--color-surface, #f8f9fa);
+  border-radius: 30px;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.channel-switcher__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #64748b);
+  background: transparent;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.channel-switcher__btn:hover {
+  color: var(--color-text, #1e293b);
+}
+
+.channel-switcher__btn--active {
+  color: #fff;
+  background-color: var(--color-primary, #d97706);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+/* Mobile responsive compacting */
+@media (max-width: 767px) {
+  .menu-hero,
+  .menu-slider {
+    display: none !important;
+  }
+
+  .channel-switcher {
+    margin-top: 8px !important;
+    margin-bottom: 12px !important;
+    padding: 3px;
+    border-radius: 12px;
+  }
+
+  .channel-switcher__btn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    gap: 4px;
+    border-radius: 9px;
+  }
+}
+
+/* Accordion Component */
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 16px);
+  margin-bottom: var(--space-xl, 32px);
+}
+
+.accordion-item {
+  background: var(--color-card-bg, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.accordion-item:hover {
+  border-color: var(--color-primary-light, #fef3c7);
+}
+
+.accordion-item--featured {
+  border: 2px solid var(--color-primary, #d97706);
+  background: linear-gradient(to bottom right, #fffdfa, #fff8f0);
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+
+  p, span, h3 {
+    margin: 0;
+  }
+}
+
+.accordion-header__title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.accordion-header__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text, #1e293b);
+}
+
+.accordion-header__subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #64748b);
+}
+
+.accordion-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.accordion-header__price {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primary, #d97706);
+}
+
+.accordion-header__icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.25s ease;
+  fill: currentColor;
+  color: var(--color-text-muted, #64748b);
+}
+
+.accordion-item--open .accordion-header__icon {
+  transform: rotate(180deg);
+  color: var(--color-primary, #d97706);
+}
+
+.accordion-content {
+  padding: 0 20px 20px 20px;
+}
+
+.accordion-content[hidden] {
+  display: none;
+}
+
+/* Menu Content Sections inside Accordion */
+.menu-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--color-border, #e2e8f0);
+}
+
+.menu-section-block__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary-dark, #b45309);
+  margin-bottom: 10px;
+}
+
+.menu-section-block__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-section-block__item {
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: var(--color-text, #334155);
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.menu-section-block__item:last-child {
+  border-bottom: none;
+}
+
+.menu-includes-note {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background-color: var(--color-primary-50, #fffbeb);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-primary-900, #78350f);
+}
+
+/* List View Simple Item Rows */
+.listview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+.listview-item:last-child {
+  border-bottom: none;
+}
+
+.listview-item__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.listview-item__img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  flex-shrink: 0;
+  background-color: var(--color-surface, #f8f9fa);
+}
+
+.listview-item__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.listview-item__name {
+  font-weight: 600;
+  color: var(--color-text, #1e293b);
+  overflow-wrap: break-word;
+}
+
+.listview-item__desc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+  overflow-wrap: break-word;
+}
+
+.listview-item__price {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-primary, #d97706);
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}

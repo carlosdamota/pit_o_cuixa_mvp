@@ -38,32 +38,10 @@
 }
 
 .footer__hours,
-.footer__address,
-.footer__phone {
+.footer__address {
   font-size: var(--font-size-sm);
   opacity: 0.8;
   margin: 0;
-}
-
-/* Footer bg is dark — links must inherit the light footer text color */
-.footer__phone a {
-  color: inherit;
-}
-
-.footer__nav {
-  margin-top: var(--space-sm);
-}
-
-.footer__link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-size: var(--font-size-sm);
-  transition: opacity var(--transition-fast);
-}
-
-.footer__link:hover {
-  text-decoration: underline;
-  opacity: 0.8;
 }
 
 .footer__copy {

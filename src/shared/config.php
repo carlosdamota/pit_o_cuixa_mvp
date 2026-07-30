@@ -133,7 +133,7 @@ final class Config
      */
     public static function supportedLocales(): array
     {
-        return ['ca', 'es', 'en'];
+        return ['ca', 'es', 'en', 'uk'];
     }
 
     /**

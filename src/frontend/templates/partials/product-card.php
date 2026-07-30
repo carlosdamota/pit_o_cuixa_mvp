@@ -13,14 +13,33 @@
 
 $lang = LANG;
 
-// Support both pre-localised and raw bilingual product data
-$name        = $product['name']        ?? $product["name_{$lang}"]        ?? '';
-$description = $product['description'] ?? $product["description_{$lang}"] ?? '';
+// Support pre-localised, language-specific, and fallback data
+$name = !empty($product['name'])
+    ? $product['name']
+    : (!empty($product["name_{$lang}"])
+        ? $product["name_{$lang}"]
+        : (!empty($product['name_ca'])
+            ? $product['name_ca']
+            : (!empty($product['name_es'])
+                ? $product['name_es']
+                : ($product['name_en'] ?? ''))));
+
+$description = !empty($product['description'])
+    ? $product['description']
+    : (!empty($product["description_{$lang}"])
+        ? $product["description_{$lang}"]
+        : (!empty($product['description_ca'])
+            ? $product['description_ca']
+            : (!empty($product['description_es'])
+                ? $product['description_es']
+                : ($product['description_en'] ?? ''))));
+
 $price       = (float) ($product['price'] ?? 0);
 $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.') . ' €';
 $imageUrl    = $product['image_url']   ?? null;
 $orderUrl    = $product['last_shop_url'] ?? '#';
 $slug        = $product['slug']        ?? '';
+$productId   = (int) ($product['id']   ?? 0);
 
 // Build search corpus from both locales (lowercased, space-separated)
 $searchText = strtolower(
@@ -31,6 +50,7 @@ $searchText = strtolower(
 );
 ?>
 <article class="product-card"
+         data-product-id="<?= $productId ?>"
          data-product-slug="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
          data-search-text="<?= htmlspecialchars($searchText, ENT_QUOTES, 'UTF-8') ?>">
     <div class="product-card__image-wrap">
@@ -61,6 +81,8 @@ $searchText = strtolower(
             <?php if ($orderUrl && $orderUrl !== '#'): ?>
                 <a href="<?= htmlspecialchars($orderUrl, ENT_QUOTES, 'UTF-8') ?>"
                    class="product-card__cta"
+                   data-track-click
+                   data-product-id="<?= $productId ?>"
                    target="_blank"
                    rel="noopener noreferrer">
                     <?= __('menu.order.cta') ?>

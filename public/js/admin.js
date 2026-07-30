@@ -857,3 +857,19 @@ export function initKeyboardShortcuts(handlers) {
     }
   });
 }
+
+// Automatically intercept [data-logout-form] submissions
+if (typeof document !== 'undefined') {
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('[data-logout-form]');
+    if (!form) return;
+    e.preventDefault();
+    try {
+      await api('POST', '/api/auth/logout');
+    } catch (_) {
+      // ignore
+    }
+    window.location.href = '/admin/login';
+  });
+}
+

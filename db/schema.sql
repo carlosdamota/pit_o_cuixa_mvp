@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS categories (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     slug        TEXT    NOT NULL UNIQUE,
+    name_ca     TEXT    NOT NULL DEFAULT '',
     name_es     TEXT    NOT NULL,
     name_en     TEXT    NOT NULL,
     sort_order  INTEGER NOT NULL DEFAULT 0,
@@ -44,8 +45,10 @@ CREATE TABLE IF NOT EXISTS products (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     category_id     INTEGER NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
     slug            TEXT    NOT NULL UNIQUE,
+    name_ca         TEXT    NOT NULL DEFAULT '',
     name_es         TEXT    NOT NULL,
     name_en         TEXT    NOT NULL,
+    description_ca  TEXT    NOT NULL DEFAULT '',
     description_es  TEXT    NOT NULL DEFAULT '',
     description_en  TEXT    NOT NULL DEFAULT '',
     price           REAL    NOT NULL DEFAULT 0.00,
@@ -54,6 +57,12 @@ CREATE TABLE IF NOT EXISTS products (
     sort_order      INTEGER NOT NULL DEFAULT 0,
     is_active       INTEGER NOT NULL DEFAULT 1,
     is_featured     INTEGER NOT NULL DEFAULT 0,
+    is_dine_in      INTEGER NOT NULL DEFAULT 1,
+    is_delivery     INTEGER NOT NULL DEFAULT 1,
+    source          TEXT    NOT NULL DEFAULT 'delivery',
+    type            TEXT    NOT NULL DEFAULT 'simple',
+    menu_data       TEXT    DEFAULT NULL,
+    clicks_count    INTEGER NOT NULL DEFAULT 0,
     created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
 );

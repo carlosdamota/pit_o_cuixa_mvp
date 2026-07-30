@@ -130,6 +130,40 @@ $lang       = $pageData['locale'] ?? LANG;
                                    class="admin-field__input" value="0">
                         </div>
 
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label">Canales de Disponibilidad</label>
+                            <div class="admin-checkboxes">
+                                <label class="admin-checkbox">
+                                    <input type="checkbox" name="is_dine_in" value="1" checked>
+                                    🍽️ Restaurante (Local)
+                                </label>
+                                <label class="admin-checkbox">
+                                    <input type="checkbox" name="is_delivery" value="1" checked>
+                                    🛵 Domicilio (Delivery)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="prod-type">Tipo de Producto</label>
+                            <select id="prod-type" name="type" class="admin-field__select" data-type-select>
+                                <option value="simple">Producto Simple (A la carta)</option>
+                                <option value="menu">Menú / Pack Combo</option>
+                            </select>
+                        </div>
+
+                        <div class="admin-field admin-field--full" data-menu-editor hidden>
+                            <label class="admin-field__label" for="prod-menu-data">Estructura del Menú (JSON)</label>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;">
+                                Define las secciones y platos del menú en formato JSON.
+                            </p>
+                            <textarea id="prod-menu-data" name="menu_data" class="admin-field__textarea" rows="6"
+                                      placeholder='{ "badge": "De lunes a viernes", "includes": "Incluye agua, vino o cerveza", "sections": [{ "title_es": "Primeros Platos", "items_es": ["Pasta boloñesa", "Ensaladilla rusa"] }] }'></textarea>
+                            <button type="button" class="admin-btn-sm" data-btn-template-menu style="margin-top:6px;">
+                                ✨ Cargar plantilla de Menú del Día
+                            </button>
+                        </div>
+
                         <div class="admin-field admin-checkboxes">
                             <label class="admin-checkbox">
                                 <input type="checkbox" name="is_active" value="1" checked>
@@ -161,9 +195,11 @@ $lang       = $pageData['locale'] ?? LANG;
                             <th>ID</th>
                             <th>Slug</th>
                             <th>Nombre (ES)</th>
-                            <th>Nombre (EN)</th>
                             <th>Precio</th>
                             <th>Categoría</th>
+                            <th>Canal</th>
+                            <th>Tipo</th>
+                            <th>Clics</th>
                             <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
@@ -171,7 +207,7 @@ $lang       = $pageData['locale'] ?? LANG;
                     <tbody data-products-tbody>
                         <?php if ($products === []): ?>
                             <tr>
-                                <td colspan="8" class="admin-table__empty">
+                                <td colspan="10" class="admin-table__empty">
                                     No hay productos. ¡Crea el primero!
                                 </td>
                             </tr>
@@ -185,14 +221,22 @@ $lang       = $pageData['locale'] ?? LANG;
                                     break;
                                 }
                             }
+                            $channels = [];
+                            if (!empty($p['is_dine_in'])) $channels[] = '🍽️ Local';
+                            if (!empty($p['is_delivery'])) $channels[] = '🛵 Delivery';
+                            $channelStr = implode(' ', $channels) ?: 'Ninguno';
+                            $typeStr = ($p['type'] ?? 'simple') === 'menu' ? '🗂️ Menú' : 'Simple';
+                            $menuDataAttr = is_array($p['menu_data']) ? json_encode($p['menu_data'], JSON_UNESCAPED_UNICODE) : (string)($p['menu_data'] ?? '');
                         ?>
                             <tr data-product-id="<?= (int) $p['id'] ?>">
                                 <td><?= (int) $p['id'] ?></td>
                                 <td><?= htmlspecialchars($p['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($p['name_es'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($p['name_en'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td>€<?= number_format((float) ($p['price'] ?? 0), 2) ?></td>
                                 <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><small><?= htmlspecialchars($channelStr, ENT_QUOTES, 'UTF-8') ?></small></td>
+                                <td><small><?= htmlspecialchars($typeStr, ENT_QUOTES, 'UTF-8') ?></small></td>
+                                <td>🔥 <?= (int) ($p['clicks_count'] ?? 0) ?></td>
                                 <td><?= !empty($p['is_active']) ? '✓' : '✗' ?></td>
                                 <td class="admin-table__actions">
                                     <button class="admin-btn-sm" data-edit-product="<?= (int) $p['id'] ?>"
@@ -207,7 +251,11 @@ $lang       = $pageData['locale'] ?? LANG;
                                             data-last-shop-url="<?= htmlspecialchars($p['last_shop_url'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                             data-sort-order="<?= (int) ($p['sort_order'] ?? 0) ?>"
                                             data-is-active="<?= !empty($p['is_active']) ? '1' : '0' ?>"
-                                            data-is-featured="<?= !empty($p['is_featured']) ? '1' : '0' ?>">
+                                            data-is-featured="<?= !empty($p['is_featured']) ? '1' : '0' ?>"
+                                            data-is-dine-in="<?= !empty($p['is_dine_in']) ? '1' : '0' ?>"
+                                            data-is-delivery="<?= !empty($p['is_delivery']) ? '1' : '0' ?>"
+                                            data-type="<?= htmlspecialchars($p['type'] ?? 'simple', ENT_QUOTES, 'UTF-8') ?>"
+                                            data-menu-data='<?= htmlspecialchars($menuDataAttr, ENT_QUOTES, 'UTF-8') ?>'>
                                         Editar
                                     </button>
                                     <button class="admin-btn-sm admin-btn-sm--danger"
@@ -271,13 +319,21 @@ function escHtml(str) {
 
 /** Build a product table row HTML from data */
 function buildRow(p) {
+    const channels = [];
+    if (p.is_dine_in) channels.push('🍽️ Local');
+    if (p.is_delivery) channels.push('🛵 Delivery');
+    const channelStr = channels.join(' ') || 'Ninguno';
+    const typeStr = (p.type === 'menu') ? '🗂️ Menú' : 'Simple';
+    const menuDataAttr = (typeof p.menu_data === 'object' && p.menu_data !== null) ? JSON.stringify(p.menu_data) : (p.menu_data || '');
+
     return `<tr data-product-id="${p.id}">
         <td>${p.id}</td>
         <td>${escHtml(p.slug)}</td>
         <td>${escHtml(p.name_es)}</td>
-        <td>${escHtml(p.name_en)}</td>
         <td>€${parseFloat(p.price).toFixed(2)}</td>
         <td>${escHtml(catName(p.category_id))}</td>
+        <td><small>${escHtml(channelStr)}</small></td>
+        <td><small>${escHtml(typeStr)}</small></td>
         <td>${p.is_active ? '✓' : '✗'}</td>
         <td class="admin-table__actions">
             <button class="admin-btn-sm" data-edit-product="${p.id}"
@@ -292,7 +348,11 @@ function buildRow(p) {
                     data-last-shop-url="${escHtml(p.last_shop_url || '')}"
                     data-sort-order="${p.sort_order || 0}"
                     data-is-active="${p.is_active ? '1' : '0'}"
-                    data-is-featured="${p.is_featured ? '1' : '0'}">
+                    data-is-featured="${p.is_featured ? '1' : '0'}"
+                    data-is-dine-in="${p.is_dine_in ? '1' : '0'}"
+                    data-is-delivery="${p.is_delivery ? '1' : '0'}"
+                    data-type="${escHtml(p.type || 'simple')}"
+                    data-menu-data='${escHtml(menuDataAttr)}'>
                 Editar
             </button>
             <button class="admin-btn-sm admin-btn-sm--danger"
@@ -304,28 +364,18 @@ function buildRow(p) {
     </tr>`;
 }
 
-/** Build a product row from the form data (after create) */
-function buildRowFromForm(form) {
-    const data = getFormData(form);
-    return buildRow({
-        id: form.querySelector('[data-field-id]').value || Date.now(),
-        slug: data.slug,
-        name_es: data.name_es,
-        name_en: data.name_en,
-        description_es: data.description_es,
-        description_en: data.description_en,
-        price: data.price,
-        category_id: data.category_id,
-        image_url: data.image_url,
-        last_shop_url: data.last_shop_url,
-        sort_order: data.sort_order,
-        is_active: data.is_active,
-        is_featured: data.is_featured,
-    });
-}
-
 /** Collect form data into object */
 function getFormData(form) {
+    const rawMenuData = form.querySelector('[name="menu_data"]')?.value.trim() || '';
+    let parsedMenuData = null;
+    if (rawMenuData !== '') {
+        try {
+            parsedMenuData = JSON.parse(rawMenuData);
+        } catch (_) {
+            parsedMenuData = rawMenuData;
+        }
+    }
+
     return {
         slug: form.querySelector('[name="slug"]').value,
         name_es: form.querySelector('[name="name_es"]').value,
@@ -339,7 +389,18 @@ function getFormData(form) {
         sort_order: parseInt(form.querySelector('[name="sort_order"]').value) || 0,
         is_active: form.querySelector('[name="is_active"]').checked,
         is_featured: form.querySelector('[name="is_featured"]').checked,
+        is_dine_in: form.querySelector('[name="is_dine_in"]').checked ? 1 : 0,
+        is_delivery: form.querySelector('[name="is_delivery"]').checked ? 1 : 0,
+        source: form.querySelector('[name="last_shop_url"]').value ? 'delivery' : 'manual',
+        type: form.querySelector('[name="type"]').value,
+        menu_data: parsedMenuData,
     };
+}
+
+/** Toggle menu editor visibility */
+function toggleMenuEditor(type) {
+    const editor = document.querySelector('[data-menu-editor]');
+    if (editor) editor.hidden = (type !== 'menu');
 }
 
 /** Fill form with product data for editing */
@@ -347,9 +408,13 @@ function fillForm(btn) {
     const form = document.querySelector('[data-product-form]');
     if (!form) return;
 
-    form.querySelector('[data-form-title]');
+    const drawerTitle = document.querySelector('[data-drawer-title]');
+    if (drawerTitle) drawerTitle.textContent = 'Editar Producto';
+
+    const submitBtn = document.querySelector('[data-btn-submit]');
+    if (submitBtn) submitBtn.textContent = 'Actualizar';
+
     form.querySelector('[data-field-method]').value = 'PUT';
-    form.querySelector('[data-btn-submit]').textContent = 'Actualizar';
     form.querySelector('[data-field-id]').value = btn.dataset.editProduct;
 
     const fields = {
@@ -363,15 +428,25 @@ function fillForm(btn) {
         image_url: 'imageUrl',
         last_shop_url: 'lastShopUrl',
         sort_order: 'sortOrder',
+        type: 'type',
     };
 
     for (const [name, dataKey] of Object.entries(fields)) {
         const input = form.querySelector(`[name="${name}"]`);
-        if (input) input.value = btn.dataset[dataKey] || '';
+        if (input) input.value = btn.dataset[dataKey] || (name === 'type' ? 'simple' : '');
     }
 
     form.querySelector('[name="is_active"]').checked = btn.dataset.isActive === '1';
     form.querySelector('[name="is_featured"]').checked = btn.dataset.isFeatured === '1';
+    form.querySelector('[name="is_dine_in"]').checked = btn.dataset.isDineIn !== '0';
+    form.querySelector('[name="is_delivery"]').checked = btn.dataset.isDelivery !== '0';
+
+    const menuDataInput = form.querySelector('[name="menu_data"]');
+    if (menuDataInput) {
+        menuDataInput.value = btn.dataset.menuData || '';
+    }
+
+    toggleMenuEditor(btn.dataset.type || 'simple');
 }
 
 /** Reset form for create mode */
@@ -379,11 +454,21 @@ function resetForm() {
     const form = document.querySelector('[data-product-form]');
     if (!form) return;
 
+    const drawerTitle = document.querySelector('[data-drawer-title]');
+    if (drawerTitle) drawerTitle.textContent = 'Nuevo Producto';
+
+    const submitBtn = document.querySelector('[data-btn-submit]');
+    if (submitBtn) submitBtn.textContent = 'Guardar';
+
     form.querySelector('[data-field-method]').value = 'POST';
-    form.querySelector('[data-btn-submit]').textContent = 'Guardar';
     form.querySelector('[data-field-id]').value = '';
     form.reset();
     form.querySelector('[name="is_active"]').checked = true;
+    form.querySelector('[name="is_dine_in"]').checked = true;
+    form.querySelector('[name="is_delivery"]').checked = true;
+    form.querySelector('[name="type"]').value = 'simple';
+
+    toggleMenuEditor('simple');
 
     // Clear image preview if present
     const previewEl = document.querySelector('[data-preview="image"]');
@@ -392,6 +477,57 @@ function resetForm() {
         previewEl.classList.remove('admin-image-preview--visible');
     }
 }
+
+// ── Type Select Change Event ───────────────────────────────────────
+document.querySelector('[data-type-select]')?.addEventListener('change', (e) => {
+    toggleMenuEditor(e.target.value);
+});
+
+// ── Pre-fill Sample Menu Template ──────────────────────────────────
+document.querySelector('[data-btn-template-menu]')?.addEventListener('click', () => {
+    const textarea = document.querySelector('[name="menu_data"]');
+    if (!textarea) return;
+    const sample = {
+        badge: "De lunes a viernes (Suplemento de +3€ en fin de semana)",
+        includes: "Incluye agua, refresco, vino o cerveza",
+        sections: [
+            {
+                title_es: "PRIMEROS PLATOS",
+                items_es: [
+                    "Pasta con boloñesa artesana",
+                    "Ensaladilla rusa clásica",
+                    "Ensalada César de pollo crujiente",
+                    "Croquetas caseras de pollo y jamón",
+                    "Fideuá con sabor a mediterráneo",
+                    "Plato de la semana"
+                ]
+            },
+            {
+                title_es: "SEGUNDOS PLATOS",
+                items_es: [
+                    "Cuarto de pollo a l'ast, la joya de la casa",
+                    "Arroz con verduras y pollo al curry suave",
+                    "Fingers de pollo con salsa de yogur, miel y mostaza",
+                    "Berenjena rellena gratinada al horno",
+                    "Canelones de rustido al estilo de la abuela",
+                    "Plato de la semana"
+                ]
+            },
+            {
+                title_es: "POSTRES",
+                items_es: [
+                    "Flan",
+                    "Tarta de Queso",
+                    "Brownie de chocolate",
+                    "Yogurt con mermelada de frambuesa",
+                    "Helado",
+                    "Café"
+                ]
+            }
+        ]
+    };
+    textarea.value = JSON.stringify(sample, null, 2);
+});
 
 // ── Create Button ────────────────────────────────────────────────
 document.querySelector('[data-create-btn]')?.addEventListener('click', () => {

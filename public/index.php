@@ -17,6 +17,7 @@ require_once __DIR__ . '/../src/shared/bootstrap.php';
 use Pit\Cuixa\Backend\Router;
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Api\Products;
+use Pit\Cuixa\Backend\Db\Repositories\Product; #Borrar en Produ
 use Pit\Cuixa\Backend\Api\Menu;
 use Pit\Cuixa\Backend\Api\AuthController;
 use Pit\Cuixa\Backend\Api\AdminProducts;
@@ -35,6 +36,7 @@ use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\Faq;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
+use Pit\Cuixa\Backend\Pages\LlmsTxt;
 
 // ── 2. Determine request path and method ───────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -96,6 +98,16 @@ $router->add('GET', '/api/products', static function (array $params): void {
     Products::list($categoryId, $limit);
 });
 
+$router->add('GET', '/api/products/popular', static function (array $params): void {
+    $limit = min((int) ($_GET['limit'] ?? 5), 50);
+    Products::popular($limit);
+});
+
+$router->add('POST', '/api/products/{id}/click', static function (array $params): void {
+    $productId = (int) ($params['id'] ?? 0);
+    Products::recordClick($productId);
+});
+
 $router->add('GET', '/api/products/{slug}', static function (array $params): void {
     Products::show($params['slug'] ?? '');
 });
@@ -124,6 +136,19 @@ $router->add('GET', '/api/scraper', static function(array $params): void{
     Response::json($scraper->scraper());
 });
 
+//Ruta del update_menu para dev, borrar cuando estemos en produccion
+$router->add('GET', '/api/update-menu', static function () {
+    
+    $scraper = new WebScraper();
+
+    $repo = new Product();
+    $repo->sync($scraper->scraper());
+
+    Response::json([
+        'status' => 'ok'
+    ]);
+});
+
 // Admin API CRUD
 $router->add('GET',    '/api/admin/products',       static function (array $params): void { AdminProducts::list(); });
 $router->add('POST',   '/api/admin/products',       static function (array $params): void { AdminProducts::create(); });
@@ -146,6 +171,10 @@ $router->add('GET', '/robots.txt', static function (array $params): void {
     Robots::render();
 });
 
+$router->add('GET', '/llms.txt', static function (array $params): void {
+    LlmsTxt::render();
+});
+
 // ── 4c. HTML Page Routes ──────────────────────────────────────────────
 
 // Home page
@@ -163,23 +192,19 @@ $router->add('GET', '/faq', static function (array $params): void {
     Faq::render();
 });
 
-// FAQ page with locale prefix (e.g. /es/faq, /en/faq)
+// FAQ page with locale prefix (e.g. /ca/faq, /es/faq, /en/faq)
 $router->add('GET', '/{lang}/faq', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
     if (in_array($lang, ['ca', 'es', 'en'], true)) {
-        // Override locale for this request
-        $_GET['lang'] = $lang;
-
-        // Reload translations with the requested locale
-        $GLOBALS['_translations'] = array_merge(
-            require __DIR__ . '/../src/shared/i18n/en.php',
-            require __DIR__ . '/../src/shared/i18n/ca.php',
-            require __DIR__ . '/../src/shared/i18n/' . $lang . '.php'
-        );
+        // Redirect so the request re-enters bootstrap locale resolution,
+        // ensuring LANG constant matches translations.
+        Response::redirect('/faq?lang=' . $lang, 302);
+        return;
     }
 
-    Faq::render();
+    // Unrecognised locale prefix — delegate to 404
+    Response::error('Not Found', 404);
 });
 
 // Admin pages

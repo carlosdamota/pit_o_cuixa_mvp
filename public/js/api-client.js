@@ -9,25 +9,28 @@
 
 const API_BASE = '/api';
 
+/** Allowed locale codes. */
+const ALLOWED = ['ca', 'es', 'en'];
+
 /**
  * Get the current locale from the <html> lang attribute
  * or from the ?lang= query parameter.
  *
- * @returns {string}  Current locale code ('es' | 'en')
+ * @returns {string}  Current locale code ('ca' | 'es' | 'en')
  */
 function getLocale() {
   const htmlLang = document.documentElement.getAttribute('lang');
-  if (htmlLang === 'es' || htmlLang === 'en') {
+  if (ALLOWED.includes(htmlLang)) {
     return htmlLang;
   }
 
   const params = new URLSearchParams(window.location.search);
   const lang = params.get('lang');
-  if (lang === 'es' || lang === 'en') {
+  if (ALLOWED.includes(lang)) {
     return lang;
   }
 
-  return 'es';
+  return 'ca';
 }
 
 /**
