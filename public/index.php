@@ -17,6 +17,7 @@ require_once __DIR__ . '/../src/shared/bootstrap.php';
 use Pit\Cuixa\Backend\Router;
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Api\Products;
+use Pit\Cuixa\Backend\Db\Repositories\Product; #Borrar en Produ
 use Pit\Cuixa\Backend\Api\Menu;
 use Pit\Cuixa\Backend\Api\AuthController;
 use Pit\Cuixa\Backend\Api\AdminProducts;
@@ -133,6 +134,19 @@ $router->add('GET', '/api/scraper', static function(array $params): void{
     $scraper = new WebScraper();
 
     Response::json($scraper->scraper());
+});
+
+//Ruta del update_menu para dev, borrar cuando estemos en produccion
+$router->add('GET', '/api/update-menu', static function () {
+    
+    $scraper = new WebScraper();
+
+    $repo = new Product();
+    $repo->sync($scraper->scraper());
+
+    Response::json([
+        'status' => 'ok'
+    ]);
 });
 
 // Admin API CRUD

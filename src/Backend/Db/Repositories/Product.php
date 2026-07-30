@@ -24,6 +24,144 @@ class Product
     }
 
     /**
+     * Summary of sync
+     * @param array $scrapedProducts
+     * @return void
+     */
+
+    public function sync (array $scrapedProducts) : void{
+
+        //Productos de la DB.
+        $dbProducts = $this->all(onlyActive : false);
+
+        //Mapa Slugs
+        $catRepo = new Category();
+        $catMap = $catRepo->MapSlug();
+
+        
+        $filterProducts = [];
+        
+        foreach($dbProducts as $p){
+
+            //Convertimos el array en dict
+            $filterProducts[$p["slug"]] = $p;
+        }
+
+        $scrapedMap = [];
+
+        foreach($scrapedProducts as $p){
+    
+            $p['category_id'] = $catMap[$p['category']];
+            unset($p['category']);
+
+            $slug = $p['slug'];
+
+            $scrapedMap[$slug] = $p;
+
+            //Insertar Datos
+            if(!isset($filterProducts[$slug])){
+                
+                var_dump($slug);
+
+                $this->insert($p);
+                continue;
+            }
+
+            //Actualizar Datos
+            $changes = $this->getChanges($filterProducts[$slug], $p);
+
+            if(!empty($changes)){
+                $this->update($slug, $changes);
+            }
+
+            //Activar Producto
+            if(!$filterProducts[$slug]['is_active']){
+                $this->setStatus($slug, true);
+            }
+
+            //Desactivar Producto
+
+            foreach($filterProducts as $slug => $p){
+
+                if(!isset($scrapedMap[$slug]) && $p['is_active']){
+                    $this->setStatus($slug, false);
+                }
+            }
+        }
+    }
+    /**
+     * Summary of insert
+     * @param array $product
+     * @return void
+     */
+
+    public function insert(array $product): void{
+
+        //Preparamos la insercion
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO products(
+            category_id, slug, name_es, name_en, name_ca, description_es, description_en, description_ca, price, image_url, last_shop_url, sort_order, is_active, is_featured)
+            VALUES(
+            :category_id, :slug, :name_es, :name_en, :name_ca, :description_es, :description_en, :description_ca, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
+        );
+        var_dump($product['category_id']);
+        $stmt -> execute([
+            ':category_id' => $product['category_id'],
+            ':slug' => $product['slug'],
+            ':name_es' => $product['name_es'],
+            ':name_en' => '',
+            ':name_ca' => '',
+            ':description_es' => $product['description_es'],
+            ':description_en' => '',
+            ':description_ca' => '',
+            ':price' => $product['price'],
+            ':image_url' => $product['image_url'],
+            ':last_shop_url' => $product['last_shop_url'],
+            ':sort_order' => $product['sort_order'],
+            ':is_active' => 1,
+            ':is_featured' => 0
+        ]);
+
+        return;
+    }
+
+    public function update(string $slug, array $changes) : void{
+
+        if(empty($changes)){
+            return;
+        }
+
+        $fields = [];
+        $params = [];
+
+        foreach($changes as $col => $val){
+            $fields[] = "{$col} = :{$col}";
+            $params[":{$col}"] = $val;
+        }
+
+        $fields[] = 'updated_at = datetime("now")';
+        $params[':slug'] = $slug;
+
+        $sql = 'UPDATE products SET '.implode(', ', $fields). ' WHERE slug = :slug';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+    }
+
+    /**
+     * Summary of deactivate
+     * @param string $slug
+     * @return void
+     */
+    public function setStatus(string $slug, bool $active) : void{
+
+        $stmt = $this->pdo->prepare('UPDATE products SET is_active = :active, updated_at = datetime("now") WHERE slug = :slug');
+        $stmt->execute([
+            ':slug' => $slug,
+            ':active' => (int)$active
+        ]);
+    }
+
+    /**
      * Return all active products, optionally filtered by category.
      *
      * @param  int|null $categoryId  Filter by category ID (null = all)
@@ -31,21 +169,16 @@ class Product
      * @param  int      $offset      Offset for pagination
      * @return array<int, array<string, mixed>>
      */
-    /**
-     * Return all active products, optionally filtered by category and channel.
-     *
-     * @param  int|null    $categoryId  Filter by category ID (null = all)
-     * @param  int         $limit       Maximum rows to return (safety cap)
-     * @param  int         $offset      Offset for pagination
-     * @param  string|null $channel     Filter by channel ('dine_in' | 'delivery' | null)
-     * @return array<int, array<string, mixed>>
-     */
-    public function all(?int $categoryId = null, int $limit = 100, int $offset = 0, ?string $channel = null): array
+    public function all(?int $categoryId = null, int $limit = 100, int $offset = 0, bool $onlyActive = true): array
     {
         $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
                 FROM products p
                 JOIN categories c ON p.category_id = c.id
-                WHERE p.is_active = 1';
+                WHERE 1 = 1';
+
+        if($onlyActive){
+            $sql .= ' AND p.is_active = 1';
+        }
 
         $params = [];
 
@@ -213,4 +346,53 @@ class Product
 
         return $row;
     }
+
+    private function getChanges(array $db, array $scrap) : array{
+        
+        $changes = [];
+
+        if($db['category_id'] !== $scrap['category_id']){
+            $changes['category_id'] = $scrap['category_id'];
+        }
+
+        if($db['name_es'] !== $scrap['name_es']){
+            $changes['name_es'] = $scrap['name_es'];
+        }
+
+
+        /*if($db['name_ca'] !== $scrap['name_ca']){
+            $changes['name_ca'] = $scrap['name_ca'];
+        }*/
+
+        if($db['description_es'] !== $scrap['description_es']){
+            $changes['description_es'] = $scrap['description_es'];
+        }
+
+        /*if($db['description_en'] !== $scrap['description_en']){
+            $changes['description_en'] = $scrap['description_en'];
+        }*/
+
+        /*if($db['description_ca'] !== $scrap['description_ca']){
+            $changes['description_ca'] = $scrap['description_ca'];
+        }*/
+
+        if((float)$db['price'] !== (float)$scrap['price']){
+            $changes['price'] = (float)$scrap['price'];
+        }
+
+        if($db['image_url'] !== $scrap['image_url']){
+            $changes['image_url'] = $scrap['image_url'];
+        }
+
+        if($db['last_shop_url'] !== $scrap['last_shop_url']){
+            $changes['last_shop_url'] = $scrap['last_shop_url'];
+        }
+
+        if((int)$db['sort_order'] !== (int)$scrap['sort_order']){
+            $changes['sort_order'] = (int)$scrap['sort_order'];
+        }
+
+        return $changes;
+    }
+
 }
