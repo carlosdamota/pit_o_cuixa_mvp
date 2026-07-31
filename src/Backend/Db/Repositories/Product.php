@@ -141,9 +141,9 @@ class Product
         //Preparamos la insercion
         $stmt = $this->pdo->prepare(
             'INSERT INTO products(
-            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured)
+            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery)
             VALUES(
-            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
+            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery)'
         );
         $stmt->execute([
             ':category_id' => $product['category_id'],
@@ -165,7 +165,12 @@ class Product
             ':last_shop_url' => $product['last_shop_url'],
             ':sort_order' => $product['sort_order'],
             ':is_active' => 1,
-            ':is_featured' => 0
+            ':is_featured' => 0,
+            // Channel defaults: scraped products are delivery-only. Explicit
+            // values (from the scraper or admin) win; anything missing falls
+            // back to delivery = 1, dine_in = 0.
+            ':is_dine_in'  => (int) ($product['is_dine_in']  ?? 0),
+            ':is_delivery' => (int) ($product['is_delivery'] ?? 1)
         ]);
 
         return;
@@ -452,6 +457,18 @@ class Product
 
         if((int)$db['sort_order'] !== (int)$scrap['sort_order']){
             $changes['sort_order'] = (int)$scrap['sort_order'];
+        }
+
+        // Channel flags are enforced by the source of truth: scraped products
+        // are delivery-only. Any manual dine-in/delivery change in the admin
+        // panel is reverted on the next re-sync (security/net-guard: the
+        // external menu is authoritative for availability).
+        if((bool)($db['is_dine_in'] ?? false) !== (bool)($scrap['is_dine_in'] ?? false)){
+            $changes['is_dine_in'] = (int)(bool)($scrap['is_dine_in'] ?? false);
+        }
+
+        if((bool)($db['is_delivery'] ?? false) !== (bool)($scrap['is_delivery'] ?? true)){
+            $changes['is_delivery'] = (int)(bool)($scrap['is_delivery'] ?? true);
         }
 
         return $changes;
