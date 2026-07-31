@@ -111,7 +111,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 <div class="container section" data-channel-view="dine_in" data-menu-products<?= $isDeliveryMode ? ' hidden' : '' ?>>
     <?php if ($dineInMenus !== []): ?>
         <section style="margin-bottom:var(--space-xl, 32px);" data-category="all">
-            <h2 class="section__title" style="font-size:1.5rem;margin-bottom:16px;text-align:left;">
+            <h2 class="section__title">
                 🗂️ Menús del Día y Promociones
             </h2>
             <div class="accordion-list">
@@ -175,7 +175,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 
     <!-- Carta en local por Secciones / Categorías (ListView colapsable) -->
     <section>
-        <h2 class="section__title" style="font-size:1.5rem;margin-bottom:16px;text-align:left;">
+        <h2 class="section__title">
             📖 A la Carta en Restaurante
         </h2>
         <div class="accordion-list">

@@ -74,6 +74,9 @@ export function initMenuFilter() {
       if (isDineIn) {
         // Carta en Local (dine_in) is NEVER filtered by category tabs
         categoryMatch = true;
+      } else if (searchQuery.length < 2 && activeCategory !== 'popular') {
+        // In delivery mode when not searching/popular, keep ALL category blocks in DOM for scrollspy
+        categoryMatch = true;
       } else if (activeCategory === 'all') {
         categoryMatch = true;
       } else if (activeCategory === 'popular') {
@@ -155,18 +158,19 @@ export function initMenuFilter() {
     const deliveryView = document.querySelector('[data-channel-view="delivery"]');
     if (!deliveryView || typeof IntersectionObserver === 'undefined') return;
 
-    const sections = deliveryView.querySelectorAll('.product-group[data-category]');
+    const sections = Array.from(deliveryView.querySelectorAll('.product-group[data-category]'));
     if (sections.length === 0) return;
 
     const observerOptions = {
       root: null,
-      rootMargin: '-130px 0px -50% 0px',
+      rootMargin: '-110px 0px -65% 0px',
       threshold: 0
     };
 
     const observer = new IntersectionObserver((entries) => {
       if (isProgrammaticScrolling) return;
       if (deliveryView.hidden) return;
+      if (searchQuery.length >= 2 || activeCategory === 'popular') return;
 
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -183,6 +187,22 @@ export function initMenuFilter() {
     }, observerOptions);
 
     sections.forEach((section) => observer.observe(section));
+
+    // Scroll fallback to re-activate 'all' when user scrolls back to top
+    window.addEventListener('scroll', () => {
+      if (isProgrammaticScrolling || deliveryView.hidden || searchQuery.length >= 2 || activeCategory === 'popular') return;
+      const firstSection = sections[0];
+      if (firstSection) {
+        const rect = firstSection.getBoundingClientRect();
+        if (rect.top > 160 && activeCategory !== 'all') {
+          const allTab = filterBar.querySelector('[data-filter="all"]');
+          if (allTab) {
+            activeCategory = 'all';
+            setActiveTab(allTab, true);
+          }
+        }
+      }
+    }, { passive: true });
   }
 
   initScrollSpy();
@@ -207,11 +227,20 @@ export function initMenuFilter() {
     }
 
     // Smooth scroll to category section when clicking category tab
-    if (filter !== 'all' && filter !== 'popular') {
+    if (filter === 'all') {
+      const deliveryView = document.querySelector('[data-channel-view="delivery"]');
+      if (deliveryView) {
+        isProgrammaticScrolling = true;
+        const yOffset = -120;
+        const y = deliveryView.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        setTimeout(() => { isProgrammaticScrolling = false; }, 800);
+      }
+    } else if (filter !== 'popular') {
       const targetSection = document.querySelector(`[data-channel-view="delivery"] .product-group[data-category="${CSS.escape(filter)}"]`);
       if (targetSection) {
         isProgrammaticScrolling = true;
-        const yOffset = -140;
+        const yOffset = -120;
         const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: 'smooth' });
         setTimeout(() => { isProgrammaticScrolling = false; }, 800);

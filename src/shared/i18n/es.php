@@ -161,4 +161,19 @@ return [
     'menu.slider.dots'    => 'Ir a diapositiva',
     'menu.slider.prev'    => 'Diapositiva anterior',
     'menu.slider.next'    => 'Siguiente diapositiva',
+
+    // ── Home Quotes ───────────────────────────────────────────────
+    'home.quotes' => [
+        '¡En esta familia se chupa hasta los dedos!',
+        'El ingrediente secreto es el pollo... y estar juntos.',
+        'Menos drama y más pollo en la mesa.',
+        'Familia unida, pollo devorado.',
+        'Donde hay buen pollo y familia, hay felicidad.',
+        '¡Aquí el pollo nos une a todos!',
+        'Comer juntos sabe mejor con buen pollo.',
+        '¡Alitas arriba las familias felices!',
+    ],
+
+    // ── PWA Installation ──────────────────────────────────────────
+    'pwa.install' => 'Instalar App',
 ];

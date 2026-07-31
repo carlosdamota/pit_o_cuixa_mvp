@@ -161,4 +161,19 @@ return [
     'menu.slider.dots'    => 'Go to slide',
     'menu.slider.prev'    => 'Previous slide',
     'menu.slider.next'    => 'Next slide',
+
+    // ── Home Quotes ───────────────────────────────────────────────
+    'home.quotes' => [
+        'In this family, we lick our fingers clean!',
+        'The secret ingredient is chicken... and being together.',
+        'Less drama and more chicken on the table.',
+        'Family united, chicken devoured.',
+        'Where there\'s good chicken and family, there\'s happiness.',
+        'Chicken brings us all together here!',
+        'Eating together tastes better with great chicken.',
+        'Wings up for happy families!',
+    ],
+
+    // ── PWA Installation ──────────────────────────────────────────
+    'pwa.install' => 'Install App',
 ];
