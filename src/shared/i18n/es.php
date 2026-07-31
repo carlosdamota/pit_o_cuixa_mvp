@@ -173,4 +173,7 @@ return [
         'Comer juntos sabe mejor con buen pollo.',
         '¡Alitas arriba las familias felices!',
     ],
+
+    // ── PWA Installation ──────────────────────────────────────────
+    'pwa.install' => 'Instalar App',
 ];

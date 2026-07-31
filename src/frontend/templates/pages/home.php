@@ -177,6 +177,19 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
                 <span class="onboarding__faq-text"><?= __('nav.faq') ?></span>
             </a>
 
+            <!-- PWA Install CTA Button (Center) -->
+            <div id="pwa-install-container" class="onboarding__pwa-wrapper" hidden>
+                <install manifest="/manifest.json" class="onboarding__pwa-native"></install>
+                <button type="button" id="pwa-install-btn" class="onboarding__pwa-btn" aria-label="<?= __('pwa.install') ?>">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span><?= __('pwa.install') ?></span>
+                </button>
+            </div>
+
             <!-- Language Flag Icon Buttons (right) -->
             <div class="onboarding__lang-group" role="navigation" aria-label="<?= __('lang.switch') ?>">
                 <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=ca', ENT_QUOTES, 'UTF-8') ?>"

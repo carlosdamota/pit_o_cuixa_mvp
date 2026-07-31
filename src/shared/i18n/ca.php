@@ -173,4 +173,7 @@ return [
         'Menjar junts sap millor amb un bon pollastre.',
         '¡Aletes amunt les famílies felices!',
     ],
+
+    // ── PWA Installation ──────────────────────────────────────────
+    'pwa.install' => 'Instal·lar App',
 ];

@@ -204,4 +204,49 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ignore parsing error gracefully
         }
     }
+
+    // ── PWA Installation Controller ────────────────────────────────────
+    const pwaContainer = document.getElementById('pwa-install-container');
+    const pwaBtn = document.getElementById('pwa-install-btn');
+    let deferredPrompt = null;
+
+    // Check if already installed / running in standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+
+    if (!isStandalone && pwaContainer) {
+        // Check for native <install> element support (Origin Trial in Chromium 148+)
+        const supportsNativeInstall = 'HTMLInstallElement' in window || Boolean(customElements && customElements.get('install'));
+        const nativeInstallEl = pwaContainer.querySelector('.onboarding__pwa-native');
+
+        if (supportsNativeInstall && nativeInstallEl) {
+            pwaContainer.hidden = false;
+            if (pwaBtn) pwaBtn.style.display = 'none';
+        } else {
+            // Fallback beforeinstallprompt event
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                pwaContainer.hidden = false;
+            });
+
+            if (pwaBtn) {
+                pwaBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        pwaContainer.hidden = true;
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Hide button automatically if app is installed
+        window.addEventListener('appinstalled', () => {
+            pwaContainer.hidden = true;
+            deferredPrompt = null;
+        });
+    }
 });

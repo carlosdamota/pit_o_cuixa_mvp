@@ -616,6 +616,40 @@ body:has(.landing--onboarding) .main {
   background-color: #000000;
 }
 
+/* PWA Installation CTA Button */
+.onboarding__pwa-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding__pwa-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(211, 47, 47, 0.25);
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
+  font-size: var(--font-size-xs, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.25);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.onboarding__pwa-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(211, 47, 47, 0.35);
+}
+
+.onboarding__pwa-btn svg {
+  flex-shrink: 0;
+}
+
 /* Language Selector Group with Transparent Background for Flag Favicons */
 .onboarding__lang-group {
   display: flex;
