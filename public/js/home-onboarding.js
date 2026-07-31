@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         updateDots(currentIndex);
                         quoteBox.classList.remove('onboarding__quote-card--fading');
                     }, 350);
-                }, 5000);
+                }, 8000);
             }
         } catch (e) {
             // Ignore parsing error gracefully

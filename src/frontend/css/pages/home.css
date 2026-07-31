@@ -501,8 +501,7 @@ body:has(.landing--onboarding) .main {
   margin: var(--space-xs, 4px) auto;
   padding: 12px 18px 10px 18px;
   background: linear-gradient(135deg, #fffcf6 0%, #fff7e8 100%);
-  border: 1px solid rgba(227, 6, 19, 0.15);
-  border-left: 4px solid var(--color-secondary, #d32f2f);
+  border: 1px solid rgba(227, 6, 19, 0.14);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(44, 24, 16, 0.08);
   text-align: center;
