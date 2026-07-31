@@ -140,6 +140,20 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
             <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p>
         </div>
 
+        <?php
+        $quotesList = __('home.quotes');
+        if (is_array($quotesList) && !empty($quotesList)):
+        ?>
+        <!-- ── Rotating Positive Quotes Banner (White Section) ────────── -->
+        <div class="onboarding__quote-box"
+             id="home-quote-box"
+             data-quotes="<?= htmlspecialchars(json_encode($quotesList, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>"
+             aria-live="polite">
+            <span class="onboarding__quote-icon" aria-hidden="true">✨</span>
+            <span class="onboarding__quote-text" id="home-quote-text"><?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?></span>
+        </div>
+        <?php endif; ?>
+
         <!-- ── Bottom Footer Area ─────────────────────────────────────── -->
         <footer class="onboarding__footer">
             <!-- FAQ Button (left) -->

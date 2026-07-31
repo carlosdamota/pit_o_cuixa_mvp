@@ -159,4 +159,35 @@ document.addEventListener('DOMContentLoaded', () => {
         pointerClone.style.left = `${x}px`;
         pointerClone.style.top = `${y}px`;
     }
+
+    // ── 5-Second Random Rotating Quotes Ticker ────────────────────────
+    const quoteBox = document.getElementById('home-quote-box');
+    const quoteText = document.getElementById('home-quote-text');
+
+    if (quoteBox && quoteText && quoteBox.dataset.quotes) {
+        try {
+            const quotes = JSON.parse(quoteBox.dataset.quotes);
+            if (Array.isArray(quotes) && quotes.length > 1) {
+                let currentIndex = 0;
+
+                setInterval(() => {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * quotes.length);
+                    } while (nextIndex === currentIndex);
+
+                    currentIndex = nextIndex;
+
+                    quoteBox.classList.add('onboarding__quote-box--fading');
+
+                    setTimeout(() => {
+                        quoteText.textContent = quotes[currentIndex];
+                        quoteBox.classList.remove('onboarding__quote-box--fading');
+                    }, 400);
+                }, 5000);
+            }
+        } catch (e) {
+            // Ignore parsing error gracefully
+        }
+    }
 });

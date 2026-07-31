@@ -493,6 +493,42 @@ body:has(.landing--onboarding) .main {
   text-align: center;
 }
 
+/* ── Rotating Positive Quotes Banner (White Section) ─────────────── */
+.onboarding__quote-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 90%;
+  margin: 6px auto 4px auto;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(44, 24, 16, 0.12);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 14px rgba(44, 24, 16, 0.06);
+  text-align: center;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.onboarding__quote-box--fading {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.onboarding__quote-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.onboarding__quote-text {
+  font-size: clamp(11px, 2.7vw, 13px);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-on-surface);
+  line-height: 1.35;
+}
+
 /* ── Bottom Footer Area (White Section) ─────────────────────────── */
 .onboarding__footer {
   width: 100%;
