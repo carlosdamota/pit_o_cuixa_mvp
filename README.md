@@ -111,6 +111,33 @@ En este proyecto, **los archivos CSS fuente no se modifican directamente en `pub
 
 ---
 
+### 🛠️ Scripts CLI de automatización
+
+El proyecto cuenta con 4 scripts PHP nativos en `scripts/` para tareas administrativas y de mantenimiento:
+
+| Script | Propósito / Función | Ejemplo de uso |
+|--------|---------------------|----------------|
+| `scripts/setup.php` | Inicializa la base de datos SQLite (`data/pitocuixa.db`), aplica `db/schema.sql`, inserta datos semilla y crea el usuario administrador inicial. Admite banderas CLI para automatización. | `php scripts/setup.php --fresh --scrape --translate` |
+| `scripts/migrate.php` | Ejecuta migraciones de base de datos pendientes desde `db/migrations/*.sql` y registra su ejecución en la tabla `_migrations`. | `php scripts/migrate.php` |
+| `scripts/sync-css.php` | Copia y sincroniza hojas de estilo desde `src/frontend/css/` a `public/css/` para que el servidor web sirva la versión más reciente. | `php scripts/sync-css.php` |
+| `scripts/translate.php` | Traduce automáticamente en lote categorías y productos a catalán, inglés y ucraniano utilizando la API de DeepL (requiere `DEEPL_API_KEY` en `.env`). | `php scripts/translate.php` |
+
+#### ⚙️ Opciones del script `setup.php`:
+
+| Bandera | Alias | Descripción |
+|---------|-------|-------------|
+| `--fresh` | `-f` | Elimina la base de datos SQLite existente antes de volver a creárla desde cero. |
+| `--scrape` | `-s` | Ejecuta el web scraper tras el setup para poblar/sincronizar los productos desde la carta externa. |
+| `--translate` | `-t` | Ejecuta el traductor DeepL tras el setup para traducir campos faltantes (requiere `DEEPL_API_KEY`). |
+| `--help` | `-h` | Muestra la ayuda de opciones por consola. |
+
+> 💡 **Ejemplo de reinicio completo para desarrollo**:
+> ```bash
+> php scripts/setup.php --fresh --scrape --translate
+> ```
+
+---
+
 ### Configuración de Entorno
 
 | Variable | Por defecto | Significado |
@@ -134,7 +161,7 @@ pit-o-cuixa/
 │   └── shared/       # Configuración global, helper i18n
 ├── db/               # Migraciones SQL (001, 002, 003, 004) y esquema base
 ├── data/             # Base de datos SQLite activa (creada por setup.php)
-├── scripts/          # Automatización: setup.php, sync-css.php, migrate.php
+├── scripts/          # Automatización: setup.php, sync-css.php, migrate.php, translate.php
 └── openspec/         # Especificaciones técnicas de desarrollo
 ```
 

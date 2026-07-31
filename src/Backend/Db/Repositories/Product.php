@@ -100,20 +100,21 @@ class Product
         //Preparamos la insercion
         $stmt = $this->pdo->prepare(
             'INSERT INTO products(
-            category_id, slug, name_es, name_en, name_ca, description_es, description_en, description_ca, price, image_url, last_shop_url, sort_order, is_active, is_featured)
+            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured)
             VALUES(
-            :category_id, :slug, :name_es, :name_en, :name_ca, :description_es, :description_en, :description_ca, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
+            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
         );
-        var_dump($product['category_id']);
-        $stmt -> execute([
+        $stmt->execute([
             ':category_id' => $product['category_id'],
             ':slug' => $product['slug'],
             ':name_es' => $product['name_es'],
-            ':name_en' => '',
-            ':name_ca' => '',
+            ':name_en' => $product['name_en'] ?? '',
+            ':name_ca' => $product['name_ca'] ?? '',
+            ':name_uk' => $product['name_uk'] ?? '',
             ':description_es' => $product['description_es'],
-            ':description_en' => '',
-            ':description_ca' => '',
+            ':description_en' => $product['description_en'] ?? '',
+            ':description_ca' => $product['description_ca'] ?? '',
+            ':description_uk' => $product['description_uk'] ?? '',
             ':price' => $product['price'],
             ':image_url' => $product['image_url'],
             ':last_shop_url' => $product['last_shop_url'],
@@ -181,7 +182,7 @@ class Product
             $onlyActive = true;
         }
 
-        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
+        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                 FROM products p
                 JOIN categories c ON p.category_id = c.id
                 WHERE 1 = 1';
@@ -257,7 +258,7 @@ class Product
     public function bySlug(string $slug): ?array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
+            'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
              FROM products p
              JOIN categories c ON p.category_id = c.id
              WHERE p.slug = :slug AND p.is_active = 1'
@@ -305,14 +306,14 @@ class Product
         $totalClicks = (int) $totalClicksStmt->fetchColumn();
 
         if ($totalClicks > 0) {
-            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
+            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                     FROM products p
                     JOIN categories c ON p.category_id = c.id
                     WHERE p.is_active = 1
                     ORDER BY p.clicks_count DESC, p.sort_order ASC
                     LIMIT :limit';
         } else {
-            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en
+            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                     FROM products p
                     JOIN categories c ON p.category_id = c.id
                     WHERE p.is_active = 1
