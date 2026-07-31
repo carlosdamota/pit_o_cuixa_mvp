@@ -151,12 +151,63 @@
   outline-offset: 2px;
 }
 
+/* ── Product Groups & Menu Section Layout ──────────────────────── */
+.menu-products,
+[data-channel-view] {
+  padding-top: var(--space-md);
+}
+
+.product-group {
+  margin-bottom: var(--space-2xl);
+  scroll-margin-top: 120px;
+}
+
+.product-group:first-child {
+  margin-top: 0;
+}
+
+.product-group__title,
+.section__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-on-surface);
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-md);
+  line-height: var(--line-height-tight);
+}
+
+.product-group:first-child .product-group__title {
+  margin-top: 0;
+}
+
+@media (min-width: 640px) {
+  .menu-products,
+  [data-channel-view] {
+    padding-top: var(--space-md);
+  }
+
+  .product-group {
+    margin-bottom: var(--space-3xl);
+  }
+
+  .product-group__title,
+  .section__title {
+    font-size: var(--font-size-3xl);
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .product-group:first-child .product-group__title {
+    margin-top: 0;
+  }
+}
+
 /* ── Grid container & Responsive Breakpoints ────────────────── */
 .featured__grid,
 .product-group__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 /* Mobile height tuning */
@@ -179,11 +230,11 @@
   .featured__grid,
   .product-group__grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
+    gap: var(--space-xl);
   }
 }
 
-/* DS-003: Desktop — 3 columns */
+/* DS-003: Desktop — 3 columns (3 columns max for delivery grid with generous gap) */
 @media (min-width: 1024px) {
   .product-card {
     min-height: 280px;
@@ -192,12 +243,16 @@
   .featured__grid,
   .product-group__grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2xl);
   }
 }
 
-/* DS-003: Wide desktop — 4 columns */
+/* Wide desktop — keep 3 columns instead of 4 for delivery grid */
 @media (min-width: 1280px) {
   .product-group__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2xl);
   }
 }
+
+
