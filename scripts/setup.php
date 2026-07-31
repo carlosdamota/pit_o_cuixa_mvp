@@ -196,9 +196,9 @@ foreach ($statements as $stmt) {
 status('✓', "Schema executed ({$executed} statements).");
 
 if ($isNewDb) {
-    status('✓', 'Seed data inserted (categories + products).');
+    status('✓', 'Catalog tables created empty (categories + products — filled by scripts/fill-menu.php).');
 } else {
-    echo "Existing database: seed data already present (INSERT OR IGNORE not used — duplicates may be skipped).\n";
+    echo "Existing database: catalog tables left untouched.\n";
 }
 
 // ── 8. Check existing admin users ────────────────────────────────────────
