@@ -31,8 +31,33 @@ class Product
 
     public function sync (array $scrapedProducts) : void{
 
+        // Guard: an empty scrape must NEVER wipe the catalog. If the external
+        // page changed, the network failed, or WebScraper returned [], the
+        // scraped map built below stays empty and every existing product would
+        // look "not in the map" — the deactivation loop would turn off the
+        // whole visible menu on a single failed cron run. The previous
+        // nested-loop code was accidentally safe on empty input (the loop
+        // never ran), but the deactivation loop now runs AFTER the scrape
+        // loop, so this guard is required. Empty scrape = no-op for activation
+        // state; existing products are left untouched.
+        if (empty($scrapedProducts)) {
+            error_log('[Product::sync] Empty scrape received; skipping sync, existing products left untouched.');
+            return;
+        }
+
         //Productos de la DB.
-        $dbProducts = $this->all(onlyActive : false);
+        // Load the full catalog (not the default LIMIT 100 window) so a re-fill
+        // on a catalog larger than 100 rows does not treat out-of-window products
+        // as new and abort on the UNIQUE(products.slug) constraint.
+        $dbProducts = $this->all(onlyActive : false, limit : 10000);
+
+        // Repair rows whose price is still stored as TEXT by the old bug. The
+        // change-detection path reads SERIALIZED rows (all() casts price to
+        // float), which hides the stored column type — a TEXT row like
+        // "11,00 €" compares float-equal to its normalized value (both 11.0)
+        // and would never be flagged. This rewrites every TEXT price from its
+        // own content as a proper REAL, so no corrupted rows survive re-sync.
+        $this->repairTextPrices();
 
         //Mapa Slugs
         $catRepo = new Category();
@@ -51,8 +76,15 @@ class Product
 
         foreach($scrapedProducts as $p){
     
-            $p['category_id'] = $catMap[$p['category']];
+            // Defensive category lookup: unknown slugs fall back to `otros`;
+            // if even that is missing, skip the product instead of aborting
+            // the whole fill (NOT NULL constraint on products.category_id).
+            $p['category_id'] = $catMap[$p['category'] ?? ''] ?? $catMap['otros'] ?? null;
             unset($p['category']);
+
+            if ($p['category_id'] === null) {
+                continue;
+            }
 
             $slug = $p['slug'];
 
@@ -60,8 +92,6 @@ class Product
 
             //Insertar Datos
             if(!isset($filterProducts[$slug])){
-                
-                var_dump($slug);
 
                 $this->insert($p);
                 continue;
@@ -78,14 +108,25 @@ class Product
             if(!$filterProducts[$slug]['is_active']){
                 $this->setStatus($slug, true);
             }
+        }
 
-            //Desactivar Producto
+        // Second guard: the input can be non-empty yet yield no usable products
+        // (every slug dropped during cleanup because no category — not even the
+        // `otros` fallback — resolved). An empty scraped map carries the same
+        // wipe hazard as an empty scrape, so deactivation is skipped as well.
+        if (empty($scrapedMap)) {
+            error_log('[Product::sync] Scrape yielded no usable products; skipping deactivation, existing products left untouched.');
+            return;
+        }
 
-            foreach($filterProducts as $slug => $p){
+        //Desactivar Producto
+        // NOTE: must run AFTER the loop above — $scrapedMap is only complete once every
+        // scraped product has been processed. Running this inside the loop deactivated
+        // every product except the first-seen one on re-sync (stale partial map).
+        foreach($filterProducts as $slug => $p){
 
-                if(!isset($scrapedMap[$slug]) && $p['is_active']){
-                    $this->setStatus($slug, false);
-                }
+            if(!isset($scrapedMap[$slug]) && $p['is_active']){
+                $this->setStatus($slug, false);
             }
         }
     }
@@ -115,7 +156,11 @@ class Product
             ':description_en' => $product['description_en'] ?? '',
             ':description_ca' => $product['description_ca'] ?? '',
             ':description_uk' => $product['description_uk'] ?? '',
-            ':price' => $product['price'],
+            // Normalize BEFORE binding: the scraper emits raw DOM text like
+            // "19,50 €" and a naive (float) cast truncates it to 19.0, storing
+            // corrupted prices in the REAL column (see getChanges() for the
+            // re-sync repair path).
+            ':price' => $this->normalizePrice($product['price'] ?? 0),
             ':image_url' => $product['image_url'],
             ':last_shop_url' => $product['last_shop_url'],
             ':sort_order' => $product['sort_order'],
@@ -387,8 +432,14 @@ class Product
             $changes['description_ca'] = $scrap['description_ca'];
         }*/
 
-        if((float)$db['price'] !== (float)$scrap['price']){
-            $changes['price'] = (float)$scrap['price'];
+        // Normalize the scraped price BEFORE comparing: a naive (float) cast
+        // on raw DOM text ("19,50 €") truncates it to 19.0, so a change would
+        // either be missed or written back corrupted. Comparing the normalized
+        // value against the DB value also repairs rows already corrupted by the
+        // old code (price stored as TEXT) on the next re-sync.
+        $scrapedPrice = $this->normalizePrice($scrap['price'] ?? 0);
+        if ((float) $db['price'] !== $scrapedPrice) {
+            $changes['price'] = $scrapedPrice;
         }
 
         if($db['image_url'] !== $scrap['image_url']){
@@ -404,6 +455,88 @@ class Product
         }
 
         return $changes;
+    }
+
+    /**
+     * Repair rows whose price column still holds raw scraped TEXT.
+     *
+     * The pre-fix code bound raw DOM text ("19,50 €") directly into the REAL
+     * column; SQLite keeps it as TEXT because a comma decimal is not a valid
+     * REAL literal. Rows with an integer value ("11,00 €") compare float-equal
+     * to their normalized value (both 11.0), so the getChanges() comparison
+     * alone never rewrites them — the type must be repaired explicitly.
+     * Each TEXT price is normalized from its own content (the scraper format
+     * is the only source of such rows), so this is safe to run on any DB.
+     */
+    private function repairTextPrices(): void
+    {
+        $stmt = $this->pdo->query(
+            "SELECT id, price FROM products WHERE typeof(price) = 'text'"
+        );
+        $stmt->execute();
+
+        $update = $this->pdo->prepare(
+            'UPDATE products SET price = :price, updated_at = datetime("now") WHERE id = :id'
+        );
+
+        foreach ($stmt->fetchAll() as $row) {
+            $update->execute([
+                ':id'    => $row['id'],
+                ':price' => $this->normalizePrice($row['price']),
+            ]);
+        }
+    }
+
+    /**
+     * Normalize a price into a clean float BEFORE it reaches the REAL column.
+     *
+     * The scraper emits raw DOM text like "19,50 €" (comma decimal, non-breaking
+     * space, € symbol) — a naive (float) cast on that string yields 19.0, which
+     * silently corrupted every non-integer price on the live menu. Admin/API
+     * input is already a plain number ("19.50") and passes through unchanged.
+     *
+     * Rules:
+     *   - int/float input passes through as-is.
+     *   - € symbol (U+20AC) and every space variant (regular, NBSP U+00A0,
+     *     narrow NBSP U+202F) are stripped.
+     *   - Comma-decimal ("19,50") and dot-decimal ("19.50") both parse.
+     *   - When both separators are present ("1.234,56"), the LAST one is the
+     *     decimal separator and the other is thousands grouping.
+     *   - Unparseable input degrades to 0.0 (matches the column default).
+     *
+     * @param  mixed $price
+     * @return float
+     */
+    private function normalizePrice(mixed $price): float
+    {
+        if (is_int($price) || is_float($price)) {
+            return (float) $price;
+        }
+
+        $raw = str_replace(
+            ["\u{00A0}", "\u{202F}", ' ', "\u{20AC}"],
+            '',
+            trim((string) $price)
+        );
+
+        // Nothing numeric left (empty, stray symbol, garbage) → column default.
+        if ($raw === '' || !preg_match('/\d/', $raw)) {
+            return 0.0;
+        }
+
+        $hasComma = str_contains($raw, ',');
+        $hasDot   = str_contains($raw, '.');
+
+        if ($hasComma && !$hasDot) {
+            // "19,50" → 19.5 (Spanish decimal comma).
+            $raw = str_replace(',', '.', $raw);
+        } elseif ($hasComma && $hasDot) {
+            // "1.234,56" / "1,234.56" → the last separator is the decimal one.
+            $raw = str_replace(',', '.', $raw);
+            $raw = (string) preg_replace('/\.(?=.*\.)/', '', $raw);
+        }
+
+        return (float) $raw;
     }
 
 }
