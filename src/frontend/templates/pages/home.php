@@ -144,14 +144,24 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
         $quotesList = __('home.quotes');
         if (is_array($quotesList) && !empty($quotesList)):
         ?>
-        <!-- ── Rotating Positive Quotes Banner (White Section) ────────── -->
-        <div class="onboarding__quote-box"
+        <!-- ── Rotating Positive Quotes Card (White Section) ────────── -->
+        <div class="onboarding__quote-card"
              id="home-quote-box"
              data-quotes="<?= htmlspecialchars(json_encode($quotesList, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>"
              aria-live="polite">
-            <span class="onboarding__quote-mark onboarding__quote-mark--open" aria-hidden="true">“</span>
-            <p class="onboarding__quote-text" id="home-quote-text"><?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?></p>
-            <span class="onboarding__quote-mark onboarding__quote-mark--close" aria-hidden="true">”</span>
+            <div class="onboarding__quote-watermark" aria-hidden="true">“</div>
+            <div class="onboarding__quote-content">
+                <div class="onboarding__quote-badge">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.2L12 16.6l-6.3 4.6 2.3-7.2-6-4.6h7.6z"/></svg>
+                    <span><?= __('site.name') ?></span>
+                </div>
+                <p class="onboarding__quote-text" id="home-quote-text">“<?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?>”</p>
+                <div class="onboarding__quote-dots" id="home-quote-dots" aria-hidden="true">
+                    <?php for ($i = 0; $i < count($quotesList); $i++): ?>
+                        <span class="quote-dot<?= $i === 0 ? ' quote-dot--active' : '' ?>"></span>
+                    <?php endfor; ?>
+                </div>
+            </div>
         </div>
         <?php endif; ?>
 
@@ -159,11 +169,12 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
         <footer class="onboarding__footer">
             <!-- FAQ Button (left) -->
             <a href="/faq<?= $langSuffix ?>" class="onboarding__faq-btn" aria-label="<?= __('nav.faq') ?>" title="<?= __('nav.faq') ?>">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    <path d="M12 7a2 2 0 0 1 2 2c0 1-1.5 1.5-2 2"/>
-                    <circle cx="12" cy="14" r="0.5" fill="currentColor"/>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
+                <span class="onboarding__faq-text"><?= __('nav.faq') ?></span>
             </a>
 
             <!-- Language Flag Icon Buttons (right) -->

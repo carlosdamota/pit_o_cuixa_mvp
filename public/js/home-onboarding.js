@@ -163,12 +163,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 5-Second Random Rotating Quotes Ticker ────────────────────────
     const quoteBox = document.getElementById('home-quote-box');
     const quoteText = document.getElementById('home-quote-text');
+    const quoteDotsContainer = document.getElementById('home-quote-dots');
 
     if (quoteBox && quoteText && quoteBox.dataset.quotes) {
         try {
             const quotes = JSON.parse(quoteBox.dataset.quotes);
             if (Array.isArray(quotes) && quotes.length > 1) {
                 let currentIndex = 0;
+
+                const updateDots = (activeIdx) => {
+                    if (!quoteDotsContainer) return;
+                    const dots = quoteDotsContainer.querySelectorAll('.quote-dot');
+                    dots.forEach((dot, idx) => {
+                        if (idx === activeIdx) {
+                            dot.classList.add('quote-dot--active');
+                        } else {
+                            dot.classList.remove('quote-dot--active');
+                        }
+                    });
+                };
 
                 setInterval(() => {
                     let nextIndex;
@@ -178,12 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     currentIndex = nextIndex;
 
-                    quoteBox.classList.add('onboarding__quote-box--fading');
+                    quoteBox.classList.add('onboarding__quote-card--fading');
 
                     setTimeout(() => {
-                        quoteText.textContent = quotes[currentIndex];
-                        quoteBox.classList.remove('onboarding__quote-box--fading');
-                    }, 400);
+                        quoteText.textContent = `“${quotes[currentIndex]}”`;
+                        updateDots(currentIndex);
+                        quoteBox.classList.remove('onboarding__quote-card--fading');
+                    }, 350);
                 }, 5000);
             }
         } catch (e) {

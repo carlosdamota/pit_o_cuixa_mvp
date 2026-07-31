@@ -43,7 +43,7 @@ body:has(.landing--onboarding) .main {
   top: 0;
   left: 0;
   right: 0;
-  height: clamp(70%, 78vh, 84%);
+  height: clamp(64%, 70vh, 75%);
   z-index: 0;
   pointer-events: none;
 }
@@ -483,7 +483,7 @@ body:has(.landing--onboarding) .main {
 /* Drag hint text */
 .onboarding__drag-hint {
   position: absolute;
-  top: 280px;
+  top: 240px;
   left: 0;
   right: 0;
   font-size: clamp(11px, 2.5vw, 13px);
@@ -493,62 +493,96 @@ body:has(.landing--onboarding) .main {
   text-align: center;
 }
 
-/* ── Rotating Positive Quotes Banner (White Section) ─────────────── */
-.onboarding__quote-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs, 4px);
-  width: calc(100% - 32px);
+/* ── Rotating Positive Quotes Card (White Section) ─────────────── */
+.onboarding__quote-card {
+  position: relative;
+  width: calc(100% - 24px);
   max-width: 380px;
   margin: var(--space-xs, 4px) auto;
-  padding: 8px 16px;
-  background: #fffdf7;
-  border: 1px solid rgba(211, 47, 47, 0.18);
+  padding: 12px 18px 10px 18px;
+  background: linear-gradient(135deg, #fffcf6 0%, #fff7e8 100%);
+  border: 1px solid rgba(227, 6, 19, 0.15);
   border-left: 4px solid var(--color-secondary, #d32f2f);
-  border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 4px 16px rgba(44, 24, 16, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(44, 24, 16, 0.08);
   text-align: center;
   z-index: 2;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  overflow: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease;
   box-sizing: border-box;
 }
 
-.onboarding__quote-box--fading {
+.onboarding__quote-card--fading {
   opacity: 0;
-  transform: translateY(4px);
+  transform: translateY(6px);
 }
 
-.onboarding__quote-mark {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  font-size: 1.6rem;
-  line-height: 0;
-  color: var(--color-secondary, #d32f2f);
-  font-weight: bold;
+.onboarding__quote-watermark {
+  position: absolute;
+  top: -14px;
+  left: 10px;
+  font-family: 'Georgia', serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: rgba(211, 47, 47, 0.07);
+  pointer-events: none;
   user-select: none;
-  opacity: 0.85;
 }
 
-.onboarding__quote-mark--open {
-  margin-right: 2px;
-  align-self: flex-start;
-  margin-top: 10px;
+.onboarding__quote-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
-.onboarding__quote-mark--close {
-  margin-left: 2px;
-  align-self: flex-end;
-  margin-bottom: 2px;
+.onboarding__quote-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background-color: rgba(211, 47, 47, 0.08);
+  color: var(--color-secondary, #d32f2f);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .onboarding__quote-text {
   font-family: var(--font-family, 'Quicksand', sans-serif);
   font-style: italic;
-  font-size: clamp(12px, 2.9vw, 14px);
+  font-size: clamp(13px, 3vw, 15px);
   font-weight: var(--font-weight-semibold, 600);
   color: #2c1810;
-  line-height: 1.35;
+  line-height: 1.4;
   margin: 0;
+  padding: 0 4px;
+}
+
+.onboarding__quote-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.quote-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: rgba(44, 24, 16, 0.18);
+  transition: all 0.3s ease;
+}
+
+.quote-dot--active {
+  width: 14px;
+  border-radius: 4px;
+  background-color: var(--color-secondary, #d32f2f);
 }
 
 /* ── Bottom Footer Area (White Section) ─────────────────────────── */
@@ -561,24 +595,26 @@ body:has(.landing--onboarding) .main {
   padding-top: var(--space-xs);
 }
 
-/* FAQ Button */
+/* FAQ Pill Button */
 .onboarding__faq-btn {
-  width: 44px;
-  height: 44px;
+  height: 36px;
+  padding: 0 14px;
   border-radius: var(--radius-full);
   background-color: var(--color-on-surface);
   color: var(--color-surface-container-lowest);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: var(--font-size-xs, 12px);
+  font-weight: var(--font-weight-semibold, 600);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 .onboarding__faq-btn:hover {
-  transform: scale(1.08);
-  background-color: #000;
+  transform: translateY(-2px);
+  background-color: #000000;
 }
 
 /* Language Selector Group with Transparent Background for Flag Favicons */
