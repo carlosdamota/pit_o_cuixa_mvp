@@ -118,7 +118,11 @@ class WebScraper{
                     'image_url' => $image,
                     'last_shop_url' => $link,
                     'category' => $category,
-                    'sort_order' => $counter++
+                    'sort_order' => $counter++,
+                    // Scraped items are delivery-only; dine-in availability is
+                    // managed manually from the admin panel.
+                    'is_dine_in'  => false,
+                    'is_delivery' => true
                 ];
             }
         }

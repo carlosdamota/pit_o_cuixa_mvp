@@ -159,4 +159,94 @@ document.addEventListener('DOMContentLoaded', () => {
         pointerClone.style.left = `${x}px`;
         pointerClone.style.top = `${y}px`;
     }
+
+    // ── 5-Second Random Rotating Quotes Ticker ────────────────────────
+    const quoteBox = document.getElementById('home-quote-box');
+    const quoteText = document.getElementById('home-quote-text');
+    const quoteDotsContainer = document.getElementById('home-quote-dots');
+
+    if (quoteBox && quoteText && quoteBox.dataset.quotes) {
+        try {
+            const quotes = JSON.parse(quoteBox.dataset.quotes);
+            if (Array.isArray(quotes) && quotes.length > 1) {
+                let currentIndex = 0;
+
+                const updateDots = (activeIdx) => {
+                    if (!quoteDotsContainer) return;
+                    const dots = quoteDotsContainer.querySelectorAll('.quote-dot');
+                    dots.forEach((dot, idx) => {
+                        if (idx === activeIdx) {
+                            dot.classList.add('quote-dot--active');
+                        } else {
+                            dot.classList.remove('quote-dot--active');
+                        }
+                    });
+                };
+
+                setInterval(() => {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * quotes.length);
+                    } while (nextIndex === currentIndex);
+
+                    currentIndex = nextIndex;
+
+                    quoteBox.classList.add('onboarding__quote-card--fading');
+
+                    setTimeout(() => {
+                        quoteText.textContent = `“${quotes[currentIndex]}”`;
+                        updateDots(currentIndex);
+                        quoteBox.classList.remove('onboarding__quote-card--fading');
+                    }, 350);
+                }, 8000);
+            }
+        } catch (e) {
+            // Ignore parsing error gracefully
+        }
+    }
+
+    // ── PWA Installation Controller ────────────────────────────────────
+    const pwaContainer = document.getElementById('pwa-install-container');
+    const pwaBtn = document.getElementById('pwa-install-btn');
+    let deferredPrompt = null;
+
+    // Check if already installed / running in standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+
+    if (!isStandalone && pwaContainer) {
+        // Check for native <install> element support (Origin Trial in Chromium 148+)
+        const supportsNativeInstall = 'HTMLInstallElement' in window || Boolean(customElements && customElements.get('install'));
+        const nativeInstallEl = pwaContainer.querySelector('.onboarding__pwa-native');
+
+        if (supportsNativeInstall && nativeInstallEl) {
+            pwaContainer.hidden = false;
+            if (pwaBtn) pwaBtn.style.display = 'none';
+        } else {
+            // Fallback beforeinstallprompt event
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                pwaContainer.hidden = false;
+            });
+
+            if (pwaBtn) {
+                pwaBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        pwaContainer.hidden = true;
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Hide button automatically if app is installed
+        window.addEventListener('appinstalled', () => {
+            pwaContainer.hidden = true;
+            deferredPrompt = null;
+        });
+    }
 });
