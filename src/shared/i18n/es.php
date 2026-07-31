@@ -428,7 +428,7 @@ return [
     'menu.subtitle'    => 'Todo hecho al momento con ingredientes de primera calidad.',
     'menu.filter.all'  => 'Todo',
     'menu.filter.popular' => '🔥 Más vendidos',
-    'menu.order.cta'   => 'Pedir en last.shop',
+    'menu.order.cta'   => 'Pide Ya',
     'menu.price.from'  => 'Desde %s',
     'menu.no_products' => 'No hay productos disponibles en esta categoría.',
     'menu.search.label' => 'Buscar productos',
