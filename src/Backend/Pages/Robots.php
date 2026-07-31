@@ -32,6 +32,9 @@ class Robots
             'Disallow: /api/admin/',
             '',
             'Sitemap: ' . $siteUrl . '/sitemap.xml',
+            '# LLM / AI Summary File',
+            '# https://llmstxt.org/',
+            '# ' . $siteUrl . '/llms.txt',
             '',
         ];
 

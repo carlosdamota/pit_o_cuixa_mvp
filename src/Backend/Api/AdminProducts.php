@@ -131,10 +131,15 @@ class AdminProducts
             return;
         }
 
+        $menuDataJson = null;
+        if (isset($input['menu_data']) && (is_array($input['menu_data']) || is_string($input['menu_data']))) {
+            $menuDataJson = is_array($input['menu_data']) ? json_encode($input['menu_data'], JSON_UNESCAPED_UNICODE) : $input['menu_data'];
+        }
+
         $pdo  = \Pit\Cuixa\Backend\Db\Connection::get();
         $stmt = $pdo->prepare(
-            'INSERT INTO products (category_id, slug, name_es, name_en, description_es, description_en, price, image_url, last_shop_url, sort_order, is_active, is_featured)
-             VALUES (:category_id, :slug, :name_es, :name_en, :description_es, :description_en, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
+            'INSERT INTO products (category_id, slug, name_es, name_en, description_es, description_en, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
+             VALUES (:category_id, :slug, :name_es, :name_en, :description_es, :description_en, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
         );
 
         $stmt->execute([
@@ -150,6 +155,11 @@ class AdminProducts
             ':sort_order'     => (int) ($input['sort_order'] ?? 0),
             ':is_active'      => !empty($input['is_active']) ? 1 : 0,
             ':is_featured'    => !empty($input['is_featured']) ? 1 : 0,
+            ':is_dine_in'     => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
+            ':is_delivery'    => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
+            ':source'         => trim((string) ($input['source'] ?? 'manual')),
+            ':type'           => trim((string) ($input['type'] ?? 'simple')),
+            ':menu_data'      => $menuDataJson,
         ]);
 
         $newId = (int) $pdo->lastInsertId();
@@ -165,19 +175,12 @@ class AdminProducts
         $stmt2->execute([':id' => $newId]);
         $product = $stmt2->fetch();
 
-        // Serialize types for JSON
-        if ($product) {
-            $product['id']          = (int) $product['id'];
-            $product['category_id'] = (int) $product['category_id'];
-            $product['price']       = (float) $product['price'];
-            $product['sort_order']  = (int) $product['sort_order'];
-            $product['is_active']   = (bool) $product['is_active'];
-            $product['is_featured'] = (bool) $product['is_featured'];
-        }
+        $repo = new ProductRepo();
+        $serialized = $product ? $repo->serialize($product) : ['id' => $newId];
 
         Response::json([
             'error' => false,
-            'data'  => $product ?: ['id' => $newId],
+            'data'  => $serialized,
         ], 201);
     }
 
@@ -218,6 +221,11 @@ class AdminProducts
             return;
         }
 
+        $menuDataJson = null;
+        if (isset($input['menu_data']) && (is_array($input['menu_data']) || is_string($input['menu_data']))) {
+            $menuDataJson = is_array($input['menu_data']) ? json_encode($input['menu_data'], JSON_UNESCAPED_UNICODE) : $input['menu_data'];
+        }
+
         $stmt = $pdo->prepare(
             'UPDATE products SET
                 category_id    = :category_id,
@@ -232,6 +240,11 @@ class AdminProducts
                 sort_order     = :sort_order,
                 is_active      = :is_active,
                 is_featured    = :is_featured,
+                is_dine_in     = :is_dine_in,
+                is_delivery    = :is_delivery,
+                source         = :source,
+                type           = :type,
+                menu_data      = :menu_data,
                 updated_at     = datetime(\'now\')
              WHERE id = :id'
         );
@@ -250,6 +263,11 @@ class AdminProducts
             ':sort_order'      => (int) ($input['sort_order'] ?? 0),
             ':is_active'       => !empty($input['is_active']) ? 1 : 0,
             ':is_featured'     => !empty($input['is_featured']) ? 1 : 0,
+            ':is_dine_in'      => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
+            ':is_delivery'     => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
+            ':source'          => trim((string) ($input['source'] ?? 'manual')),
+            ':type'            => trim((string) ($input['type'] ?? 'simple')),
+            ':menu_data'       => $menuDataJson,
         ]);
 
         // Fetch updated product with category info
@@ -260,21 +278,14 @@ class AdminProducts
              WHERE p.id = :id'
         );
         $stmt2->execute([':id' => $id]);
-        $updated = $stmt2->fetch();
+        $product = $stmt2->fetch();
 
-        // Serialize types for JSON
-        if ($updated) {
-            $updated['id']          = (int) $updated['id'];
-            $updated['category_id'] = (int) $updated['category_id'];
-            $updated['price']       = (float) $updated['price'];
-            $updated['sort_order']  = (int) $updated['sort_order'];
-            $updated['is_active']   = (bool) $updated['is_active'];
-            $updated['is_featured'] = (bool) $updated['is_featured'];
-        }
+        $repo = new ProductRepo();
+        $serialized = $product ? $repo->serialize($product) : ['id' => $id];
 
         Response::json([
             'error' => false,
-            'data'  => $updated ?: ['id' => $id, 'updated' => true],
+            'data'  => $serialized,
         ]);
     }
 
