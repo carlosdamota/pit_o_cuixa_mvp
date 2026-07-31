@@ -6,12 +6,15 @@
    BEM block: .landing--onboarding
    ====================================================================== */
 
-/* ── Hide standard layout header, footer & whatsapp float on onboarding ── */
+/* ── Hide standard layout header & footer on onboarding (keep whatsapp float) ── */
 .landing--onboarding ~ .footer,
 body:has(.landing--onboarding) .header,
-body:has(.landing--onboarding) .footer,
-body:has(.landing--onboarding) .whatsapp-float {
+body:has(.landing--onboarding) .footer {
   display: none !important;
+}
+
+body:has(.landing--onboarding) .whatsapp-float {
+  z-index: 10000 !important;
 }
 
 body:has(.landing--onboarding) .main {
@@ -507,13 +510,14 @@ body:has(.landing--onboarding) .main {
   text-align: center;
   z-index: 2;
   overflow: hidden;
+  transform: translateY(-50px);
   transition: opacity 0.35s ease, transform 0.35s ease;
   box-sizing: border-box;
 }
 
 .onboarding__quote-card--fading {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(-44px);
 }
 
 .onboarding__quote-watermark {

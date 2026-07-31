@@ -503,11 +503,14 @@ return [
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [
+        'A belly full of chicken knows no sorrow.',
+        'When you\'re hungry, you dream of chicken.',
+        'Good chicken makes good spirits.',
+        'A chicken on your plate is worth two in the wild.',
+        'A good chicken is enough for everyone.',
+        'Where two can eat, three can feast.',
+        'Full belly, happy heart, family together.',
         'In this family, we lick our fingers clean!',
-        'The secret ingredient is chicken... and being together.',
-        'Less drama and more chicken on the table.',
-        'Family united, chicken devoured.',
-        'Where there\'s good chicken and family, there\'s happiness.',
         'Chicken brings us all together here!',
         'Eating together tastes better with great chicken.',
         'Wings up for happy families!',

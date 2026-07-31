@@ -502,11 +502,14 @@ return [
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [
+        'Pollo en panza no tiene pena.',
+        'Quien tiene hambre, sueña con pollo.',
+        'Un buen pollo hace buena sangre.',
+        'Más vale pollo en mano que cien volando.',
+        'Un buen pollo da para todos.',
+        'Donde comen dos, comen tres.',
+        'Panza llena, corazón contento y la familia junta.',
         '¡En esta familia se chupa hasta los dedos!',
-        'El ingrediente secreto es el pollo... y estar juntos.',
-        'Menos drama y más pollo en la mesa.',
-        'Familia unida, pollo devorado.',
-        'Donde hay buen pollo y familia, hay felicidad.',
         '¡Aquí el pollo nos une a todos!',
         'Comer juntos sabe mejor con buen pollo.',
         '¡Alitas arriba las familias felices!',

@@ -191,11 +191,13 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
         <?= $content ?? '' ?>
     </main>
 
-    <!-- ── Footer & Floating WhatsApp (hidden on home page) ─────────── -->
+    <!-- ── Footer (hidden on home page) ─────────────────────────────── -->
     <?php if ($pageName !== 'home'): ?>
     <?php require __DIR__ . '/../partials/footer.php'; ?>
-    <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
+
+    <!-- ── Floating WhatsApp (visible on all pages) ─────────────────── -->
+    <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/main.js"></script>

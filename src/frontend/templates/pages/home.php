@@ -151,10 +151,7 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
              aria-live="polite">
             <div class="onboarding__quote-watermark" aria-hidden="true">“</div>
             <div class="onboarding__quote-content">
-                <div class="onboarding__quote-badge">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.2L12 16.6l-6.3 4.6 2.3-7.2-6-4.6h7.6z"/></svg>
-                    <span><?= __('site.name') ?></span>
-                </div>
+                
                 <p class="onboarding__quote-text" id="home-quote-text">“<?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?>”</p>
                 <div class="onboarding__quote-dots" id="home-quote-dots" aria-hidden="true">
                     <?php for ($i = 0; $i < count($quotesList); $i++): ?>

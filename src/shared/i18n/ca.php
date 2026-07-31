@@ -501,11 +501,14 @@ return [
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [
+        'Pollastre en panxa no té pena.',
+        'Qui té fam, somia amb pollastre.',
+        'Un bon pollastre fa bona sang.',
+        'Més val pollastre a la mà que cent volant.',
+        'Un bon pollastre dona per a tots.',
+        'On mengen dos, en mengen tres.',
+        'Panxa plena, cor content i la família junta.',
         '¡En aquesta família ens llepem els dits!',
-        'L\'ingredient secret és el pollastre... i estar tots junts.',
-        'Menys drama i més pollastre a la taula.',
-        'Família unida, pollastre devorat.',
-        'On hi ha bon pollastre i família, hi ha felicitat.',
         '¡Aquí el pollastre ens uneix a tots!',
         'Menjar junts sap millor amb un bon pollastre.',
         '¡Aletes amunt les famílies felices!',
