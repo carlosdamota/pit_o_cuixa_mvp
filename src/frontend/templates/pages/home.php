@@ -149,8 +149,9 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
              id="home-quote-box"
              data-quotes="<?= htmlspecialchars(json_encode($quotesList, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>"
              aria-live="polite">
-            <span class="onboarding__quote-icon" aria-hidden="true">✨</span>
-            <span class="onboarding__quote-text" id="home-quote-text"><?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="onboarding__quote-mark onboarding__quote-mark--open" aria-hidden="true">“</span>
+            <p class="onboarding__quote-text" id="home-quote-text"><?= htmlspecialchars($quotesList[0], ENT_QUOTES, 'UTF-8') ?></p>
+            <span class="onboarding__quote-mark onboarding__quote-mark--close" aria-hidden="true">”</span>
         </div>
         <?php endif; ?>
 
