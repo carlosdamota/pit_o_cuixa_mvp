@@ -141,9 +141,9 @@ class Product
         //Preparamos la insercion
         $stmt = $this->pdo->prepare(
             'INSERT INTO products(
-            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery)
+            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
             VALUES(
-            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery)'
+            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
         );
         $stmt->execute([
             ':category_id' => $product['category_id'],
@@ -164,13 +164,24 @@ class Product
             ':image_url' => $product['image_url'],
             ':last_shop_url' => $product['last_shop_url'],
             ':sort_order' => $product['sort_order'],
-            ':is_active' => 1,
-            ':is_featured' => 0,
+            // Active/featured now respect an explicit caller value and only
+            // fall back when absent. `sync()` sends neither key, so scraped
+            // products are unchanged (is_active=1, is_featured=0), while the
+            // admin's explicit input is preserved instead of being overridden.
+            ':is_active' => (int)(bool)($product['is_active'] ?? 1),
+            ':is_featured' => (int)(bool)($product['is_featured'] ?? 0),
             // Channel defaults: scraped products are delivery-only. Explicit
             // values (from the scraper or admin) win; anything missing falls
             // back to delivery = 1, dine_in = 0.
             ':is_dine_in'  => (int) ($product['is_dine_in']  ?? 0),
-            ':is_delivery' => (int) ($product['is_delivery'] ?? 1)
+            ':is_delivery' => (int) ($product['is_delivery'] ?? 1),
+            // source/type/menu_data were previously left to the column defaults;
+            // binding them explicitly keeps those same defaults for the scraper
+            // (source='delivery', type='simple', menu_data=NULL) while letting
+            // the admin persist its own values.
+            ':source'     => $product['source'] ?? 'delivery',
+            ':type'       => $product['type'] ?? 'simple',
+            ':menu_data'  => $product['menu_data'] ?? null
         ]);
 
         return;
@@ -182,20 +193,78 @@ class Product
             return;
         }
 
+        $params = $this->buildUpdateParams($changes);
+        $params[':slug'] = $slug;
+
+        $stmt = $this->pdo->prepare(
+            'UPDATE products SET ' . $this->buildUpdateFields($changes) . ' WHERE slug = :slug'
+        );
+        $stmt->execute($params);
+    }
+
+    /**
+     * Overwrite a product by its primary key.
+     *
+     * The admin layer works by id (the URL path carries the product id), while
+     * sync() keys on slug. This method routes the admin writes through the
+     * repository so the products table has a single write path. Pass every
+     * column as a change for a full overwrite; partial updates only touch the
+     * provided columns.
+     *
+     * @param  int   $id       Primary key of the product to update
+     * @param  array $changes  Column => value map to overwrite
+     * @return void
+     */
+    public function updateById(int $id, array $changes) : void{
+
+        if(empty($changes)){
+            return;
+        }
+
+        $params = $this->buildUpdateParams($changes);
+        $params[':id'] = $id;
+
+        $stmt = $this->pdo->prepare(
+            'UPDATE products SET ' . $this->buildUpdateFields($changes) . ' WHERE id = :id'
+        );
+        $stmt->execute($params);
+    }
+
+    /**
+     * Build the UPDATE SET clause (without the WHERE part) for a set of column
+     * changes, always appending the updated_at timestamp.
+     *
+     * @param  array $changes
+     * @return string
+     */
+    private function buildUpdateFields(array $changes): string
+    {
         $fields = [];
-        $params = [];
 
         foreach($changes as $col => $val){
             $fields[] = "{$col} = :{$col}";
-            $params[":{$col}"] = $val;
         }
 
         $fields[] = 'updated_at = datetime("now")';
-        $params[':slug'] = $slug;
 
-        $sql = 'UPDATE products SET '.implode(', ', $fields). ' WHERE slug = :slug';
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
+        return implode(', ', $fields);
+    }
+
+    /**
+     * Build the named-parameter map for a set of column changes.
+     *
+     * @param  array $changes
+     * @return array<string, mixed>
+     */
+    private function buildUpdateParams(array $changes): array
+    {
+        $params = [];
+
+        foreach($changes as $col => $val){
+            $params[":{$col}"] = $val;
+        }
+
+        return $params;
     }
 
     /**
@@ -208,6 +277,25 @@ class Product
         $stmt = $this->pdo->prepare('UPDATE products SET is_active = :active, updated_at = datetime("now") WHERE slug = :slug');
         $stmt->execute([
             ':slug' => $slug,
+            ':active' => (int)$active
+        ]);
+    }
+
+    /**
+     * Set the active state of a product by its primary key.
+     *
+     * Counterpart of setStatus() keyed on id, used by the admin soft-delete
+     * flow (DELETE /api/admin/products/{id}) which works by id, not slug.
+     *
+     * @param  int  $id
+     * @param  bool $active
+     * @return void
+     */
+    public function setStatusById(int $id, bool $active) : void{
+
+        $stmt = $this->pdo->prepare('UPDATE products SET is_active = :active, updated_at = datetime("now") WHERE id = :id');
+        $stmt->execute([
+            ':id' => $id,
             ':active' => (int)$active
         ]);
     }
