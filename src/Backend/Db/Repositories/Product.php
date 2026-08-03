@@ -116,6 +116,38 @@ class Product
             //immunity) while the scraped item keeps its place in the catalog.
             $existing = $filterProducts[$slug] ?? null;
             if ($existing !== null && ($existing['type'] ?? 'simple') === 'menu') {
+                // REUSE the previously renamed row instead of creating a fresh
+                // -N row on every re-sync. Night 1 inserts {base}-delivery;
+                // night 2 must find it (same lineage: slug + last_shop_url) and
+                // UPDATE only what changed via getChanges(), keeping the slug,
+                // its public URL and its /img/pic/{slug}.webp image stable.
+                // The last_shop_url check is the anti-clobber guard: a simple
+                // row the admin created with the same slug but a different
+                // source URL is never UPDATE-reused (it falls through to the
+                // counter). Note it only protects against the update: a manual
+                // simple row is still subject to the deactivation loop below
+                // when it is not in scrapedMap.
+                $renamedSlug = $slug . '-delivery';
+                $prevRenamed = $filterProducts[$renamedSlug] ?? null;
+                $prevSameLineage = $prevRenamed !== null
+                    && ($prevRenamed['type'] ?? 'simple') === 'simple'
+                    && ($prevRenamed['last_shop_url'] ?? '') === ($p['last_shop_url'] ?? '');
+
+                if ($prevSameLineage) {
+                    $p['slug'] = $renamedSlug;
+                    $slug      = $renamedSlug;
+                    $scrapedMap[$slug] = $p;
+
+                    $changes = $this->getChanges($prevRenamed, $p);
+                    if (!empty($changes)) {
+                        $this->update($slug, $changes);
+                    }
+                    if (!$prevRenamed['is_active']) {
+                        $this->setStatus($slug, true);
+                    }
+                    continue;
+                }
+
                 $resolved = $this->resolveSlugCollision($slug, 'simple', 0, $reservedSlugs);
                 if ($resolved === null) {
                     // Unreachable in practice: a scraped simple vs an admin menu
