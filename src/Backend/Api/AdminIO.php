@@ -2,7 +2,7 @@
 /**
  * Pit o Cuixa — Admin Import/Export API Controller
  *
- * POST /api/admin/import — CSV upload, parse, upsert by last_shop_url
+ * POST /api/admin/import — CSV upload, parse, upsert by slug
  * GET  /api/admin/export — CSV download of all products
  *
  * All endpoints require Bearer token auth.
@@ -16,6 +16,7 @@ namespace Pit\Cuixa\Backend\Api;
 
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Auth\Auth;
+use Pit\Cuixa\Backend\Db\Repositories\Product as ProductRepo;
 
 class AdminIO
 {
@@ -26,7 +27,9 @@ class AdminIO
      * Columns: slug, name_es, name_en, description_es, description_en, price,
      *          category_id, image_url, last_shop_url, sort_order, is_active, is_featured
      *
-     * Upserts by last_shop_url: if exists → update, if not → insert.
+     * Upserts by slug: if exists → update, if not → insert.
+     * NOTE: the docblock previously claimed upsert by last_shop_url, but the
+     * code has always matched on slug; the slug behavior is preserved here.
      * Returns: { imported: int, errors: string[] }
      */
     public static function import(): void
@@ -145,63 +148,55 @@ class AdminIO
                 continue;
             }
 
-            // ── Upsert by last_shop_url ────────────────────────────────
+            // ── Upsert by slug ──────────────────────────────────────────
             try {
-                // Check if product exists by slug
+                $repo = new ProductRepo();
+
+                // Check if product exists by slug (read; writes below are
+                // delegated to the centralized Product repository).
                 $check = $pdo->prepare('SELECT id FROM products WHERE slug = :slug');
                 $check->execute([':slug' => $data['slug']]);
                 $existing = $check->fetch();
 
                 if ($existing !== false) {
-                    // Update
-                    $stmt = $pdo->prepare(
-                        'UPDATE products SET
-                            name_es = :name_es, name_en = :name_en,
-                            description_es = :description_es, description_en = :description_en,
-                            price = :price, category_id = :category_id,
-                            image_url = :image_url, last_shop_url = :last_shop_url,
-                            sort_order = :sort_order, is_active = :is_active,
-                            is_featured = :is_featured,
-                            updated_at = datetime(\'now\')
-                         WHERE id = :id'
-                    );
-                    $stmt->execute([
-                        ':id'             => $existing['id'],
-                        ':name_es'        => $data['name_es'],
-                        ':name_en'        => $data['name_en'],
-                        ':description_es' => $data['description_es'] ?? '',
-                        ':description_en' => $data['description_en'] ?? '',
-                        ':price'          => (float) ($data['price'] ?? 0),
-                        ':category_id'    => (int) $data['category_id'],
-                        ':image_url'      => $data['image_url'] ?? '',
-                        ':last_shop_url'  => $data['last_shop_url'] ?? '',
-                        ':sort_order'     => (int) ($data['sort_order'] ?? 0),
-                        ':is_active'      => !empty($data['is_active']) ? 1 : 0,
-                        ':is_featured'    => !empty($data['is_featured']) ? 1 : 0,
+                    // Update only the CSV-provided columns (same set the old
+                    // inline UPDATE touched; is_dine_in/is_delivery/source/
+                    // type/menu_data are left untouched here, exactly as before).
+                    $repo->updateById((int) $existing['id'], [
+                        'name_es'        => $data['name_es'],
+                        'name_en'        => $data['name_en'],
+                        'description_es' => $data['description_es'] ?? '',
+                        'description_en' => $data['description_en'] ?? '',
+                        'price'          => (float) ($data['price'] ?? 0),
+                        'category_id'    => (int) $data['category_id'],
+                        'image_url'      => $data['image_url'] ?? '',
+                        'last_shop_url'  => $data['last_shop_url'] ?? '',
+                        'sort_order'     => (int) ($data['sort_order'] ?? 0),
+                        'is_active'      => !empty($data['is_active']) ? 1 : 0,
+                        'is_featured'    => !empty($data['is_featured']) ? 1 : 0,
                     ]);
                 } else {
-                    // Insert
-                    $stmt = $pdo->prepare(
-                        'INSERT INTO products
-                            (slug, name_es, name_en, description_es, description_en, price,
-                             category_id, image_url, last_shop_url, sort_order, is_active, is_featured)
-                         VALUES
-                            (:slug, :name_es, :name_en, :description_es, :description_en, :price,
-                             :category_id, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured)'
-                    );
-                    $stmt->execute([
-                        ':slug'           => $data['slug'],
-                        ':name_es'        => $data['name_es'],
-                        ':name_en'        => $data['name_en'],
-                        ':description_es' => $data['description_es'] ?? '',
-                        ':description_en' => $data['description_en'] ?? '',
-                        ':price'          => (float) ($data['price'] ?? 0),
-                        ':category_id'    => (int) $data['category_id'],
-                        ':image_url'      => $data['image_url'] ?? '',
-                        ':last_shop_url'  => $data['last_shop_url'] ?? '',
-                        ':sort_order'     => (int) ($data['sort_order'] ?? 0),
-                        ':is_active'      => !empty($data['is_active']) ? 1 : 0,
-                        ':is_featured'    => !empty($data['is_featured']) ? 1 : 0,
+                    // Insert. The CSV never carries channel flags; the old
+                    // inline INSERT let them fall to the column defaults
+                    // (is_dine_in=1, is_delivery=1), while Product::insert()
+                    // defaults to the scraper's delivery-only semantics
+                    // (dine_in=0). Pass the column defaults explicitly so the
+                    // stored row matches the historical import behavior.
+                    $repo->insert([
+                        'slug'           => $data['slug'],
+                        'name_es'        => $data['name_es'],
+                        'name_en'        => $data['name_en'],
+                        'description_es' => $data['description_es'] ?? '',
+                        'description_en' => $data['description_en'] ?? '',
+                        'price'          => (float) ($data['price'] ?? 0),
+                        'category_id'    => (int) $data['category_id'],
+                        'image_url'      => $data['image_url'] ?? '',
+                        'last_shop_url'  => $data['last_shop_url'] ?? '',
+                        'sort_order'     => (int) ($data['sort_order'] ?? 0),
+                        'is_active'      => !empty($data['is_active']) ? 1 : 0,
+                        'is_featured'    => !empty($data['is_featured']) ? 1 : 0,
+                        'is_dine_in'     => 1,
+                        'is_delivery'    => 1,
                     ]);
                 }
 
