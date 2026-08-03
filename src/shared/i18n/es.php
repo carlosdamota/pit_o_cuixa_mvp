@@ -12,19 +12,19 @@ declare(strict_types=1);
 
 return [
     // ── Global / Layout ──────────────────────────────────────────
-    'site.name'        => 'Pit o Cuixa',
-    'site.tagline'     => 'Pollería y rosticería en Torredembarra',
+    'site.name' => 'Pit o Cuixa',
+    'site.tagline' => 'Pollería y rosticería en Torredembarra',
     'site.description' => 'Pollería y rosticería artesana en Torredembarra. Pollo al ast, brochetas, hamburguesas y más. Pide online y recoge en tienda.',
-    'nav.home'         => 'Inicio',
-    'nav.menu'         => 'Carta',
-    'nav.admin'        => 'Admin',
-    'nav.login'        => 'Iniciar sesión',
-    'nav.logout'       => 'Cerrar sesión',
-    'lang.switch'      => 'Cambiar idioma',
-    'lang.code'        => 'es',
-    'nav.faq'          => 'FAQ',
-    'footer.rights'    => 'Todos los derechos reservados.',
-    'footer.hours'     => 'Horario: Lun-Dom 11:00–23:00',
+    'nav.home' => 'Inicio',
+    'nav.menu' => 'Carta',
+    'nav.admin' => 'Admin',
+    'nav.login' => 'Iniciar sesión',
+    'nav.logout' => 'Cerrar sesión',
+    'lang.switch' => 'Cambiar idioma',
+    'lang.code' => 'es',
+    'nav.faq' => 'FAQ',
+    'footer.rights' => 'Todos los derechos reservados.',
+    'footer.hours' => 'Horario: Lun-Dom 11:00–23:00',
 
     // ── Footer Legal ─────────────────────────────────────────────────
     'footer.privacy' => 'Política de Privacidad',
@@ -34,7 +34,7 @@ return [
 
     // ── Privacy Page ───────────────────────────────────────────────
     'privacy.title' => 'Política de Privacidad',
-    'privacy.desc'  => 'Información sobre el tratamiento de datos personales en Pit o Cuixa.',
+    'privacy.desc' => 'Información sobre el tratamiento de datos personales en Pit o Cuixa.',
 
     // ── Section 0 ────────
     'privacy.intro.paragraph1' => 'Confidencialidad y seguridad son valores fundamentales para LAST SYSTEMS, S.L., y en consecuencia, nos comprometemos a garantizar la privacidad del Usuario en todo momento y a no recopilar información innecesaria. A continuación, te proporcionamos toda la información necesaria sobre nuestra Política de Privacidad respecto a los datos personales que recopilamos, explicando:',
@@ -58,43 +58,43 @@ return [
     'privacy.data.paragraph2' => 'En resumen, esta Política de Privacidad cubre todos los datos personales recopilados y utilizados por LAST SYSTEMS, S.L. a través de la Plataforma.',
     'privacy.data.paragraph3' => 'Por la presente, el usuario (tú) garantiza que los Datos Personales proporcionados son verdaderos y precisos, y se compromete a notificar cualquier cambio o modificación de los mismos. Cualquier pérdida o daño causado al sitio web, al Responsable del Tratamiento o a terceros por proporcionar información errónea, inexacta o incompleta en los formularios será responsabilidad exclusiva del usuario. Si LAST SYSTEMS, S.L. considera que existen motivos razonables para dudar de la veracidad, precisión o integridad de los datos proporcionados, puede denegarte el acceso y uso del sitio web y/o de cualquiera de sus contenidos y/o servicios, en el presente o en el futuro.',
     'privacy.data.paragraph4' => 'Podemos recopilar o recibir tus datos a través de nuestro sitio web o formularios, entre otros. En algunos casos, proporcionas tus Datos Personales directamente (por ejemplo, cuando te pones en contacto con nosotros), o en otros casos, los recopilamos nosotros (por ejemplo, mediante cookies para entender cómo utilizas nuestro sitio web).',
-    
+
     // ── Section 3 ────────
     'privacy.purpose.title' => 'Fines, Legitimación y Conservación de los datos enviados a través de:',
-    
-        // -- Formulario de Contacto ---
-        'privacy.purpose.contact_form.title' => 'Formulario de Contacto',
-        'privacy.purpose.contact_form.paragraph1' => 'Datos personales recopilados: Nombre, apellido, correo electrónico y número de teléfono.',
-        'privacy.purpose.contact_form.paragraph2' => 'Fines: Proporcionarte una forma de contactarnos y responder a tus solicitudes de información, incluso por medios electrónicos (correo electrónico, SMS, WhatsApp).',
-        'privacy.purpose.contact_form.paragraph3' => 'Legitimación: Tu consentimiento expreso y el interés legítimo de LAST SYSTEMS, S.L.. Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
 
-        // -- Chat en Vivo ---
-        'privacy.purpose.live_chat.title' => 'Chat en Vivo',
-        'privacy.purpose.live_chat.paragraph1' => 'Tienes acceso a un sistema de mensajería instantánea interna para comunicarte directamente con Nosotros. En estos casos, eres libre de compartir cualquier tipo de información, incluidos datos personales, de los que seremos el Responsable del Tratamiento si es necesario.',
-        'privacy.purpose.live_chat.paragraph2' => 'Fines: Responder a tu solicitud de información.',
-        'privacy.purpose.live_chat.paragraph3' => 'Legitimación: Tu consentimiento al solicitarnos información a través del servicio de mensajería instantánea.',
-        'privacy.purpose.live_chat.paragraph4' => 'Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
-        
-        // -- Formulario Call Back ---
-        'privacy.purpose.callback.title' => "Formulario de 'Call Back'",
-        'privacy.purpose.callback.paragraph1' => 'Si no encuentras la información que necesitas en nuestro sitio web, puedes rellenar un formulario con tu número de teléfono, para que uno de nuestros agentes te devuelva la llamada de forma gratuita.',
-        'privacy.purpose.callback.paragraph2' => 'Datos personales recopilados: Número de teléfono.',
-        'privacy.purpose.callback.paragraph3' => 'Fines: Proporcionarte una forma de contactarnos y responder a tu solicitud de información.',
-        'privacy.purpose.callback.paragraph4' => 'Legitimación: Tu consentimiento al proporcionarnos tu número de teléfono para que te contactemos, y el interés legítimo de LAST SYSTEMS, S.L.. Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
-        
-        // -- Envío de Correos Electrónicos ---
-        'privacy.purpose.email.title' => 'Envío de Correos Electrónicos',
-        'privacy.purpose.email.paragraph1' => 'Fines: Responder a tus solicitudes de información, atender tus consultas y responder tus preguntas o dudas. Si recibimos tu Curriculum Vitae (CV), tus datos personales y curriculares pueden ser incluidos en nuestras bases de datos para participar en nuestros procesos de selección presentes y futuros.',
-        'privacy.purpose.email.paragraph2' => 'Legitimación: El consentimiento del usuario al solicitar información a través del correo electrónico o enviarnos su CV para participar en nuestros procesos de selección.',
-        'privacy.purpose.email.paragraph3' => 'Conservación: Una vez que tu solicitud por correo electrónico haya sido resuelta, si no se ha generado un nuevo tratamiento. Si recibimos tu CV, tus datos podrán conservarse hasta un año para futuros procesos de selección.',
-        
-        // -- Obligación de proporcionarnos los datos ---
-        'privacy.purpose.obligation.title' => 'Obligación de proporcionarnos tus datos personales y consecuencias de no hacerlo.',
-        'privacy.purpose.obligation.paragraph1' => 'El suministro de datos personales requiere una edad mínima de 18 años, o, en su caso, capacidad legal suficiente para contratar.',
-        'privacy.purpose.obligation.paragraph2' => 'Los datos personales solicitados son necesarios para gestionar tus solicitudes y/o ofrecerte los servicios que puedas contratar, por lo que si no los proporcionas, no podremos atenderte correctamente ni prestar el servicio solicitado.',
-        'privacy.purpose.obligation.paragraph3' => 'En cualquier caso, nos reservamos el derecho de decidir si incluir o no tus datos personales y demás información en nuestras bases de datos.',
-    
-        // ── Section 4 ────────
+    // -- Formulario de Contacto ---
+    'privacy.purpose.contact_form.title' => 'Formulario de Contacto',
+    'privacy.purpose.contact_form.paragraph1' => 'Datos personales recopilados: Nombre, apellido, correo electrónico y número de teléfono.',
+    'privacy.purpose.contact_form.paragraph2' => 'Fines: Proporcionarte una forma de contactarnos y responder a tus solicitudes de información, incluso por medios electrónicos (correo electrónico, SMS, WhatsApp).',
+    'privacy.purpose.contact_form.paragraph3' => 'Legitimación: Tu consentimiento expreso y el interés legítimo de LAST SYSTEMS, S.L.. Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
+
+    // -- Chat en Vivo ---
+    'privacy.purpose.live_chat.title' => 'Chat en Vivo',
+    'privacy.purpose.live_chat.paragraph1' => 'Tienes acceso a un sistema de mensajería instantánea interna para comunicarte directamente con Nosotros. En estos casos, eres libre de compartir cualquier tipo de información, incluidos datos personales, de los que seremos el Responsable del Tratamiento si es necesario.',
+    'privacy.purpose.live_chat.paragraph2' => 'Fines: Responder a tu solicitud de información.',
+    'privacy.purpose.live_chat.paragraph3' => 'Legitimación: Tu consentimiento al solicitarnos información a través del servicio de mensajería instantánea.',
+    'privacy.purpose.live_chat.paragraph4' => 'Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
+
+    // -- Formulario Call Back ---
+    'privacy.purpose.callback.title' => "Formulario de 'Call Back'",
+    'privacy.purpose.callback.paragraph1' => 'Si no encuentras la información que necesitas en nuestro sitio web, puedes rellenar un formulario con tu número de teléfono, para que uno de nuestros agentes te devuelva la llamada de forma gratuita.',
+    'privacy.purpose.callback.paragraph2' => 'Datos personales recopilados: Número de teléfono.',
+    'privacy.purpose.callback.paragraph3' => 'Fines: Proporcionarte una forma de contactarnos y responder a tu solicitud de información.',
+    'privacy.purpose.callback.paragraph4' => 'Legitimación: Tu consentimiento al proporcionarnos tu número de teléfono para que te contactemos, y el interés legítimo de LAST SYSTEMS, S.L.. Conservación: Una vez que tu solicitud haya sido respondida o resuelta, si no se ha generado un nuevo tratamiento.',
+
+    // -- Envío de Correos Electrónicos ---
+    'privacy.purpose.email.title' => 'Envío de Correos Electrónicos',
+    'privacy.purpose.email.paragraph1' => 'Fines: Responder a tus solicitudes de información, atender tus consultas y responder tus preguntas o dudas. Si recibimos tu Curriculum Vitae (CV), tus datos personales y curriculares pueden ser incluidos en nuestras bases de datos para participar en nuestros procesos de selección presentes y futuros.',
+    'privacy.purpose.email.paragraph2' => 'Legitimación: El consentimiento del usuario al solicitar información a través del correo electrónico o enviarnos su CV para participar en nuestros procesos de selección.',
+    'privacy.purpose.email.paragraph3' => 'Conservación: Una vez que tu solicitud por correo electrónico haya sido resuelta, si no se ha generado un nuevo tratamiento. Si recibimos tu CV, tus datos podrán conservarse hasta un año para futuros procesos de selección.',
+
+    // -- Obligación de proporcionarnos los datos ---
+    'privacy.purpose.obligation.title' => 'Obligación de proporcionarnos tus datos personales y consecuencias de no hacerlo.',
+    'privacy.purpose.obligation.paragraph1' => 'El suministro de datos personales requiere una edad mínima de 18 años, o, en su caso, capacidad legal suficiente para contratar.',
+    'privacy.purpose.obligation.paragraph2' => 'Los datos personales solicitados son necesarios para gestionar tus solicitudes y/o ofrecerte los servicios que puedas contratar, por lo que si no los proporcionas, no podremos atenderte correctamente ni prestar el servicio solicitado.',
+    'privacy.purpose.obligation.paragraph3' => 'En cualquier caso, nos reservamos el derecho de decidir si incluir o no tus datos personales y demás información en nuestras bases de datos.',
+
+    // ── Section 4 ────────
     'privacy.recipients.title' => 'Destinatarios de tus Datos',
     'privacy.recipients.paragraph1' => 'Los Datos Personales que recopilamos de ti pueden ser tratados por miembros del equipo de LAST SYSTEMS, S.L., en función de su interés legítimo, para llevar a cabo tareas administrativas.',
     'privacy.recipients.paragraph2' => 'Adicionalmente, tus datos personales podrán ser comunicados a:',
@@ -365,9 +365,9 @@ return [
     'terms.dispute_resolution.paragraph1' => 'Los conflictos o controversias que tuvieran lugar fuera de la Unión Europea quedarán sujetos a su resolución por parte de la Corte Española de Arbitraje de la Cámara de Comercio.',
 
     // ── FAQ Page ─────────────────────────────────────────────────
-    'faq.title'      => 'Preguntas frecuentes',
-    'faq.desc'       => 'Respuestas a las preguntas más comunes sobre nuestra cocina, servicio a domicilio y encargo de pollos al ast en Torredembarra.',
-    'faq.items'      => [
+    'faq.title' => 'Preguntas frecuentes',
+    'faq.desc' => 'Respuestas a las preguntas más comunes sobre nuestra cocina, servicio a domicilio y encargo de pollos al ast en Torredembarra.',
+    'faq.items' => [
         [
             'q' => '¿Qué incluye el pollo a l\'ast y qué opciones de menús tenéis?',
             'a' => 'El pollo a l\'ast se sirve entero o medio pollo, siempre acompañado de nuestro alioli casero. Disponemos de menús combinados con patatas fritas caseras, ensaladas (César, mixta, rusa), canelones de rostit o croquetas. Puedes consultar las opciones y precios actualizados en nuestra carta online.',
@@ -407,106 +407,106 @@ return [
     ],
 
     // ── Home Page ────────────────────────────────────────────────
-    'home.title'       => 'Pit o Cuixa — Pollería en Torredembarra',
-    'home.desc'        => 'La mejor pollería y rosticería de Torredembarra. Pollo al ast, brochetas, hamburguesas y platos caseros.',
-    'home.hero.title'  => 'El mejor pollo al ast de Torredembarra',
+    'home.title' => 'Pit o Cuixa — Pollería en Torredembarra',
+    'home.desc' => 'La mejor pollería y rosticería de Torredembarra. Pollo al ast, brochetas, hamburguesas y platos caseros.',
+    'home.hero.title' => 'El mejor pollo al ast de Torredembarra',
     'home.hero.subtitle' => 'Desde 1998 cocinando con amor para ti y los tuyos.',
-    'home.hero.cta'    => 'Ver la carta',
-    'home.featured'    => 'Más pedidos',
+    'home.hero.cta' => 'Ver la carta',
+    'home.featured' => 'Más pedidos',
     'home.featured.subtitle' => 'Nuestros clientes lo saben: estos son los imprescindibles.',
-    'home.info.title'  => 'Visítanos',
+    'home.info.title' => 'Visítanos',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
-    'home.info.phone'  => 'Tel. +34 977 64 20 10',
-    'home.info.hours'  => 'Abierto cada día de 11:00 a 23:00',
+    'home.info.phone' => 'Tel. +34 977 64 20 10',
+    'home.info.hours' => 'Abierto cada día de 11:00 a 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
-    'home.landing.title'     => 'Pit o Cuixa — Pollería en Torredembarra',
-    'home.landing.aria'      => '¿Qué te apetece?',
-    'home.landing.pollos'    => 'Pollos al ast',
+    'home.landing.title' => 'Pit o Cuixa — Pollería en Torredembarra',
+    'home.landing.aria' => '¿Qué te apetece?',
+    'home.landing.pollos' => 'Pollos al ast',
     'home.landing.combinados' => 'Platos combinados',
-    'home.landing.picapica'  => 'Picapica',
-    'home.onboarding.in_local'  => 'En local',
-    'home.onboarding.delivery'  => 'A domicilio',
+    'home.landing.picapica' => 'Picapica',
+    'home.onboarding.in_local' => 'En local',
+    'home.onboarding.delivery' => 'A domicilio',
     'home.onboarding.drag_hint' => 'Arrastra tu opción al local para empezar',
 
     // ── Menu Page ────────────────────────────────────────────────
-    'menu.title'       => 'Carta — Pit o Cuixa',
-    'menu.desc'        => 'Explora nuestra carta: pollo al ast, brochetas, hamburguesas, ensaladas y mucho más.',
-    'menu.heading'     => 'Nuestra carta',
-    'menu.subtitle'    => 'Todo hecho al momento con ingredientes de primera calidad.',
-    'menu.filter.all'  => 'Todo',
+    'menu.title' => 'Carta — Pit o Cuixa',
+    'menu.desc' => 'Explora nuestra carta: pollo al ast, brochetas, hamburguesas, ensaladas y mucho más.',
+    'menu.heading' => 'Nuestra carta',
+    'menu.subtitle' => 'Todo hecho al momento con ingredientes de primera calidad.',
+    'menu.filter.all' => 'Todo',
     'menu.filter.popular' => '🔥 Más vendidos',
-    'menu.order.cta'   => 'Pedir en last.shop',
-    'menu.price.from'  => 'Desde %s',
+    'menu.order.cta' => 'Pedir en haora',
+    'menu.price.from' => 'Desde %s',
     'menu.no_products' => 'No hay productos disponibles en esta categoría.',
     'menu.search.label' => 'Buscar productos',
     'menu.search.placeholder' => 'Buscar productos...',
     'menu.search.no_results' => 'No se encontraron productos',
-    'menu.map.title'       => 'Zona de reparto a domicilio',
-    'menu.map.subtitle'    => 'Llegamos recién hechos y bien calientes a tu puerta.',
+    'menu.map.title' => 'Zona de reparto a domicilio',
+    'menu.map.subtitle' => 'Llegamos recién hechos y bien calientes a tu puerta.',
     'menu.map.towns_label' => 'Cobertura directa:',
     'menu.map.delivery_note' => '🛵 Reparto disponible en Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès y La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
-    'product.price'    => '%s €',
+    'product.price' => '%s €',
     'product.featured' => 'Destacado',
-    'product.view'     => 'Ver',
+    'product.view' => 'Ver',
 
     // ── Errors ───────────────────────────────────────────────────
-    'error.404'        => 'Página no encontrada',
-    'error.404.desc'   => 'La página que buscas no existe.',
-    'error.404.title'  => 'Página no encontrada',
+    'error.404' => 'Página no encontrada',
+    'error.404.desc' => 'La página que buscas no existe.',
+    'error.404.title' => 'Página no encontrada',
     'error.404.message' => 'Lo sentimos, la página que buscas no existe o ha sido movida.',
-    'error.404.cta'    => 'Volver al inicio',
-    'error.500'        => 'Error del servidor',
-    'error.500.desc'   => 'Algo ha ido mal. Inténtalo de nuevo más tarde.',
-    'error.401'        => 'No autorizado',
-    'error.401.desc'   => 'Debes iniciar sesión para acceder a esta página.',
+    'error.404.cta' => 'Volver al inicio',
+    'error.500' => 'Error del servidor',
+    'error.500.desc' => 'Algo ha ido mal. Inténtalo de nuevo más tarde.',
+    'error.401' => 'No autorizado',
+    'error.401.desc' => 'Debes iniciar sesión para acceder a esta página.',
 
     // ── Admin ────────────────────────────────────────────────────
-    'admin.title'            => 'Administración',
-    'admin.login.title'      => 'Inicio de sesión',
-    'admin.login.error'      => 'Usuario o contraseña incorrectos',
-    'admin.logout.success'   => 'Sesión cerrada',
-    'admin.dashboard'        => 'Panel',
-    'admin.products'         => 'Productos',
-    'admin.categories'       => 'Categorías',
-    'admin.product.new'      => 'Nuevo Producto',
-    'admin.product.edit'     => 'Editar Producto',
-    'admin.product.delete'   => 'Eliminar',
-    'admin.category.new'     => 'Nueva Categoría',
-    'admin.category.edit'    => 'Editar Categoría',
-    'admin.category.delete'  => 'Eliminar',
-    'admin.save'             => 'Guardar',
-    'admin.cancel'           => 'Cancelar',
-    'admin.update'           => 'Actualizar',
-    'admin.no_products'      => 'No hay productos.',
-    'admin.no_categories'    => 'No hay categorías.',
-    'admin.import'           => 'Importar CSV',
-    'admin.export'           => 'Exportar CSV',
-    'admin.view_site'       => 'Ver sitio',
-    'admin.password'        => 'Contraseña',
-    'admin.username'        => 'Usuario',
+    'admin.title' => 'Administración',
+    'admin.login.title' => 'Inicio de sesión',
+    'admin.login.error' => 'Usuario o contraseña incorrectos',
+    'admin.logout.success' => 'Sesión cerrada',
+    'admin.dashboard' => 'Panel',
+    'admin.products' => 'Productos',
+    'admin.categories' => 'Categorías',
+    'admin.product.new' => 'Nuevo Producto',
+    'admin.product.edit' => 'Editar Producto',
+    'admin.product.delete' => 'Eliminar',
+    'admin.category.new' => 'Nueva Categoría',
+    'admin.category.edit' => 'Editar Categoría',
+    'admin.category.delete' => 'Eliminar',
+    'admin.save' => 'Guardar',
+    'admin.cancel' => 'Cancelar',
+    'admin.update' => 'Actualizar',
+    'admin.no_products' => 'No hay productos.',
+    'admin.no_categories' => 'No hay categorías.',
+    'admin.import' => 'Importar CSV',
+    'admin.export' => 'Exportar CSV',
+    'admin.view_site' => 'Ver sitio',
+    'admin.password' => 'Contraseña',
+    'admin.username' => 'Usuario',
 
     // ── Admin: Settings ──────────────────────────────────────────
-    'admin.settings.nav'        => 'Ajustes',
-    'admin.settings.title'      => 'Ajustes',
-    'admin.settings.slider'     => 'Slider de imágenes del menú',
+    'admin.settings.nav' => 'Ajustes',
+    'admin.settings.title' => 'Ajustes',
+    'admin.settings.slider' => 'Slider de imágenes del menú',
     'admin.settings.slider_label' => 'Activar slider de imágenes en la página de carta',
     'admin.settings.slider_hint' => 'Al activarlo, el héroe de la carta mostrará un slider. Sube imágenes a /img/menu-slider/ (JPG, PNG, WebP).',
-    'admin.settings.images'     => 'Imágenes disponibles',
+    'admin.settings.images' => 'Imágenes disponibles',
     'admin.settings.images_count' => '%d imagen(es) encontrada(s) en /img/menu-slider/',
     'admin.settings.images_none' => 'No se encontraron imágenes. Súbelas a /img/menu-slider/ para usar el slider.',
     'admin.settings.images_hint' => 'Las imágenes se muestran en orden alfabético. Formatos: JPG, PNG, WebP.',
-    'admin.settings.saved'      => 'Ajuste guardado correctamente.',
+    'admin.settings.saved' => 'Ajuste guardado correctamente.',
 
     // ── Menu Slider ──────────────────────────────────────────────
-    'menu.slider.aria'     => 'Slider de imágenes de la carta',
+    'menu.slider.aria' => 'Slider de imágenes de la carta',
     'menu.slider.slide_n' => 'Diapositiva %d de %d',
     'menu.slider.image_alt' => 'Imagen del menú %d',
-    'menu.slider.dots'    => 'Ir a diapositiva',
-    'menu.slider.prev'    => 'Diapositiva anterior',
-    'menu.slider.next'    => 'Siguiente diapositiva',
+    'menu.slider.dots' => 'Ir a diapositiva',
+    'menu.slider.prev' => 'Diapositiva anterior',
+    'menu.slider.next' => 'Siguiente diapositiva',
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [
