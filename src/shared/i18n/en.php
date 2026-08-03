@@ -12,19 +12,19 @@ declare(strict_types=1);
 
 return [
     // ── Global / Layout ──────────────────────────────────────────
-    'site.name'        => 'Pit o Cuixa',
-    'site.tagline'     => 'Rotisserie in Torredembarra',
+    'site.name' => 'Pit o Cuixa',
+    'site.tagline' => 'Rotisserie in Torredembarra',
     'site.description' => 'Artisan rotisserie and grill in Torredembarra. Rotisserie chicken, skewers, burgers and more. Order online and pick up in store.',
-    'nav.home'         => 'Home',
-    'nav.menu'         => 'Menu',
-    'nav.admin'        => 'Admin',
-    'nav.login'        => 'Log in',
-    'nav.logout'       => 'Log out',
-    'lang.switch'      => 'Change language',
-    'lang.code'        => 'en',
-    'nav.faq'          => 'FAQ',
-    'footer.rights'    => 'All rights reserved.',
-    'footer.hours'     => 'Open: Mon-Sun 11:00–23:00',
+    'nav.home' => 'Home',
+    'nav.menu' => 'Menu',
+    'nav.admin' => 'Admin',
+    'nav.login' => 'Log in',
+    'nav.logout' => 'Log out',
+    'lang.switch' => 'Change language',
+    'lang.code' => 'en',
+    'nav.faq' => 'FAQ',
+    'footer.rights' => 'All rights reserved.',
+    'footer.hours' => 'Open: Mon-Sun 11:00–23:00',
 
     // ── Footer Legal ─────────────────────────────────────────────────
     'footer.privacy' => 'Privacy Policy',
@@ -34,7 +34,7 @@ return [
 
     // ── Privacy Page ───────────────────────────────────────────────
     'privacy.title' => 'Privacy Policy',
-    'privacy.desc'  => 'Information about the processing of personal data at Pit o Cuixa.',
+    'privacy.desc' => 'Information about the processing of personal data at Pit o Cuixa.',
 
     // ── Section 0 ────────
     'privacy.intro.paragraph1' => 'Confidentiality and security are fundamental values for LAST SYSTEMS, S.L., and consequently, we are committed to ensuring the User’s privacy at all times and not collecting unnecessary information. Below, we provide you with all the necessary information regarding our Privacy Policy concerning the personal data we collect, explaining:',
@@ -58,42 +58,42 @@ return [
     'privacy.data.paragraph2' => 'In summary, this Privacy Policy covers all personal data collected and used by LAST SYSTEMS, S.L. through the Platform.',
     'privacy.data.paragraph3' => 'By using this Platform, you (the user) guarantee that the Personal Data provided is true and accurate, and you undertake to notify us of any changes or modifications. Any loss or damage caused to the website, the Data Controller or third parties as a result of providing incorrect, inaccurate or incomplete information in the forms shall be the sole responsibility of the user. If LAST SYSTEMS, S.L. considers that there are reasonable grounds to doubt the truthfulness, accuracy or completeness of the data provided, it may deny you access to and use of the website and/or any of its content and/or services, both now and in the future.',
     'privacy.data.paragraph4' => 'We may collect or receive your data through our website or forms, among other means. In some cases, you provide your Personal Data directly (for example, when you contact us), while in other cases, we collect it ourselves (for example, through cookies to understand how you use our website).',
-    
+
     // ── Section 3 ────────
     'privacy.purpose.title' => 'Purposes, Legal Basis and Retention of Data Submitted Through:',
-    
-        // -- Formulario de Contacto ---
-        'privacy.purpose.contact_form.title' => 'Contact Form',
-        'privacy.purpose.contact_form.paragraph1' => 'Personal data collected: First name, surname, email address and telephone number.',
-        'privacy.purpose.contact_form.paragraph2' => 'Purpose: To provide you with a way to contact us and respond to your requests for information, including by electronic means (email, SMS, WhatsApp).',
-        'privacy.purpose.contact_form.paragraph3' => 'Legal basis: Your explicit consent and the legitimate interest of LAST SYSTEMS, S.L.. Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
 
-        // -- Chat en Vivo ---
-        'privacy.purpose.live_chat.title' => 'Live Chat',
-        'privacy.purpose.live_chat.paragraph1' => 'You have access to an internal instant messaging system that allows you to communicate directly with us. In these cases, you are free to share any type of information, including personal data, for which we will act as the Data Controller where necessary.',
-        'privacy.purpose.live_chat.paragraph2' => 'Purpose: To respond to your request for information.',
-        'privacy.purpose.live_chat.paragraph3' => 'Legal basis: Your consent when requesting information through the instant messaging service.',
-        'privacy.purpose.live_chat.paragraph4' => 'Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
-        
-        // -- Formulario Call Back ---
-        'privacy.purpose.callback.title' => "Call Back Form",
-        'privacy.purpose.callback.paragraph1' => 'If you cannot find the information you need on our website, you can complete a form with your telephone number so that one of our agents can call you back free of charge.',
-        'privacy.purpose.callback.paragraph2' => 'Personal data collected: Telephone number.',
-        'privacy.purpose.callback.paragraph3' => 'Purpose: To provide you with a way to contact us and respond to your request for information.',
-        'privacy.purpose.callback.paragraph4' => 'Legal basis: Your consent when providing us with your telephone number so that we may contact you, and the legitimate interest of LAST SYSTEMS, S.L.. Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
-        
-        // -- Envío de Correos Electrónicos ---
-        'privacy.purpose.email.title' => 'Email Communications',
-        'privacy.purpose.email.paragraph1' => 'Purpose: To respond to your requests for information, handle your enquiries and answer your questions. If we receive your Curriculum Vitae (CV), your personal and professional data may be included in our databases to allow you to participate in our current and future recruitment processes.',
-        'privacy.purpose.email.paragraph2' => 'Legal basis: The user’s consent when requesting information by email or sending us their CV to participate in our recruitment processes.',
-        'privacy.purpose.email.paragraph3' => 'Retention: Once your request submitted by email has been resolved, provided that no further processing has been initiated. If we receive your CV, your data may be retained for up to one year for future recruitment processes.',
-        
-        // -- Obligación de proporcionarnos los datos ---
-        'privacy.purpose.obligation.title' => 'Obligation to Provide Your Personal Data and Consequences of Not Doing So.',
-        'privacy.purpose.obligation.paragraph1' => 'The provision of personal data requires a minimum age of 18 years or, where applicable, sufficient legal capacity to enter into a contract.',
-        'privacy.purpose.obligation.paragraph2' => 'The personal data requested is necessary to process your requests and/or provide the services you may contract. Therefore, if you do not provide it, we will not be able to properly assist you or provide the requested service.',
-        'privacy.purpose.obligation.paragraph3' => 'In any case, we reserve the right to decide whether or not to include your personal data and any other information in our databases.',
-    
+    // -- Formulario de Contacto ---
+    'privacy.purpose.contact_form.title' => 'Contact Form',
+    'privacy.purpose.contact_form.paragraph1' => 'Personal data collected: First name, surname, email address and telephone number.',
+    'privacy.purpose.contact_form.paragraph2' => 'Purpose: To provide you with a way to contact us and respond to your requests for information, including by electronic means (email, SMS, WhatsApp).',
+    'privacy.purpose.contact_form.paragraph3' => 'Legal basis: Your explicit consent and the legitimate interest of LAST SYSTEMS, S.L.. Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
+
+    // -- Chat en Vivo ---
+    'privacy.purpose.live_chat.title' => 'Live Chat',
+    'privacy.purpose.live_chat.paragraph1' => 'You have access to an internal instant messaging system that allows you to communicate directly with us. In these cases, you are free to share any type of information, including personal data, for which we will act as the Data Controller where necessary.',
+    'privacy.purpose.live_chat.paragraph2' => 'Purpose: To respond to your request for information.',
+    'privacy.purpose.live_chat.paragraph3' => 'Legal basis: Your consent when requesting information through the instant messaging service.',
+    'privacy.purpose.live_chat.paragraph4' => 'Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
+
+    // -- Formulario Call Back ---
+    'privacy.purpose.callback.title' => "Call Back Form",
+    'privacy.purpose.callback.paragraph1' => 'If you cannot find the information you need on our website, you can complete a form with your telephone number so that one of our agents can call you back free of charge.',
+    'privacy.purpose.callback.paragraph2' => 'Personal data collected: Telephone number.',
+    'privacy.purpose.callback.paragraph3' => 'Purpose: To provide you with a way to contact us and respond to your request for information.',
+    'privacy.purpose.callback.paragraph4' => 'Legal basis: Your consent when providing us with your telephone number so that we may contact you, and the legitimate interest of LAST SYSTEMS, S.L.. Retention: Once your request has been answered or resolved, provided that no further processing has been initiated.',
+
+    // -- Envío de Correos Electrónicos ---
+    'privacy.purpose.email.title' => 'Email Communications',
+    'privacy.purpose.email.paragraph1' => 'Purpose: To respond to your requests for information, handle your enquiries and answer your questions. If we receive your Curriculum Vitae (CV), your personal and professional data may be included in our databases to allow you to participate in our current and future recruitment processes.',
+    'privacy.purpose.email.paragraph2' => 'Legal basis: The user’s consent when requesting information by email or sending us their CV to participate in our recruitment processes.',
+    'privacy.purpose.email.paragraph3' => 'Retention: Once your request submitted by email has been resolved, provided that no further processing has been initiated. If we receive your CV, your data may be retained for up to one year for future recruitment processes.',
+
+    // -- Obligación de proporcionarnos los datos ---
+    'privacy.purpose.obligation.title' => 'Obligation to Provide Your Personal Data and Consequences of Not Doing So.',
+    'privacy.purpose.obligation.paragraph1' => 'The provision of personal data requires a minimum age of 18 years or, where applicable, sufficient legal capacity to enter into a contract.',
+    'privacy.purpose.obligation.paragraph2' => 'The personal data requested is necessary to process your requests and/or provide the services you may contract. Therefore, if you do not provide it, we will not be able to properly assist you or provide the requested service.',
+    'privacy.purpose.obligation.paragraph3' => 'In any case, we reserve the right to decide whether or not to include your personal data and any other information in our databases.',
+
     // ── Section 4 ────────
     'privacy.recipients.title' => 'Recipients of Your Personal Data',
     'privacy.recipients.paragraph1' => 'The Personal Data we collect from you may be processed by members of the LAST SYSTEMS, S.L. team, based on their legitimate interest, in order to carry out administrative tasks.',
@@ -366,9 +366,9 @@ return [
 
 
     // ── FAQ Page ─────────────────────────────────────────────────
-    'faq.title'      => 'Frequently Asked Questions',
-    'faq.desc'       => 'Answers to the most common questions about our food, home delivery, and rotisserie chicken orders in Torredembarra.',
-    'faq.items'      => [
+    'faq.title' => 'Frequently Asked Questions',
+    'faq.desc' => 'Answers to the most common questions about our food, home delivery, and rotisserie chicken orders in Torredembarra.',
+    'faq.items' => [
         [
             'q' => 'What does the rotisserie chicken include and what menu options are available?',
             'a' => 'Our rotisserie chicken (pollo a l\'ast) is served whole or half, always accompanied by our homemade aioli. We offer combo menus with homemade French fries, salads (Caesar, mixed, Russian salad), roasted meat cannelloni, or croquettes. You can view updated options and prices in our online menu.',
@@ -408,106 +408,106 @@ return [
     ],
 
     // ── Home Page ────────────────────────────────────────────────
-    'home.title'       => 'Pit o Cuixa — Rotisserie in Torredembarra',
-    'home.desc'        => 'The best rotisserie and grill in Torredembarra. Rotisserie chicken, skewers, burgers and homemade dishes.',
-    'home.hero.title'  => 'The best rotisserie chicken in Torredembarra',
+    'home.title' => 'Pit o Cuixa — Rotisserie in Torredembarra',
+    'home.desc' => 'The best rotisserie and grill in Torredembarra. Rotisserie chicken, skewers, burgers and homemade dishes.',
+    'home.hero.title' => 'The best rotisserie chicken in Torredembarra',
     'home.hero.subtitle' => 'Since 1998 cooking with love for you and your family.',
-    'home.hero.cta'    => 'View menu',
-    'home.featured'    => 'Most ordered',
+    'home.hero.cta' => 'View menu',
+    'home.featured' => 'Most ordered',
     'home.featured.subtitle' => 'Our customers know best: these are the must-haves.',
-    'home.info.title'  => 'Visit us',
+    'home.info.title' => 'Visit us',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
-    'home.info.phone'  => 'Tel. +34 977 64 20 10',
-    'home.info.hours'  => 'Open every day from 11:00 to 23:00',
+    'home.info.phone' => 'Tel. +34 977 64 20 10',
+    'home.info.hours' => 'Open every day from 11:00 to 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
-    'home.landing.title'     => 'Pit o Cuixa — Rotisserie in Torredembarra',
-    'home.landing.aria'      => 'What are you craving?',
-    'home.landing.pollos'    => 'Rotisserie Chicken',
+    'home.landing.title' => 'Pit o Cuixa — Rotisserie in Torredembarra',
+    'home.landing.aria' => 'What are you craving?',
+    'home.landing.pollos' => 'Rotisserie Chicken',
     'home.landing.combinados' => 'Set Menus',
-    'home.landing.picapica'  => 'Nibbles',
-    'home.onboarding.in_local'  => 'Eat-in',
-    'home.onboarding.delivery'  => 'Delivery',
+    'home.landing.picapica' => 'Nibbles',
+    'home.onboarding.in_local' => 'Eat-in',
+    'home.onboarding.delivery' => 'Delivery',
     'home.onboarding.drag_hint' => 'Drag your option to the store to start',
 
     // ── Menu Page ────────────────────────────────────────────────
-    'menu.title'       => 'Menu — Pit o Cuixa',
-    'menu.desc'        => 'Explore our menu: rotisserie chicken, skewers, burgers, salads and more.',
-    'menu.heading'     => 'Our menu',
-    'menu.subtitle'    => 'Everything made to order with top-quality ingredients.',
-    'menu.filter.all'  => 'All',
+    'menu.title' => 'Menu — Pit o Cuixa',
+    'menu.desc' => 'Explore our menu: rotisserie chicken, skewers, burgers, salads and more.',
+    'menu.heading' => 'Our menu',
+    'menu.subtitle' => 'Everything made to order with top-quality ingredients.',
+    'menu.filter.all' => 'All',
     'menu.filter.popular' => '🔥 Best Sellers',
-    'menu.order.cta'   => 'Order at last.shop',
-    'menu.price.from'  => 'From %s',
+    'menu.order.cta' => 'Order now',
+    'menu.price.from' => 'From %s',
     'menu.no_products' => 'No products available in this category.',
     'menu.search.label' => 'Search products',
     'menu.search.placeholder' => 'Search products...',
     'menu.search.no_results' => 'No products found',
-    'menu.map.title'       => 'Home Delivery Area',
-    'menu.map.subtitle'    => 'Freshly prepared and delivered piping hot to your doorstep.',
+    'menu.map.title' => 'Home Delivery Area',
+    'menu.map.subtitle' => 'Freshly prepared and delivered piping hot to your doorstep.',
     'menu.map.towns_label' => 'Direct delivery coverage:',
     'menu.map.delivery_note' => '🛵 Delivery available in Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès, and La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
-    'product.price'    => '€%s',
+    'product.price' => '€%s',
     'product.featured' => 'Featured',
-    'product.view'     => 'View',
+    'product.view' => 'View',
 
     // ── Errors ───────────────────────────────────────────────────
-    'error.404'        => 'Page not found',
-    'error.404.desc'   => 'The page you are looking for does not exist.',
-    'error.404.title'  => 'Page not found',
+    'error.404' => 'Page not found',
+    'error.404.desc' => 'The page you are looking for does not exist.',
+    'error.404.title' => 'Page not found',
     'error.404.message' => 'Sorry, the page you are looking for does not exist or has been moved.',
-    'error.404.cta'    => 'Back to home',
-    'error.500'        => 'Server error',
-    'error.500.desc'   => 'Something went wrong. Please try again later.',
-    'error.401'        => 'Unauthorized',
-    'error.401.desc'   => 'You need to log in to access this page.',
+    'error.404.cta' => 'Back to home',
+    'error.500' => 'Server error',
+    'error.500.desc' => 'Something went wrong. Please try again later.',
+    'error.401' => 'Unauthorized',
+    'error.401.desc' => 'You need to log in to access this page.',
 
     // ── Admin ────────────────────────────────────────────────────
-    'admin.title'            => 'Administration',
-    'admin.login.title'      => 'Log in',
-    'admin.login.error'      => 'Invalid username or password',
-    'admin.logout.success'   => 'Logged out successfully',
-    'admin.dashboard'        => 'Dashboard',
-    'admin.products'         => 'Products',
-    'admin.categories'       => 'Categories',
-    'admin.product.new'      => 'New Product',
-    'admin.product.edit'     => 'Edit Product',
-    'admin.product.delete'   => 'Delete',
-    'admin.category.new'     => 'New Category',
-    'admin.category.edit'    => 'Edit Category',
-    'admin.category.delete'  => 'Delete',
-    'admin.save'             => 'Save',
-    'admin.cancel'           => 'Cancel',
-    'admin.update'           => 'Update',
-    'admin.no_products'      => 'No products found.',
-    'admin.no_categories'    => 'No categories found.',
-    'admin.import'           => 'Import CSV',
-    'admin.export'           => 'Export CSV',
-    'admin.view_site'       => 'View site',
-    'admin.password'        => 'Password',
-    'admin.username'        => 'Username',
+    'admin.title' => 'Administration',
+    'admin.login.title' => 'Log in',
+    'admin.login.error' => 'Invalid username or password',
+    'admin.logout.success' => 'Logged out successfully',
+    'admin.dashboard' => 'Dashboard',
+    'admin.products' => 'Products',
+    'admin.categories' => 'Categories',
+    'admin.product.new' => 'New Product',
+    'admin.product.edit' => 'Edit Product',
+    'admin.product.delete' => 'Delete',
+    'admin.category.new' => 'New Category',
+    'admin.category.edit' => 'Edit Category',
+    'admin.category.delete' => 'Delete',
+    'admin.save' => 'Save',
+    'admin.cancel' => 'Cancel',
+    'admin.update' => 'Update',
+    'admin.no_products' => 'No products found.',
+    'admin.no_categories' => 'No categories found.',
+    'admin.import' => 'Import CSV',
+    'admin.export' => 'Export CSV',
+    'admin.view_site' => 'View site',
+    'admin.password' => 'Password',
+    'admin.username' => 'Username',
 
     // ── Admin: Settings ──────────────────────────────────────────
-    'admin.settings.nav'        => 'Settings',
-    'admin.settings.title'      => 'Settings',
-    'admin.settings.slider'     => 'Menu Image Slider',
+    'admin.settings.nav' => 'Settings',
+    'admin.settings.title' => 'Settings',
+    'admin.settings.slider' => 'Menu Image Slider',
     'admin.settings.slider_label' => 'Enable image slider on the menu page',
     'admin.settings.slider_hint' => 'When enabled, the menu page hero will show an image slider. Upload images to /img/menu-slider/ (JPG, PNG, WebP).',
-    'admin.settings.images'     => 'Available images',
+    'admin.settings.images' => 'Available images',
     'admin.settings.images_count' => '%d image(s) found in /img/menu-slider/',
     'admin.settings.images_none' => 'No images found. Upload to /img/menu-slider/ to use the slider.',
     'admin.settings.images_hint' => 'Images are shown in alphabetical order. Supported formats: JPG, PNG, WebP.',
-    'admin.settings.saved'      => 'Setting saved successfully.',
+    'admin.settings.saved' => 'Setting saved successfully.',
 
     // ── Menu Slider ──────────────────────────────────────────────
-    'menu.slider.aria'     => 'Menu image slider',
+    'menu.slider.aria' => 'Menu image slider',
     'menu.slider.slide_n' => 'Slide %d of %d',
     'menu.slider.image_alt' => 'Menu image %d',
-    'menu.slider.dots'    => 'Go to slide',
-    'menu.slider.prev'    => 'Previous slide',
-    'menu.slider.next'    => 'Next slide',
+    'menu.slider.dots' => 'Go to slide',
+    'menu.slider.prev' => 'Previous slide',
+    'menu.slider.next' => 'Next slide',
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [

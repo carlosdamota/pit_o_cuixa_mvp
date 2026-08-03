@@ -12,19 +12,19 @@ declare(strict_types=1);
 
 return [
     // ── Global / Layout ──────────────────────────────────────────
-    'site.name'        => 'Pit o Cuixa',
-    'site.tagline'     => 'Pollería i rostería a Torredembarra',
+    'site.name' => 'Pit o Cuixa',
+    'site.tagline' => 'Pollería i rostería a Torredembarra',
     'site.description' => 'Pollería i rostería artesana a Torredembarra. Pollo a l\'ast, broquetes, hamburgueses i més. Demana online i recull a la botiga.',
-    'nav.home'         => 'Inici',
-    'nav.menu'         => 'Carta',
-    'nav.admin'        => 'Admin',
-    'nav.login'        => 'Iniciar sessió',
-    'nav.logout'       => 'Tancar sessió',
-    'lang.switch'      => 'Canviar idioma',
-    'lang.code'        => 'ca',
-    'nav.faq'          => 'FAQ',
-    'footer.rights'    => 'Tots els drets reservats.',
-    'footer.hours'     => 'Horari: Dll-Dg 11:00–23:00',
+    'nav.home' => 'Inici',
+    'nav.menu' => 'Carta',
+    'nav.admin' => 'Admin',
+    'nav.login' => 'Iniciar sessió',
+    'nav.logout' => 'Tancar sessió',
+    'lang.switch' => 'Canviar idioma',
+    'lang.code' => 'ca',
+    'nav.faq' => 'FAQ',
+    'footer.rights' => 'Tots els drets reservats.',
+    'footer.hours' => 'Horari: Dll-Dg 11:00–23:00',
 
     // ── Footer Legal ─────────────────────────────────────────────────
     'footer.privacy' => 'Política de Privacitat',
@@ -34,7 +34,7 @@ return [
 
     // ── Privacy Page ───────────────────────────────────────────────
     'privacy.title' => 'Política de Privacitat',
-    'privacy.desc'  => 'Informació sobre el tractament de dades personals a Pit o Cuixa.',
+    'privacy.desc' => 'Informació sobre el tractament de dades personals a Pit o Cuixa.',
 
     // ── Section 0 ────────
     'privacy.intro.paragraph1' => 'La confidencialitat i la seguretat són valors fonamentals per a LAST SYSTEMS, S.L. i, en conseqüència, ens comprometem a garantir la privacitat de l’Usuari en tot moment i a no recopilar informació innecessària. A continuació, et proporcionem tota la informació necessària sobre la nostra Política de Privacitat respecte a les dades personals que recopilem, explicant:',
@@ -58,42 +58,42 @@ return [
     'privacy.data.paragraph2' => 'En resum, aquesta Política de Privacitat cobreix totes les dades personals recopilades i utilitzades per LAST SYSTEMS, S.L. a través de la Plataforma.',
     'privacy.data.paragraph3' => 'Per la present, l’usuari (tu) garanteix que les Dades Personals proporcionades són veritables i exactes, i es compromet a notificar qualsevol canvi o modificació d’aquestes. Qualsevol pèrdua o dany causat al lloc web, al Responsable del Tractament o a tercers per proporcionar informació errònia, inexacta o incompleta als formularis serà responsabilitat exclusiva de l’usuari. Si LAST SYSTEMS, S.L. considera que existeixen motius raonables per dubtar de la veracitat, exactitud o integritat de les dades proporcionades, pot denegar-te l’accés i l’ús del lloc web i/o de qualsevol dels seus continguts i/o serveis, en el present o en el futur.',
     'privacy.data.paragraph4' => 'Podem recopilar o rebre les teves dades a través del nostre lloc web o formularis, entre d’altres. En alguns casos, proporciones les teves Dades Personals directament (per exemple, quan et poses en contacte amb nosaltres), i en altres casos, les recopilem nosaltres (per exemple, mitjançant galetes (cookies) per entendre com utilitzes el nostre lloc web).',
-    
+
     // ── Section 3 ────────
     'privacy.purpose.title' => 'Finalitats, legitimació i conservació de les dades enviades a través de:',
-    
-        // -- Formulario de Contacto ---
-        'privacy.purpose.contact_form.title' => 'Formulari de Contacte',
-        'privacy.purpose.contact_form.paragraph1' => 'Dades personals recopilades: Nom, cognoms, correu electrònic i número de telèfon.',
-        'privacy.purpose.contact_form.paragraph2' => 'Finalitats: Proporcionar-te una manera de contactar amb nosaltres i respondre a les teves sol·licituds d’informació, fins i tot per mitjans electrònics (correu electrònic, SMS, WhatsApp).',
-        'privacy.purpose.contact_form.paragraph3' => 'Legitimació: El teu consentiment exprés i l’interès legítim de LAST SYSTEMS, S.L.. Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
 
-        // -- Chat en Vivo ---
-        'privacy.purpose.live_chat.title' => 'Xat en Viu',
-        'privacy.purpose.live_chat.paragraph1' => 'Tens accés a un sistema de missatgeria instantània interna per comunicar-te directament amb nosaltres. En aquests casos, ets lliure de compartir qualsevol tipus d’informació, incloses dades personals, de les quals serem el Responsable del Tractament si és necessari.',
-        'privacy.purpose.live_chat.paragraph2' => 'Finalitats: Respondre a la teva sol·licitud d’informació.',
-        'privacy.purpose.live_chat.paragraph3' => 'Legitimació: El teu consentiment en sol·licitar-nos informació a través del servei de missatgeria instantània.',
-        'privacy.purpose.live_chat.paragraph4' => 'Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
-        
-        // -- Formulario Call Back ---
-        'privacy.purpose.callback.title' => "Formulari de 'Call Back'",
-        'privacy.purpose.callback.paragraph1' => 'Si no trobes la informació que necessites al nostre lloc web, pots omplir un formulari amb el teu número de telèfon perquè un dels nostres agents et retorni la trucada de manera gratuïta.',
-        'privacy.purpose.callback.paragraph2' => 'Dades personals recopilades: Número de telèfon.',
-        'privacy.purpose.callback.paragraph3' => 'Finalitats: Proporcionar-te una manera de contactar amb nosaltres i respondre a la teva sol·licitud d’informació.',
-        'privacy.purpose.callback.paragraph4' => 'Legitimació: El teu consentiment en proporcionar-nos el teu número de telèfon perquè puguem contactar amb tu, i l’interès legítim de LAST SYSTEMS, S.L.. Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
-        
-        // -- Envío de Correos Electrónicos ---
-        'privacy.purpose.email.title' => 'Enviament de Correus Electrònics',
-        'privacy.purpose.email.paragraph1' => 'Finalitats: Respondre a les teves sol·licituds d’informació, atendre les teves consultes i respondre les teves preguntes o dubtes. Si rebem el teu Currículum Vitae (CV), les teves dades personals i curriculars poden ser incloses a les nostres bases de dades per participar en els nostres processos de selecció presents i futurs.',
-        'privacy.purpose.email.paragraph2' => 'Legitimació: El consentiment de l’usuari en sol·licitar informació a través del correu electrònic o enviar-nos el seu CV per participar en els nostres processos de selecció.',
-        'privacy.purpose.email.paragraph3' => 'Conservació: Un cop la teva sol·licitud per correu electrònic hagi estat resolta, si no s’ha generat un nou tractament. Si rebem el teu CV, les teves dades podran conservar-se fins a un any per a futurs processos de selecció.',
-        
-        // -- Obligación de proporcionarnos los datos ---
-        'privacy.purpose.obligation.title' => 'Obligació de proporcionar-nos les teves dades personals i conseqüències de no fer-ho.',
-        'privacy.purpose.obligation.paragraph1' => 'El subministrament de dades personals requereix una edat mínima de 18 anys o, si escau, capacitat legal suficient per contractar.',
-        'privacy.purpose.obligation.paragraph2' => 'Les dades personals sol·licitades són necessàries per gestionar les teves sol·licituds i/o oferir-te els serveis que puguis contractar, per la qual cosa, si no les proporciones, no et podrem atendre correctament ni prestar el servei sol·licitat.',
-        'privacy.purpose.obligation.paragraph3' => 'En qualsevol cas, ens reservem el dret de decidir si incloem o no les teves dades personals i la resta d’informació a les nostres bases de dades.',
-    
+    // -- Formulario de Contacto ---
+    'privacy.purpose.contact_form.title' => 'Formulari de Contacte',
+    'privacy.purpose.contact_form.paragraph1' => 'Dades personals recopilades: Nom, cognoms, correu electrònic i número de telèfon.',
+    'privacy.purpose.contact_form.paragraph2' => 'Finalitats: Proporcionar-te una manera de contactar amb nosaltres i respondre a les teves sol·licituds d’informació, fins i tot per mitjans electrònics (correu electrònic, SMS, WhatsApp).',
+    'privacy.purpose.contact_form.paragraph3' => 'Legitimació: El teu consentiment exprés i l’interès legítim de LAST SYSTEMS, S.L.. Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
+
+    // -- Chat en Vivo ---
+    'privacy.purpose.live_chat.title' => 'Xat en Viu',
+    'privacy.purpose.live_chat.paragraph1' => 'Tens accés a un sistema de missatgeria instantània interna per comunicar-te directament amb nosaltres. En aquests casos, ets lliure de compartir qualsevol tipus d’informació, incloses dades personals, de les quals serem el Responsable del Tractament si és necessari.',
+    'privacy.purpose.live_chat.paragraph2' => 'Finalitats: Respondre a la teva sol·licitud d’informació.',
+    'privacy.purpose.live_chat.paragraph3' => 'Legitimació: El teu consentiment en sol·licitar-nos informació a través del servei de missatgeria instantània.',
+    'privacy.purpose.live_chat.paragraph4' => 'Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
+
+    // -- Formulario Call Back ---
+    'privacy.purpose.callback.title' => "Formulari de 'Call Back'",
+    'privacy.purpose.callback.paragraph1' => 'Si no trobes la informació que necessites al nostre lloc web, pots omplir un formulari amb el teu número de telèfon perquè un dels nostres agents et retorni la trucada de manera gratuïta.',
+    'privacy.purpose.callback.paragraph2' => 'Dades personals recopilades: Número de telèfon.',
+    'privacy.purpose.callback.paragraph3' => 'Finalitats: Proporcionar-te una manera de contactar amb nosaltres i respondre a la teva sol·licitud d’informació.',
+    'privacy.purpose.callback.paragraph4' => 'Legitimació: El teu consentiment en proporcionar-nos el teu número de telèfon perquè puguem contactar amb tu, i l’interès legítim de LAST SYSTEMS, S.L.. Conservació: Un cop la teva sol·licitud hagi estat resposta o resolta, si no s’ha generat un nou tractament.',
+
+    // -- Envío de Correos Electrónicos ---
+    'privacy.purpose.email.title' => 'Enviament de Correus Electrònics',
+    'privacy.purpose.email.paragraph1' => 'Finalitats: Respondre a les teves sol·licituds d’informació, atendre les teves consultes i respondre les teves preguntes o dubtes. Si rebem el teu Currículum Vitae (CV), les teves dades personals i curriculars poden ser incloses a les nostres bases de dades per participar en els nostres processos de selecció presents i futurs.',
+    'privacy.purpose.email.paragraph2' => 'Legitimació: El consentiment de l’usuari en sol·licitar informació a través del correu electrònic o enviar-nos el seu CV per participar en els nostres processos de selecció.',
+    'privacy.purpose.email.paragraph3' => 'Conservació: Un cop la teva sol·licitud per correu electrònic hagi estat resolta, si no s’ha generat un nou tractament. Si rebem el teu CV, les teves dades podran conservar-se fins a un any per a futurs processos de selecció.',
+
+    // -- Obligación de proporcionarnos los datos ---
+    'privacy.purpose.obligation.title' => 'Obligació de proporcionar-nos les teves dades personals i conseqüències de no fer-ho.',
+    'privacy.purpose.obligation.paragraph1' => 'El subministrament de dades personals requereix una edat mínima de 18 anys o, si escau, capacitat legal suficient per contractar.',
+    'privacy.purpose.obligation.paragraph2' => 'Les dades personals sol·licitades són necessàries per gestionar les teves sol·licituds i/o oferir-te els serveis que puguis contractar, per la qual cosa, si no les proporciones, no et podrem atendre correctament ni prestar el servei sol·licitat.',
+    'privacy.purpose.obligation.paragraph3' => 'En qualsevol cas, ens reservem el dret de decidir si incloem o no les teves dades personals i la resta d’informació a les nostres bases de dades.',
+
     // ── Section 4 ────────
     'privacy.recipients.title' => 'Destinataris de les teves Dades',
     'privacy.recipients.paragraph1' => 'Les Dades Personals que recopilem de tu poden ser tractades per membres de l’equip de LAST SYSTEMS, S.L., en funció del seu interès legítim, per dur a terme tasques administratives.',
@@ -170,7 +170,7 @@ return [
 
     // ── Terms Page ────────
     'terms.title' => 'Termes i Condicions',
-'terms.desc' => 'Consulta les condicions generals d’ús i contractació que regulen l’accés i la utilització de la plataforma Pit o Cuixa.',
+    'terms.desc' => 'Consulta les condicions generals d’ús i contractació que regulen l’accés i la utilització de la plataforma Pit o Cuixa.',
 
     // ── Section 0 ────────
     'terms.intro.title' => 'Introducció',
@@ -364,9 +364,9 @@ return [
     'terms.dispute_resolution.paragraph1' => 'Els conflictes o controvèrsies que tinguin lloc fora de la Unió Europea quedaran subjectes a la seva resolució per part de la Cort Espanyola d’Arbitratge de la Cambra de Comerç.',
 
     // ── FAQ Page ─────────────────────────────────────────────────
-    'faq.title'      => 'Preguntes freqüents',
-    'faq.desc'       => 'Respostes a les preguntes més comunes sobre la nostra cuina, servei a domicili i encàrrec de pollastres a l\'ast a Torredembarra.',
-    'faq.items'      => [
+    'faq.title' => 'Preguntes freqüents',
+    'faq.desc' => 'Respostes a les preguntes més comunes sobre la nostra cuina, servei a domicili i encàrrec de pollastres a l\'ast a Torredembarra.',
+    'faq.items' => [
         [
             'q' => 'Què inclou el pollastre a l\'ast i quines opcions de menú teniu?',
             'a' => 'El pollastre a l\'ast es serveix sencer o mig pollastre, sempre acompanyat del nostre allioli casolà. Disposem de menús combinats amb patates fregides casolanes, amanides (Cèsar, mixta, russa), canalons de rostit o croquetes. Pots consultar les opcions i preus actualitzats a la nostra carta online.',
@@ -406,106 +406,106 @@ return [
     ],
 
     // ── Home Page ────────────────────────────────────────────────
-    'home.title'       => 'Pit o Cuixa — Pollería a Torredembarra',
-    'home.desc'        => 'La millor pollería i rostería de Torredembarra. Pollo a l\'ast, broquetes, hamburgueses i plats casolans.',
-    'home.hero.title'  => 'El millor pollo a l\'ast de Torredembarra',
+    'home.title' => 'Pit o Cuixa — Pollería a Torredembarra',
+    'home.desc' => 'La millor pollería i rostería de Torredembarra. Pollo a l\'ast, broquetes, hamburgueses i plats casolans.',
+    'home.hero.title' => 'El millor pollo a l\'ast de Torredembarra',
     'home.hero.subtitle' => 'Des de 1998 cuinant amb amor per a tu i els teus.',
-    'home.hero.cta'    => 'Veure la carta',
-    'home.featured'    => 'Més demanats',
+    'home.hero.cta' => 'Veure la carta',
+    'home.featured' => 'Més demanats',
     'home.featured.subtitle' => 'Els nostres clients ho saben: aquests són els imprescindibles.',
-    'home.info.title'  => 'Visita\'ns',
+    'home.info.title' => 'Visita\'ns',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
-    'home.info.phone'  => 'Tel. +34 977 64 20 10',
-    'home.info.hours'  => 'Obert cada dia d\'11:00 a 23:00',
+    'home.info.phone' => 'Tel. +34 977 64 20 10',
+    'home.info.hours' => 'Obert cada dia d\'11:00 a 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
-    'home.landing.title'     => 'Pit o Cuixa — Pollería a Torredembarra',
-    'home.landing.aria'      => 'Què et ve de gust?',
-    'home.landing.pollos'    => 'Pollos a l\'ast',
+    'home.landing.title' => 'Pit o Cuixa — Pollería a Torredembarra',
+    'home.landing.aria' => 'Què et ve de gust?',
+    'home.landing.pollos' => 'Pollos a l\'ast',
     'home.landing.combinados' => 'Plats combinats',
-    'home.landing.picapica'  => 'Pica-pica',
-    'home.onboarding.in_local'  => 'Al local',
-    'home.onboarding.delivery'  => 'A domicili',
+    'home.landing.picapica' => 'Pica-pica',
+    'home.onboarding.in_local' => 'Al local',
+    'home.onboarding.delivery' => 'A domicili',
     'home.onboarding.drag_hint' => 'Arrossega la teva opció al local per començar',
 
     // ── Menu Page ────────────────────────────────────────────────
-    'menu.title'       => 'Carta — Pit o Cuixa',
-    'menu.desc'        => 'Explora la nostra carta: pollo a l\'ast, broquetes, hamburgueses, amanides i molt més.',
-    'menu.heading'     => 'La nostra carta',
-    'menu.subtitle'    => 'Tot fet al moment amb ingredients de primera qualitat.',
-    'menu.filter.all'  => 'Tot',
+    'menu.title' => 'Carta — Pit o Cuixa',
+    'menu.desc' => 'Explora la nostra carta: pollo a l\'ast, broquetes, hamburgueses, amanides i molt més.',
+    'menu.heading' => 'La nostra carta',
+    'menu.subtitle' => 'Tot fet al moment amb ingredients de primera qualitat.',
+    'menu.filter.all' => 'Tot',
     'menu.filter.popular' => '🔥 Més venuts',
-    'menu.order.cta'   => 'Demanar a last.shop',
-    'menu.price.from'  => 'Des de %s',
+    'menu.order.cta' => 'Demanar ara',
+    'menu.price.from' => 'Des de %s',
     'menu.no_products' => 'No hi ha productes disponibles en aquesta categoria.',
     'menu.search.label' => 'Cerca productes',
     'menu.search.placeholder' => 'Cerca productes...',
     'menu.search.no_results' => 'No s\'han trobat productes',
-    'menu.map.title'       => 'Zona de repartiment a domicili',
-    'menu.map.subtitle'    => 'Arribem acabats de fer i ben calents a la teva porta.',
+    'menu.map.title' => 'Zona de repartiment a domicili',
+    'menu.map.subtitle' => 'Arribem acabats de fer i ben calents a la teva porta.',
     'menu.map.towns_label' => 'Cobertura directa:',
     'menu.map.delivery_note' => '🛵 Repartiment disponible a Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès i La Riera de Gaià.',
 
     // ── Product Labels ──────────────────────────────────────────
-    'product.price'    => '%s €',
+    'product.price' => '%s €',
     'product.featured' => 'Destacat',
-    'product.view'     => 'Veure',
+    'product.view' => 'Veure',
 
     // ── Errors ───────────────────────────────────────────────────
-    'error.404'        => 'Pàgina no trobada',
-    'error.404.desc'   => 'La pàgina que busques no existeix.',
-    'error.404.title'  => 'Pàgina no trobada',
+    'error.404' => 'Pàgina no trobada',
+    'error.404.desc' => 'La pàgina que busques no existeix.',
+    'error.404.title' => 'Pàgina no trobada',
     'error.404.message' => 'Ho sentim, la pàgina que busques no existeix o ha estat moguda.',
-    'error.404.cta'    => 'Tornar a l\'inici',
-    'error.500'        => 'Error del servidor',
-    'error.500.desc'   => 'Alguna cosa ha anat malament. Torna-ho a intentar més tard.',
-    'error.401'        => 'No autoritzat',
-    'error.401.desc'   => 'Has d\'iniciar sessió per accedir a aquesta pàgina.',
+    'error.404.cta' => 'Tornar a l\'inici',
+    'error.500' => 'Error del servidor',
+    'error.500.desc' => 'Alguna cosa ha anat malament. Torna-ho a intentar més tard.',
+    'error.401' => 'No autoritzat',
+    'error.401.desc' => 'Has d\'iniciar sessió per accedir a aquesta pàgina.',
 
     // ── Admin ────────────────────────────────────────────────────
-    'admin.title'            => 'Administració',
-    'admin.login.title'      => 'Inici de sessió',
-    'admin.login.error'      => 'Usuari o contrasenya incorrectes',
-    'admin.logout.success'   => 'Sessió tancada',
-    'admin.dashboard'        => 'Panell',
-    'admin.products'         => 'Productes',
-    'admin.categories'       => 'Categories',
-    'admin.product.new'      => 'Nou Producte',
-    'admin.product.edit'     => 'Editar Producte',
-    'admin.product.delete'   => 'Eliminar',
-    'admin.category.new'     => 'Nova Categoria',
-    'admin.category.edit'    => 'Editar Categoria',
-    'admin.category.delete'  => 'Eliminar',
-    'admin.save'             => 'Guardar',
-    'admin.cancel'           => 'Cancel·lar',
-    'admin.update'           => 'Actualitzar',
-    'admin.no_products'      => 'No hi ha productes.',
-    'admin.no_categories'    => 'No hi ha categories.',
-    'admin.import'           => 'Importar CSV',
-    'admin.export'           => 'Exportar CSV',
-    'admin.view_site'       => 'Veure lloc',
-    'admin.password'        => 'Contrasenya',
-    'admin.username'        => 'Usuari',
+    'admin.title' => 'Administració',
+    'admin.login.title' => 'Inici de sessió',
+    'admin.login.error' => 'Usuari o contrasenya incorrectes',
+    'admin.logout.success' => 'Sessió tancada',
+    'admin.dashboard' => 'Panell',
+    'admin.products' => 'Productes',
+    'admin.categories' => 'Categories',
+    'admin.product.new' => 'Nou Producte',
+    'admin.product.edit' => 'Editar Producte',
+    'admin.product.delete' => 'Eliminar',
+    'admin.category.new' => 'Nova Categoria',
+    'admin.category.edit' => 'Editar Categoria',
+    'admin.category.delete' => 'Eliminar',
+    'admin.save' => 'Guardar',
+    'admin.cancel' => 'Cancel·lar',
+    'admin.update' => 'Actualitzar',
+    'admin.no_products' => 'No hi ha productes.',
+    'admin.no_categories' => 'No hi ha categories.',
+    'admin.import' => 'Importar CSV',
+    'admin.export' => 'Exportar CSV',
+    'admin.view_site' => 'Veure lloc',
+    'admin.password' => 'Contrasenya',
+    'admin.username' => 'Usuari',
 
     // ── Admin: Settings ──────────────────────────────────────────
-    'admin.settings.nav'        => 'Ajustos',
-    'admin.settings.title'      => 'Ajustos',
-    'admin.settings.slider'     => 'Slider d\'imatges de la carta',
+    'admin.settings.nav' => 'Ajustos',
+    'admin.settings.title' => 'Ajustos',
+    'admin.settings.slider' => 'Slider d\'imatges de la carta',
     'admin.settings.slider_label' => 'Activar slider d\'imatges a la pàgina de carta',
     'admin.settings.slider_hint' => 'En activar-lo, l\'heroi de la carta mostrarà un slider. Puja imatges a /img/menu-slider/ (JPG, PNG, WebP).',
-    'admin.settings.images'     => 'Imatges disponibles',
+    'admin.settings.images' => 'Imatges disponibles',
     'admin.settings.images_count' => '%d imatge(es) trobada(es) a /img/menu-slider/',
     'admin.settings.images_none' => 'No s\'han trobat imatges. Puja-les a /img/menu-slider/ per usar el slider.',
     'admin.settings.images_hint' => 'Les imatges es mostren en ordre alfabètic. Formats: JPG, PNG, WebP.',
-    'admin.settings.saved'      => 'Ajust guardat correctament.',
+    'admin.settings.saved' => 'Ajust guardat correctament.',
 
     // ── Menu Slider ──────────────────────────────────────────────
-    'menu.slider.aria'     => 'Slider d\'imatges de la carta',
+    'menu.slider.aria' => 'Slider d\'imatges de la carta',
     'menu.slider.slide_n' => 'Diapositiva %d de %d',
     'menu.slider.image_alt' => 'Imatge del menú %d',
-    'menu.slider.dots'    => 'Anar a diapositiva',
-    'menu.slider.prev'    => 'Diapositiva anterior',
-    'menu.slider.next'    => 'Següent diapositiva',
+    'menu.slider.dots' => 'Anar a diapositiva',
+    'menu.slider.prev' => 'Diapositiva anterior',
+    'menu.slider.next' => 'Següent diapositiva',
 
     // ── Home Quotes ───────────────────────────────────────────────
     'home.quotes' => [
