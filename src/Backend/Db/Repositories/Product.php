@@ -74,6 +74,22 @@ class Product
 
         $scrapedMap = [];
 
+        // Slugs claimed before the scrape loop: the whole DB catalog (with its
+        // type) plus every scraped slug (all simple). The collision resolver
+        // checks this in-memory set BEFORE the DB, so a renamed slug can never
+        // collide with an existing row NOR with another item of the same batch,
+        // regardless of processing order.
+        $reservedSlugs = [];
+        foreach ($filterProducts as $fp) {
+            $reservedSlugs[$fp['slug']] = $fp['type'] ?? 'simple';
+        }
+        foreach ($scrapedProducts as $sp) {
+            $spSlug = (string) ($sp['slug'] ?? '');
+            if ($spSlug !== '' && !isset($reservedSlugs[$spSlug])) {
+                $reservedSlugs[$spSlug] = 'simple';
+            }
+        }
+
         foreach($scrapedProducts as $p){
     
             // Defensive category lookup: unknown slugs fall back to `otros`;
@@ -87,6 +103,46 @@ class Product
             }
 
             $slug = $p['slug'];
+
+            //Admin-created menus (type='menu') are immune to the scrape: the
+            //admin is the single editor for them, so a re-sync must neither
+            //overwrite their fields nor reactivate them. Scraped products are
+            //always type='simple' (WebScraper never sends 'type'; insert()
+            //defaults to 'simple'), so this exemption can never shield scraped
+            //items — it only protects rows the admin created as menus.
+            //A slug collision between a scraped simple and an admin menu is NOT
+            //a drop: the scraped item is renamed with the delivery suffix and
+            //persisted under its own slug, so the menu keeps its slug (and its
+            //immunity) while the scraped item keeps its place in the catalog.
+            $existing = $filterProducts[$slug] ?? null;
+            if ($existing !== null && ($existing['type'] ?? 'simple') === 'menu') {
+                $resolved = $this->resolveSlugCollision($slug, 'simple', 0, $reservedSlugs);
+                if ($resolved === null) {
+                    // Unreachable in practice: a scraped simple vs an admin menu
+                    // is always a cross-type collision. Kept defensive so a
+                    // rename can never silently drop data.
+                    error_log('[Product::sync] Slug "' . $slug . '" collides with a same-type row; scraped product skipped.');
+                    continue;
+                }
+                $p['slug'] = $resolved;
+                $slug      = $resolved;
+                $scrapedMap[$slug] = $p;
+
+                if (!isset($filterProducts[$slug])) {
+                    $this->insert($p);
+                } else {
+                    // Defensive: the resolver guarantees a fresh slug, so this
+                    // branch is unreachable today; kept mirroring the main loop.
+                    $changes = $this->getChanges($filterProducts[$slug], $p);
+                    if (!empty($changes)) {
+                        $this->update($slug, $changes);
+                    }
+                    if (!$filterProducts[$slug]['is_active']) {
+                        $this->setStatus($slug, true);
+                    }
+                }
+                continue;
+            }
 
             $scrapedMap[$slug] = $p;
 
@@ -123,9 +179,11 @@ class Product
         // NOTE: must run AFTER the loop above — $scrapedMap is only complete once every
         // scraped product has been processed. Running this inside the loop deactivated
         // every product except the first-seen one on re-sync (stale partial map).
+        // Admin-created menus (type='menu') are also skipped here: the admin is the
+        // single editor for them, so a menu absent from the scrape is never turned off.
         foreach($filterProducts as $slug => $p){
 
-            if(!isset($scrapedMap[$slug]) && $p['is_active']){
+            if(!isset($scrapedMap[$slug]) && $p['is_active'] && ($p['type'] ?? 'simple') !== 'menu'){
                 $this->setStatus($slug, false);
             }
         }
@@ -298,6 +356,88 @@ class Product
             ':id' => $id,
             ':active' => (int)$active
         ]);
+    }
+
+    /**
+     * Resolve a slug collision for a product of the given type.
+     *
+     * The slug is the product's identity — and the base of its local image file
+     * /img/pic/{slug}.webp — so two products can never share one (UNIQUE
+     * constraint on products.slug). This method implements the cross-type
+     * rename rule shared by the admin API (create/update) and sync():
+     *
+     *   - slug free                    → returned unchanged
+     *   - slug taken by the SAME type  → returns null (the caller reports a
+     *       validation error instead of letting the UNIQUE constraint crash)
+     *   - slug taken by a DIFFERENT type → returned as "{slug}-local" for
+     *       menus or "{slug}-delivery" for simple products; when that
+     *       candidate is itself taken, a numeric counter is appended
+     *       ("{slug}-local-2", "{slug}-local-3", ...) until a free slug is
+     *       found.
+     *
+     * The database is the source of truth, so an admin request (no batch
+     * context) resolves with $reservedSlugs = []. sync() passes the whole
+     * catalog plus the slugs already claimed by the current batch, so a
+     * renamed slug can never collide with an existing row nor with another
+     * item of the same batch.
+     *
+     * @param  string                $slug          Proposed slug
+     * @param  string                $type          Type of the product being stored ('menu'|'simple')
+     * @param  int                   $excludeId     Row to ignore (the product itself on update)
+     * @param  array<string, string> $reservedSlugs Slugs already claimed in this batch (slug => type)
+     * @return string|null Final slug to persist, or null when the slug is taken by the same type
+     */
+    public function resolveSlugCollision(string $slug, string $type, int $excludeId = 0, array $reservedSlugs = []): ?string
+    {
+        $occupantType = $this->slugOccupantType($slug, $excludeId, $reservedSlugs);
+
+        if ($occupantType === null) {
+            return $slug;
+        }
+
+        if ($occupantType === $type) {
+            return null;
+        }
+
+        // Cross-type collision: rename with the suffix of the incoming type.
+        // Anything that is not an admin menu behaves like a simple product.
+        $suffix    = $type === 'menu' ? 'local' : 'delivery';
+        $candidate = $slug . '-' . $suffix;
+
+        for ($n = 2; $this->slugOccupantType($candidate, $excludeId, $reservedSlugs) !== null; $n++) {
+            $candidate = $slug . '-' . $suffix . '-' . $n;
+        }
+
+        return $candidate;
+    }
+
+    /**
+     * Type of the product occupying a slug, if any.
+     *
+     * Checks the caller-provided batch map first (sync() keeps the whole
+     * catalog and the current batch in memory), then the database with a
+     * prepared SELECT. $excludeId lets an update keep its own slug without
+     * self-colliding.
+     *
+     * @param  string                $slug
+     * @param  int                   $excludeId
+     * @param  array<string, string> $reservedSlugs
+     * @return string|null Type of the occupant, or null when the slug is free
+     */
+    private function slugOccupantType(string $slug, int $excludeId, array $reservedSlugs): ?string
+    {
+        if (isset($reservedSlugs[$slug])) {
+            return (string) $reservedSlugs[$slug];
+        }
+
+        $stmt = $this->pdo->prepare(
+            'SELECT type FROM products WHERE slug = :slug AND id != :excludeId LIMIT 1'
+        );
+        $stmt->execute([':slug' => $slug, ':excludeId' => $excludeId]);
+
+        $type = $stmt->fetchColumn();
+
+        return $type === false ? null : (string) $type;
     }
 
     /**
