@@ -25,9 +25,9 @@ $lang                  = $pageData['locale'] ?? LANG;
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title"><?= __('admin.settings.title') ?></h1>
+            <h1 class="admin-header__title">Ajustes del Sistema</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← <?= __('admin.dashboard') ?></a>
+                <a href="/admin" class="admin-header__back">← Volver al Dashboard</a>
             </div>
         </header>
 
@@ -37,11 +37,11 @@ $lang                  = $pageData['locale'] ?? LANG;
 
         <!-- ── Slider Toggle ─────────────────────────────────────────── -->
         <section class="admin-section">
-            <h2 class="admin-section__title"><?= __('admin.settings.slider') ?></h2>
+            <h2 class="admin-section__title">Carrusel Visual de la Carta</h2>
 
             <div class="admin-field">
                 <label class="admin-field__label" for="menu-slider-toggle">
-                    <?= __('admin.settings.slider_label') ?>
+                    Activar visor interactivo de imágenes en la carta pública
                 </label>
                 <div class="admin-field__toggle">
                     <input type="checkbox"
@@ -54,22 +54,22 @@ $lang                  = $pageData['locale'] ?? LANG;
                     <label for="menu-slider-toggle" class="admin-toggle__visual" aria-hidden="true"></label>
                 </div>
                 <p id="slider-hint" class="admin-field__hint">
-                    <?= __('admin.settings.slider_hint') ?>
+                    Muestra un carrusel dinámico de fotos de platos en la parte superior del menú público.
                 </p>
             </div>
 
             <!-- ── Image Count Info ────────────────────────────────────── -->
             <div class="admin-field">
-                <span class="admin-field__label"><?= __('admin.settings.images') ?></span>
+                <span class="admin-field__label">Imágenes de Productos Disponibles</span>
                 <p class="admin-field__value">
                     <?php if ($imageCount > 0): ?>
-                        <?= sprintf(__('admin.settings.images_count'), $imageCount) ?>
+                        <?= sprintf('%d imágenes cargadas en el sistema', $imageCount) ?>
                     <?php else: ?>
-                        <?= __('admin.settings.images_none') ?>
+                        No hay imágenes cargadas actualmente
                     <?php endif; ?>
                 </p>
                 <p class="admin-field__hint">
-                    <?= __('admin.settings.images_hint') ?>
+                    Las imágenes se asignan editando cada producto en la sección de Productos.
                 </p>
             </div>
         </section>
@@ -102,7 +102,7 @@ if (toggle) {
 
             if (result.error) {
                 if (alertError) {
-                    alertError.textContent = result.errors?.join(', ') || 'Error saving setting';
+                    alertError.textContent = result.errors?.join(', ') || 'Error al guardar los ajustes';
                     alertError.hidden = false;
                 }
                 // Revert toggle
@@ -111,7 +111,7 @@ if (toggle) {
             }
 
             if (alertSuccess) {
-                alertSuccess.textContent = '<?= __('admin.settings.saved') ?>';
+                alertSuccess.textContent = 'Ajustes guardados correctamente';
                 alertSuccess.hidden = false;
 
                 // Auto-hide after 3 seconds

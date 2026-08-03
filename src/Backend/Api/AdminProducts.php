@@ -48,25 +48,117 @@ class AdminProducts
         ]);
     }
     /**
+     * Generate a clean URL-friendly slug from string.
+     */
+    private static function slugify(string $text): string
+    {
+        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+        if (function_exists('iconv')) {
+            $trans = @iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+            if ($trans !== false) {
+                $text = $trans;
+            }
+        }
+        $text = preg_replace('~[^-\w]+~', '', (string)$text);
+        $text = trim($text, '-');
+        $text = preg_replace('~-+~', '-', $text);
+        $text = strtolower((string)$text);
+
+        return !empty($text) ? $text : 'producto-' . time();
+    }
+
+    /**
+     * Translate missing language fields using DeepL if auto-translate is active.
+     */
+    private static function resolveTranslations(array &$input): void
+    {
+        $nameEs = trim((string) ($input['name_es'] ?? $input['name'] ?? ''));
+        $descEs = trim((string) ($input['description_es'] ?? $input['description'] ?? ''));
+
+        $nameEn = trim((string) ($input['name_en'] ?? ''));
+        $nameCa = trim((string) ($input['name_ca'] ?? ''));
+        $nameUk = trim((string) ($input['name_uk'] ?? ''));
+
+        $descEn = trim((string) ($input['description_en'] ?? ''));
+        $descCa = trim((string) ($input['description_ca'] ?? ''));
+        $descUk = trim((string) ($input['description_uk'] ?? ''));
+
+        $autoTranslate = !isset($input['auto_translate']) || !empty($input['auto_translate']);
+
+        if ($autoTranslate && !empty($nameEs)) {
+            try {
+                $deepl = new \Pit\Cuixa\Backend\Services\DeepLService();
+
+                // Translate title
+                if (empty($nameEn)) {
+                    $t = $deepl->translate($nameEs, 'en', 'ES');
+                    $nameEn = $t[0] ?? '';
+                }
+                if (empty($nameCa)) {
+                    $t = $deepl->translate($nameEs, 'ca', 'ES');
+                    $nameCa = $t[0] ?? '';
+                }
+                if (empty($nameUk)) {
+                    $t = $deepl->translate($nameEs, 'uk', 'ES');
+                    $nameUk = $t[0] ?? '';
+                }
+
+                // Translate description
+                if (!empty($descEs)) {
+                    if (empty($descEn)) {
+                        $t = $deepl->translate($descEs, 'en', 'ES');
+                        $descEn = $t[0] ?? '';
+                    }
+                    if (empty($descCa)) {
+                        $t = $deepl->translate($descEs, 'ca', 'ES');
+                        $descCa = $t[0] ?? '';
+                    }
+                    if (empty($descUk)) {
+                        $t = $deepl->translate($descEs, 'uk', 'ES');
+                        $descUk = $t[0] ?? '';
+                    }
+                }
+            } catch (\Throwable $e) {
+                error_log('[AdminProducts] DeepL translation fallback warning: ' . $e->getMessage());
+            }
+        }
+
+        // Fallback for any remaining empty language fields
+        $input['name_es']        = $nameEs;
+        $input['name_en']        = !empty($nameEn) ? $nameEn : $nameEs;
+        $input['name_ca']        = !empty($nameCa) ? $nameCa : $nameEs;
+        $input['name_uk']        = !empty($nameUk) ? $nameUk : $nameEs;
+
+        $input['description_es'] = $descEs;
+        $input['description_en'] = !empty($descEn) ? $descEn : $descEs;
+        $input['description_ca'] = !empty($descCa) ? $descCa : $descEs;
+        $input['description_uk'] = !empty($descUk) ? $descUk : $descEs;
+    }
+
+    /**
      * Validate input data for product create/update.
      *
      * @param  array $input
      * @return array{ok: bool, errors: string[]}
      */
-    private static function validate(array $input): array
+    private static function validate(array &$input): array
     {
         $errors = [];
 
-        // Required fields
+        // Support 'name' alias as name_es
+        if (empty($input['name_es']) && !empty($input['name'])) {
+            $input['name_es'] = $input['name'];
+        }
+
         if (empty($input['name_es'])) {
-            $errors[] = 'name_es is required';
+            $errors[] = 'El título/nombre del producto es obligatorio';
         }
-        if (empty($input['name_en'])) {
-            $errors[] = 'name_en is required';
+
+        // Auto-generate slug if empty
+        if (empty($input['slug']) && !empty($input['name_es'])) {
+            $input['slug'] = self::slugify($input['name_es']);
         }
-        if (empty($input['slug'])) {
-            $errors[] = 'slug is required';
-        }
+
         if (empty($input['category_id'])) {
             $errors[] = 'category_id is required';
         }
@@ -131,6 +223,8 @@ class AdminProducts
             return;
         }
 
+        self::resolveTranslations($input);
+
         $menuDataJson = null;
         if (isset($input['menu_data']) && (is_array($input['menu_data']) || is_string($input['menu_data']))) {
             $menuDataJson = is_array($input['menu_data']) ? json_encode($input['menu_data'], JSON_UNESCAPED_UNICODE) : $input['menu_data'];
@@ -138,8 +232,8 @@ class AdminProducts
 
         $pdo  = \Pit\Cuixa\Backend\Db\Connection::get();
         $stmt = $pdo->prepare(
-            'INSERT INTO products (category_id, slug, name_es, name_en, description_es, description_en, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
-             VALUES (:category_id, :slug, :name_es, :name_en, :description_es, :description_en, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
+            'INSERT INTO products (category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
+             VALUES (:category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
         );
 
         $stmt->execute([
@@ -147,8 +241,12 @@ class AdminProducts
             ':slug'           => trim((string) ($input['slug'] ?? '')),
             ':name_es'        => trim((string) ($input['name_es'] ?? '')),
             ':name_en'        => trim((string) ($input['name_en'] ?? '')),
+            ':name_ca'        => trim((string) ($input['name_ca'] ?? '')),
+            ':name_uk'        => trim((string) ($input['name_uk'] ?? '')),
             ':description_es' => trim((string) ($input['description_es'] ?? '')),
             ':description_en' => trim((string) ($input['description_en'] ?? '')),
+            ':description_ca' => trim((string) ($input['description_ca'] ?? '')),
+            ':description_uk' => trim((string) ($input['description_uk'] ?? '')),
             ':price'          => (float) ($input['price'] ?? 0),
             ':image_url'      => trim((string) ($input['image_url'] ?? '')),
             ':last_shop_url'  => trim((string) ($input['last_shop_url'] ?? '')),
@@ -210,6 +308,8 @@ class AdminProducts
             return;
         }
 
+        self::resolveTranslations($input);
+
         $pdo = \Pit\Cuixa\Backend\Db\Connection::get();
 
         // Check product exists
@@ -232,8 +332,12 @@ class AdminProducts
                 slug           = :slug,
                 name_es        = :name_es,
                 name_en        = :name_en,
+                name_ca        = :name_ca,
+                name_uk        = :name_uk,
                 description_es = :description_es,
                 description_en = :description_en,
+                description_ca = :description_ca,
+                description_uk = :description_uk,
                 price          = :price,
                 image_url      = :image_url,
                 last_shop_url  = :last_shop_url,
@@ -255,8 +359,12 @@ class AdminProducts
             ':slug'            => trim((string) ($input['slug'] ?? '')),
             ':name_es'         => trim((string) ($input['name_es'] ?? '')),
             ':name_en'         => trim((string) ($input['name_en'] ?? '')),
+            ':name_ca'         => trim((string) ($input['name_ca'] ?? '')),
+            ':name_uk'         => trim((string) ($input['name_uk'] ?? '')),
             ':description_es'  => trim((string) ($input['description_es'] ?? '')),
             ':description_en'  => trim((string) ($input['description_en'] ?? '')),
+            ':description_ca'  => trim((string) ($input['description_ca'] ?? '')),
+            ':description_uk'  => trim((string) ($input['description_uk'] ?? '')),
             ':price'           => (float) ($input['price'] ?? 0),
             ':image_url'       => trim((string) ($input['image_url'] ?? '')),
             ':last_shop_url'   => trim((string) ($input['last_shop_url'] ?? '')),

@@ -365,35 +365,43 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title'      => 'Preguntes freqüents',
-    'faq.desc'       => 'Respostes a les preguntes més comunes sobre Pit o Cuixa.',
+    'faq.desc'       => 'Respostes a les preguntes més comunes sobre la nostra cuina, servei a domicili i encàrrec de pollastres a l\'ast a Torredembarra.',
     'faq.items'      => [
         [
-            'q' => 'Feu comandes per emportar?',
-            'a' => 'Sí, pots demanar per telèfon al 977 64 20 10 i recollir a la botiga. No tenim servei a domicili.',
+            'q' => 'Què inclou el pollastre a l\'ast i quines opcions de menú teniu?',
+            'a' => 'El pollastre a l\'ast es serveix sencer o mig pollastre, sempre acompanyat del nostre allioli casolà. Disposem de menús combinats amb patates fregides casolanes, amanides (Cèsar, mixta, russa), canalons de rostit o croquetes. Pots consultar les opcions i preus actualitzats a la nostra carta online.',
         ],
         [
-            'q' => 'Quin és l\'horari?',
-            'a' => 'Obert de dilluns a diumenge d\'11:00 a 23:00. Tancats només en dies assenyalats (consulta les nostres xarxes).',
+            'q' => 'D\'on procedeix el vostre pollastre i quines garanties de qualitat té?',
+            'a' => 'Treballem amb el segell "Pollastre Groc Català" d\'Alimentbarna (cria a base de cereals a Catalunya). El nostre proveïdor compta amb les certificacions internacionals de qualitat i higiene ISO 9001 i ISO 22000 auditades per Bureau Veritas.',
         ],
         [
-            'q' => 'Teniu opcions sense gluten?',
-            'a' => 'Sí, disposem de plats combinats sense gluten. Consulta la nostra carta i pregunta al personal.',
+            'q' => 'Feu repartiment a domicili i a quines zones lliureu?',
+            'a' => 'Sí, fem repartiment a domicili a Torredembarra i localitats properes com Altafulla, Creixell, La Móra, La Pobla de Montornès i La Nou de Gaià. El temps estimat sol ser de 35 a 45 minuts i la taxa d\'enviament es calcula directament a la botiga online.',
         ],
         [
-            'q' => 'Accepteu targetes de crèdit?',
-            'a' => 'Sí, acceptem Visa, Mastercard i efectiu. També admetem bizum.',
+            'q' => 'Teniu menú diari per emportar entre setmana?',
+            'a' => 'Sí, de dilluns a divendres disposem d\'un menú econòmic per emportar que inclou 2 plats a triar (amanideta, pasta bolonyesa, croquetes, pollastre a l\'ast, etc.) més beguda.',
         ],
         [
-            'q' => 'Hi ha opcions vegetarianes?',
-            'a' => 'Sí, oferim amanides, patates braves i altres plats vegetarians. Pregunta per les nostres opcions del dia.',
+            'q' => 'Quins altres plats preparats teniu i com encarregar paelles o fideuàs?',
+            'a' => 'A més del pollastre a l\'ast, preparem aletes BBQ, canalons de rostit, albergínies farcides, croquetes casolanes i amanides. També elaborem paella marinera, arròs negre i fideuà per a grups sota comanda amb 24 hores d\'antelació.',
         ],
         [
-            'q' => 'Es pot reservar taula?',
-            'a' => 'No tenim servei de reserves. El servei és per ordre d\'arribada, però sempre procurem atendre\'t el més aviat possible.',
+            'q' => 'Teniu opcions per a al·lèrgies, celíacs o dietes vegetarianes?',
+            'a' => 'El marinat del nostre pollastre a l\'ast tradicional no conté gluten. També disposem d\'acompanyaments vegetarians (amanides, patates). Us preguem que ens aviseu de qualsevol al·lèrgia o celiaquia per extremar precaucions davant la contaminació creuada a cuina.',
         ],
         [
-            'q' => 'Oferiu menú infantil?',
-            'a' => 'Sí, tenim opcions per als més petits: mitja ració de pollastre, patates fregides i nuggets.',
+            'q' => 'Cal encarregar amb antelació o es pot reservar?',
+            'a' => 'És molt recomanable encarregar amb antelació, especialment els caps de setmana quan la demanda és molt alta. Pots fer la teva comanda còmodament a través de la nostra botiga online (pitocuixa.last.shop) o trucant per telèfon.',
+        ],
+        [
+            'q' => 'On esteu ubicats i quines instal·lacions ofereix el local?',
+            'a' => 'Ens trobem al Carrer Hort de l\'Oca, 12, a Torredembarra (Tarragona). Disposem de menjador interior i terrassa a l\'aire lliure, accés adaptat per a persones amb mobilitat reduïda i zones d\'aparcament públic als voltants.',
+        ],
+        [
+            'q' => 'Quins mètodes de pagament accepteu i com contactar per qualsevol incidència?',
+            'a' => 'Acceptem pagament amb targeta de crèdit/dèbit, pagament online al web i efectiu. Si surgeix qualsevol problema amb la teva comanda, contacta\'ns per telèfon o enviant-nos una foto de la comanda per atendre\'t i resoldre-ho d\'immediat.',
         ],
     ],
 

@@ -16,8 +16,8 @@ $csrfToken = $pageData['csrf_token'] ?? '';
      ============================================================ -->
 <section class="admin-login">
     <div class="admin-login__card">
-        <h1 class="admin-login__title"><?= __('site.name') ?></h1>
-        <p class="admin-login__subtitle"><?= __('nav.login') ?></p>
+        <h1 class="admin-login__title">Pit o Cuixa</h1>
+        <p class="admin-login__subtitle">Acceso Administración</p>
 
         <?php if (isset($_GET['error'])): ?>
             <div class="admin-alert admin-alert--error" role="alert">
@@ -33,7 +33,7 @@ $csrfToken = $pageData['csrf_token'] ?? '';
 
             <div class="admin-field">
                 <label for="login-username" class="admin-field__label">
-                    <?= __('nav.login') ?>
+                    Usuario
                 </label>
                 <input id="login-username"
                        name="username"
@@ -59,11 +59,11 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             <div class="admin-login__error" data-login-error role="alert" hidden></div>
 
             <button type="submit" class="admin-btn admin-btn--primary admin-login__submit">
-                <?= __('nav.login') ?>
+                Iniciar Sesión
             </button>
         </form>
 
-        <a href="/" class="admin-login__back">← <?= __('nav.home') ?></a>
+        <a href="/" class="admin-login__back">← Volver al sitio</a>
     </div>
 </section>
 
@@ -110,7 +110,7 @@ document.querySelector('[data-admin-login]')?.addEventListener('submit', async (
         errorEl.hidden = false;
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = '<?= __('nav.login') ?>';
+        submitBtn.textContent = 'Iniciar Sesión';
     }
 });
 </script>

@@ -66,9 +66,11 @@ $lang            = $pageData['locale'] ?? LANG;
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($perCategory as $cat): ?>
+                        <?php foreach ($perCategory as $cat): 
+                            $catName = !empty($cat["name_{$lang}"]) ? $cat["name_{$lang}"] : (!empty($cat['name_ca']) ? $cat['name_ca'] : (!empty($cat['name_es']) ? $cat['name_es'] : ($cat['name_en'] ?? '')));
+                        ?>
                             <tr>
-                                <td><?= htmlspecialchars($cat["name_{$lang}"] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= (int) $cat['cnt'] ?></td>
                             </tr>
                         <?php endforeach; ?>

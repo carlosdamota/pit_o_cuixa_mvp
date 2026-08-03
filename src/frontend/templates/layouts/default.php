@@ -129,7 +129,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 
     <!-- Admin CSS (only on admin pages) -->
     <?php if (str_starts_with($pageName, 'admin/')): ?>
-    <link rel="stylesheet" href="/css/pages/admin.css">
+    <link rel="stylesheet" href="/css/pages/admin.css<?= $v ?>">
     <?php
     // Expose CSRF token as meta tag for admin JS AJAX calls
     $csrfMeta = $pageData['csrf_token'] ?? '';
@@ -181,23 +181,27 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 </head>
 <body>
 
-    <!-- ── Header (hidden on home page) ────────────────────────────── -->
-    <?php if ($pageName !== 'home'): ?>
+    <?php $isAdmin = str_starts_with($pageName, 'admin/'); ?>
+
+    <!-- ── Header (hidden on home and admin pages) ─────────────────── -->
+    <?php if ($pageName !== 'home' && !$isAdmin): ?>
     <?php require __DIR__ . '/../partials/header.php'; ?>
     <?php endif; ?>
 
     <!-- ── Main Content ─────────────────────────────────────────────── -->
-    <main class="main" role="main">
+    <main class="main<?= $isAdmin ? ' main--admin' : '' ?>" role="main">
         <?= $content ?? '' ?>
     </main>
 
-    <!-- ── Footer (hidden on home page) ─────────────────────────────── -->
-    <?php if ($pageName !== 'home'): ?>
+    <!-- ── Footer (hidden on home and admin pages) ─────────────────── -->
+    <?php if ($pageName !== 'home' && !$isAdmin): ?>
     <?php require __DIR__ . '/../partials/footer.php'; ?>
     <?php endif; ?>
 
-    <!-- ── Floating WhatsApp (visible on all pages) ─────────────────── -->
+    <!-- ── Floating WhatsApp (hidden on admin pages) ────────────────── -->
+    <?php if (!$isAdmin): ?>
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
+    <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/main.js"></script>

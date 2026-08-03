@@ -367,35 +367,43 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title'      => 'Frequently Asked Questions',
-    'faq.desc'       => 'Answers to the most common questions about Pit o Cuixa.',
+    'faq.desc'       => 'Answers to the most common questions about our food, home delivery, and rotisserie chicken orders in Torredembarra.',
     'faq.items'      => [
         [
-            'q' => 'Do you do takeaway orders?',
-            'a' => 'Yes, you can order by phone at 977 64 20 10 and pick up in store. We do not offer delivery.',
+            'q' => 'What does the rotisserie chicken include and what menu options are available?',
+            'a' => 'Our rotisserie chicken (pollo a l\'ast) is served whole or half, always accompanied by our homemade aioli. We offer combo menus with homemade French fries, salads (Caesar, mixed, Russian salad), roasted meat cannelloni, or croquettes. You can view updated options and prices in our online menu.',
         ],
         [
-            'q' => 'What are your opening hours?',
-            'a' => 'Open Monday to Sunday from 11:00 to 23:00. Closed only on special days (check our social media).',
+            'q' => 'Where does your chicken come from and what quality guarantees do you offer?',
+            'a' => 'We work with the "Pollastre Groc Català" certification from Alimentbarna (cereal-fed chicken raised in Catalonia). Our supplier holds ISO 9001 and ISO 22000 international quality and food safety certifications audited by Bureau Veritas.',
         ],
         [
-            'q' => 'Do you have gluten-free options?',
-            'a' => 'Yes, we offer gluten-free set meals. Check our menu and ask our staff.',
+            'q' => 'Do you offer home delivery and which areas do you cover?',
+            'a' => 'Yes, we deliver in Torredembarra and nearby areas such as Altafulla, Creixell, La Móra, La Pobla de Montornès, and La Nou de Gaià. Estimated delivery time is 35 to 45 minutes, and delivery fees are calculated automatically during online checkout.',
         ],
         [
-            'q' => 'Do you accept credit cards?',
-            'a' => 'Yes, we accept Visa, Mastercard, cash, and Bizum.',
+            'q' => 'Do you have a weekday takeaway menu?',
+            'a' => 'Yes, from Monday to Friday we offer an affordable takeaway menu featuring 2 dishes to choose from (Russian salad, pasta bolognese, croquettes, roasted chicken, etc.) plus a drink.',
         ],
         [
-            'q' => 'Are there vegetarian options?',
-            'a' => 'Yes, we offer salads, patatas bravas and other vegetarian dishes. Ask about our daily options.',
+            'q' => 'What other prepared dishes do you offer and how can I order paella or fideuà?',
+            'a' => 'Besides rotisserie chicken, we prepare BBQ wings, roasted meat cannelloni, stuffed aubergines, homemade croquettes, and salads. We also make seafood paella, black rice, and fideuà for groups, available upon advance order with at least 24 hours notice.',
         ],
         [
-            'q' => 'Can I reserve a table?',
-            'a' => 'We do not take reservations. Service is on a first-come, first-served basis, but we always do our best to serve you as quickly as possible.',
+            'q' => 'Do you offer options for allergies, celiacs, or vegetarian diets?',
+            'a' => 'Our traditional rotisserie chicken marinade is gluten-free. We also offer vegetarian side dishes (salads, potatoes). Please inform us of any allergies or celiac condition so we can take extra precautions against cross-contamination.',
         ],
         [
-            'q' => 'Do you have a kids\' menu?',
-            'a' => 'Yes, we have options for little ones: half-portion chicken, fries, and nuggets.',
+            'q' => 'Is it necessary to order in advance or make a reservation?',
+            'a' => 'We highly recommend ordering in advance, especially on weekends when demand is high. You can easily place your order online through our shop (pitocuixa.last.shop) or by calling us by phone.',
+        ],
+        [
+            'q' => 'Where are you located and what facilities do you have?',
+            'a' => 'We are located at Carrer Hort de l\'Oca, 12, in Torredembarra (Tarragona). We have an indoor dining area and an outdoor terrace, wheelchair-accessible facilities, and public parking nearby.',
+        ],
+        [
+            'q' => 'What payment methods do you accept and how do I report an issue with my order?',
+            'a' => 'We accept credit/debit cards, online website payments, and cash. If you experience any issue with your order, contact us by phone or send us a photo of your order so we can resolve it immediately.',
         ],
     ],
 

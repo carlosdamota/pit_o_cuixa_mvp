@@ -366,35 +366,43 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title'      => 'Preguntas frecuentes',
-    'faq.desc'       => 'Respuestas a las preguntas más comunes sobre Pit o Cuixa.',
+    'faq.desc'       => 'Respuestas a las preguntas más comunes sobre nuestra cocina, servicio a domicilio y encargo de pollos al ast en Torredembarra.',
     'faq.items'      => [
         [
-            'q' => '¿Hacéis pedidos para llevar?',
-            'a' => 'Sí, puedes pedir por teléfono al 977 64 20 10 y recoger en tienda. No tenemos servicio a domicilio.',
+            'q' => '¿Qué incluye el pollo a l\'ast y qué opciones de menús tenéis?',
+            'a' => 'El pollo a l\'ast se sirve entero o medio pollo, siempre acompañado de nuestro alioli casero. Disponemos de menús combinados con patatas fritas caseras, ensaladas (César, mixta, rusa), canelones de rostit o croquetas. Puedes consultar las opciones y precios actualizados en nuestra carta online.',
         ],
         [
-            'q' => '¿Cuál es el horario?',
-            'a' => 'Abierto de lunes a domingo de 11:00 a 23:00. Cerrados solo en días señalados ( consulta nuestras redes).',
+            'q' => '¿De dónde procede vuestro pollo y qué garantías de calidad tiene?',
+            'a' => 'Trabajamos con el sello "Pollastre Groc Català" de Alimentbarna (cría a base de cereales en Cataluña). Nuestro proveedor cuenta con las certificaciones internacionales de calidad e higiene ISO 9001 e ISO 22000 auditadas por Bureau Veritas.',
         ],
         [
-            'q' => '¿Tenéis opciones sin gluten?',
-            'a' => 'Sí, disponemos de platos combinados sin gluten. Consulta nuestra carta y pregunta al personal.',
+            'q' => '¿Hacéis reparto a domicilio y a qué zonas entregáis?',
+            'a' => 'Sí, realizamos reparto a domicilio en Torredembarra y poblaciones cercanas como Altafulla, Creixell, La Móra, La Pobla de Montornès y La Nou de Gaià. El tiempo estimado suele ser de 35 a 45 minutos y los gastos de envío se calculan directamente en la tienda online.',
         ],
         [
-            'q' => '¿Aceptáis tarjetas de crédito?',
-            'a' => 'Sí, aceptamos Visa, Mastercard y efectivo. También admitimos bizum.',
+            'q' => '¿Tenéis menú diario para llevar entre semana?',
+            'a' => 'Sí, de lunes a viernes disponemos de un menú económico para llevar que incluye 2 platos a elegir (ensaladilla, pasta boloñesa, croquetas, pollo a l\'ast, etc.) más bebida.',
         ],
         [
-            'q' => '¿Hay opciones vegetarianas?',
-            'a' => 'Sí, ofrecemos ensaladas, patatas bravas y otros platos vegetarianos. Pregunta por nuestras opciones del día.',
+            'q' => '¿Qué otros platos preparados tenéis y cómo encargar paellas o fideuàs?',
+            'a' => 'Además del pollo a l\'ast, preparamos alitas BBQ, canelones de rostit, berenjenas rellenas, croquetas caseras y ensaladas. También elaboramos paella marinera, arroz negro y fideuà para grupos por encargo previa reserva con 24 horas de antelación.',
         ],
         [
-            'q' => '¿Se puede reservar mesa?',
-            'a' => 'No tenemos servicio de reservas. El servicio es por orden de llegada, pero siempre procuramos atenderte lo antes posible.',
+            'q' => '¿Tenéis opciones para alergias, celíacos o dietas vegetarianas?',
+            'a' => 'El adobo de nuestro pollo a l\'ast tradicional no contiene gluten. Disponemos también de guarniciones vegetarianas (ensaladas, patatas). Rogamos avisarnos de cualquier alergia o celiaquía para extremar precauciones frente a la contaminación cruzada en cocina.',
         ],
         [
-            'q' => '¿Ofrecéis menú infantil?',
-            'a' => 'Sí, tenemos opciones para los más pequeños: media ración de pollo, patatas fritas y nuggets.',
+            'q' => '¿Es necesario encargar con antelación o se puede reservar?',
+            'a' => 'Es muy recomendable encargar con antelación, especialmente los fines de semana cuando la demanda es muy alta. Puedes hacer tu pedido cómodamente a través de nuestra tienda online (pitocuixa.last.shop) o llamando por teléfono.',
+        ],
+        [
+            'q' => '¿Dónde estáis ubicados y qué instalaciones ofrece el local?',
+            'a' => 'Nos encontramos en Carrer Hort de l\'Oca, 12, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
+        ],
+        [
+            'q' => '¿Qué métodos de pago aceptáis y cómo contactar ante cualquier incidencia?',
+            'a' => 'Aceptamos pago con tarjeta de crédito/débito, pago online en la web y efectivo. Si surge cualquier problema con tu pedido, contáctanos por teléfono o enviándonos una foto del pedido para atenderte y resolverlo de inmediato.',
         ],
     ],
 

@@ -520,6 +520,17 @@ body:has(.landing--onboarding) .main {
   transform: translateY(-44px);
 }
 
+/* Desktop: keep original position */
+@media (min-width: 768px) {
+  .onboarding__quote-card {
+    transform: translateY(0);
+  }
+
+  .onboarding__quote-card--fading {
+    transform: translateY(6px);
+  }
+}
+
 .onboarding__quote-watermark {
   position: absolute;
   top: -14px;

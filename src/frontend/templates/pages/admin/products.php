@@ -65,9 +65,9 @@ $lang       = $pageData['locale'] ?? LANG;
 
                     <div class="admin-form__grid">
                         <div class="admin-field">
-                            <label class="admin-field__label" for="prod-slug">Slug *</label>
-                            <input id="prod-slug" name="slug" class="admin-field__input" required
-                                   pattern="[a-z0-9-]+" title="Minúsculas, números y guiones">
+                            <label class="admin-field__label" for="prod-slug">Slug <small style="font-weight:normal;color:var(--color-text-muted);">(Opcional)</small></label>
+                            <input id="prod-slug" name="slug" class="admin-field__input"
+                                   pattern="[a-z0-9-]+" title="Minúsculas, números y guiones. Dejar vacío para autogenerar desde el título.">
                         </div>
 
                         <div class="admin-field">
@@ -82,24 +82,21 @@ $lang       = $pageData['locale'] ?? LANG;
                             </select>
                         </div>
 
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-name-es">Nombre (ES) *</label>
-                            <input id="prod-name-es" name="name_es" class="admin-field__input" required>
-                        </div>
-
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-name-en">Name (EN) *</label>
-                            <input id="prod-name-en" name="name_en" class="admin-field__input" required>
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-name-es">Título / Nombre del Producto *</label>
+                            <input id="prod-name-es" name="name_es" class="admin-field__input" placeholder="Ej: Pollo a l'ast entero" required>
                         </div>
 
                         <div class="admin-field admin-field--full">
-                            <label class="admin-field__label" for="prod-desc-es">Descripción (ES)</label>
-                            <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2"></textarea>
+                            <label class="admin-field__label" for="prod-desc-es">Descripción del Producto</label>
+                            <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2" placeholder="Ej: Pollo asado crujiente al estilo tradicional..."></textarea>
                         </div>
 
                         <div class="admin-field admin-field--full">
-                            <label class="admin-field__label" for="prod-desc-en">Description (EN)</label>
-                            <textarea id="prod-desc-en" name="description_en" class="admin-field__textarea" rows="2"></textarea>
+                            <label class="admin-checkbox" style="font-size:0.85rem;color:var(--color-primary);">
+                                <input type="checkbox" name="auto_translate" value="1" checked>
+                                🌐 Traducir automáticamente con DeepL (Inglés, Catalán, Ucraniano)
+                            </label>
                         </div>
 
                         <div class="admin-field">
@@ -144,7 +141,7 @@ $lang       = $pageData['locale'] ?? LANG;
                             </div>
                         </div>
 
-                        <div class="admin-field">
+                        <div class="admin-field admin-field--full">
                             <label class="admin-field__label" for="prod-type">Tipo de Producto</label>
                             <select id="prod-type" name="type" class="admin-field__select" data-type-select>
                                 <option value="simple">Producto Simple (A la carta)</option>
@@ -153,15 +150,40 @@ $lang       = $pageData['locale'] ?? LANG;
                         </div>
 
                         <div class="admin-field admin-field--full" data-menu-editor hidden>
-                            <label class="admin-field__label" for="prod-menu-data">Estructura del Menú (JSON)</label>
-                            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;">
-                                Define las secciones y platos del menú en formato JSON.
+                            <label class="admin-field__label">Diseñador Visual de Menú</label>
+                            <p style="font-size:0.8rem;color:var(--color-text-muted);margin-bottom:8px;">
+                                Configura las secciones y platos del menú sin necesidad de escribir código JSON.
                             </p>
-                            <textarea id="prod-menu-data" name="menu_data" class="admin-field__textarea" rows="6"
-                                      placeholder='{ "badge": "De lunes a viernes", "includes": "Incluye agua, vino o cerveza", "sections": [{ "title_es": "Primeros Platos", "items_es": ["Pasta boloñesa", "Ensaladilla rusa"] }] }'></textarea>
-                            <button type="button" class="admin-btn-sm" data-btn-template-menu style="margin-top:6px;">
-                                ✨ Cargar plantilla de Menú del Día
-                            </button>
+
+                            <div style="padding:12px;background:var(--color-surface-container-low, #f8f9fa);border-radius:8px;border:1px solid var(--color-outline-variant, #e2e8f0);margin-bottom:8px;">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                                    <div>
+                                        <label style="font-size:0.75rem;font-weight:600;display:block;margin-bottom:4px;">Etiqueta / Badge</label>
+                                        <input type="text" class="admin-field__input" data-menu-builder-badge placeholder="Ej: De lunes a viernes">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:0.75rem;font-weight:600;display:block;margin-bottom:4px;">Incluye / Notas</label>
+                                        <input type="text" class="admin-field__input" data-menu-builder-includes placeholder="Ej: Incluye agua, vino y postre">
+                                    </div>
+                                </div>
+
+                                <div data-menu-builder-sections style="display:flex;flex-direction:column;gap:12px;"></div>
+
+                                <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                                    <button type="button" class="admin-btn-sm admin-btn-sm--secondary" data-btn-add-section>
+                                        + Añadir Sección
+                                    </button>
+                                    <button type="button" class="admin-btn-sm" data-btn-template-menu>
+                                        ✨ Cargar Plantilla de Ejemplo
+                                    </button>
+                                </div>
+                            </div>
+
+                            <details style="margin-top:4px;">
+                                <summary style="font-size:0.8rem;cursor:pointer;color:var(--color-text-muted);">Modo Avanzado (JSON)</summary>
+                                <textarea id="prod-menu-data" name="menu_data" class="admin-field__textarea" rows="4" style="margin-top:6px;font-family:monospace;font-size:0.8rem;"
+                                          placeholder='{ "badge": "De lunes a viernes", "sections": [] }'></textarea>
+                            </details>
                         </div>
 
                         <div class="admin-field admin-checkboxes">
@@ -364,8 +386,130 @@ function buildRow(p) {
     </tr>`;
 }
 
+// ── Visual Menu Builder Logic ────────────────────────────────────
+const menuBuilderBadgeInput = document.querySelector('[data-menu-builder-badge]');
+const menuBuilderIncludesInput = document.querySelector('[data-menu-builder-includes]');
+const menuBuilderSectionsContainer = document.querySelector('[data-menu-builder-sections]');
+
+function createItemRow(value = '') {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
+    div.innerHTML = `
+        <input type="text" class="admin-field__input data-item-name" placeholder="Ej: Ensalada César" value="${escHtml(value)}" style="flex:1;font-size:0.8rem;padding:4px 8px;">
+        <button type="button" class="admin-btn-sm admin-btn-sm--danger data-btn-remove-item" title="Eliminar plato" style="padding:2px 6px;font-size:0.75rem;">&times;</button>
+    `;
+    div.querySelector('.data-btn-remove-item').addEventListener('click', () => {
+        div.remove();
+        syncMenuBuilderToJson();
+    });
+    div.querySelector('.data-item-name').addEventListener('input', syncMenuBuilderToJson);
+    return div;
+}
+
+function createSectionCard(title = '', items = []) {
+    const card = document.createElement('div');
+    card.className = 'menu-section-card';
+    card.style.cssText = 'padding:10px;background:#ffffff;border:1px solid var(--color-outline-variant, #cbd5e1);border-radius:6px;';
+
+    card.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <input type="text" class="admin-field__input data-section-title" placeholder="Nombre de sección (Ej: PRIMEROS PLATOS)" value="${escHtml(title)}" style="flex:1;font-weight:600;font-size:0.85rem;">
+            <button type="button" class="admin-btn-sm admin-btn-sm--danger data-btn-remove-section" style="padding:4px 8px;font-size:0.75rem;">Eliminar Sección</button>
+        </div>
+        <div class="data-section-items" style="margin-left:8px;"></div>
+        <button type="button" class="admin-btn-sm data-btn-add-item" style="margin-top:6px;font-size:0.75rem;">+ Añadir Plato</button>
+    `;
+
+    const itemsContainer = card.querySelector('.data-section-items');
+    items.forEach(item => {
+        itemsContainer.appendChild(createItemRow(item));
+    });
+
+    card.querySelector('.data-btn-add-item').addEventListener('click', () => {
+        itemsContainer.appendChild(createItemRow(''));
+        syncMenuBuilderToJson();
+    });
+
+    card.querySelector('.data-btn-remove-section').addEventListener('click', () => {
+        card.remove();
+        syncMenuBuilderToJson();
+    });
+
+    card.querySelector('.data-section-title').addEventListener('input', syncMenuBuilderToJson);
+
+    return card;
+}
+
+function renderMenuBuilder(data) {
+    if (!menuBuilderSectionsContainer) return;
+    menuBuilderSectionsContainer.innerHTML = '';
+
+    const badge = data?.badge || '';
+    const includes = data?.includes || '';
+    if (menuBuilderBadgeInput) menuBuilderBadgeInput.value = badge;
+    if (menuBuilderIncludesInput) menuBuilderIncludesInput.value = includes;
+
+    const sections = Array.isArray(data?.sections) ? data.sections : [];
+    sections.forEach(sec => {
+        const secTitle = sec.title_es || sec.title || '';
+        const secItems = Array.isArray(sec.items_es) ? sec.items_es : (Array.isArray(sec.items) ? sec.items : []);
+        menuBuilderSectionsContainer.appendChild(createSectionCard(secTitle, secItems));
+    });
+}
+
+function syncMenuBuilderToJson() {
+    const textarea = document.querySelector('[name="menu_data"]');
+    if (!textarea) return;
+
+    const badge = menuBuilderBadgeInput?.value.trim() || '';
+    const includes = menuBuilderIncludesInput?.value.trim() || '';
+    const sections = [];
+
+    if (menuBuilderSectionsContainer) {
+        menuBuilderSectionsContainer.querySelectorAll('.menu-section-card').forEach(card => {
+            const secTitle = card.querySelector('.data-section-title')?.value.trim() || '';
+            const items = [];
+            card.querySelectorAll('.data-item-name').forEach(input => {
+                const val = input.value.trim();
+                if (val !== '') items.push(val);
+            });
+            if (secTitle !== '' || items.length > 0) {
+                sections.push({
+                    title_es: secTitle,
+                    items_es: items
+                });
+            }
+        });
+    }
+
+    if (!badge && !includes && sections.length === 0) {
+        textarea.value = '';
+    } else {
+        const dataObj = {};
+        if (badge) dataObj.badge = badge;
+        if (includes) dataObj.includes = includes;
+        dataObj.sections = sections;
+        textarea.value = JSON.stringify(dataObj, null, 2);
+    }
+}
+
+document.querySelector('[data-btn-add-section]')?.addEventListener('click', () => {
+    if (menuBuilderSectionsContainer) {
+        const card = createSectionCard('NUEVA SECCIÓN', ['']);
+        menuBuilderSectionsContainer.appendChild(card);
+        syncMenuBuilderToJson();
+    }
+});
+
+menuBuilderBadgeInput?.addEventListener('input', syncMenuBuilderToJson);
+menuBuilderIncludesInput?.addEventListener('input', syncMenuBuilderToJson);
+
 /** Collect form data into object */
 function getFormData(form) {
+    if (form.querySelector('[name="type"]')?.value === 'menu') {
+        syncMenuBuilderToJson();
+    }
+
     const rawMenuData = form.querySelector('[name="menu_data"]')?.value.trim() || '';
     let parsedMenuData = null;
     if (rawMenuData !== '') {
@@ -379,9 +523,8 @@ function getFormData(form) {
     return {
         slug: form.querySelector('[name="slug"]').value,
         name_es: form.querySelector('[name="name_es"]').value,
-        name_en: form.querySelector('[name="name_en"]').value,
         description_es: form.querySelector('[name="description_es"]').value,
-        description_en: form.querySelector('[name="description_en"]').value,
+        auto_translate: form.querySelector('[name="auto_translate"]')?.checked ? 1 : 0,
         price: parseFloat(form.querySelector('[name="price"]').value) || 0,
         category_id: parseInt(form.querySelector('[name="category_id"]').value) || 0,
         image_url: form.querySelector('[name="image_url"]').value,
@@ -420,9 +563,7 @@ function fillForm(btn) {
     const fields = {
         slug: 'slug',
         name_es: 'nameEs',
-        name_en: 'nameEn',
         description_es: 'descEs',
-        description_en: 'descEn',
         price: 'price',
         category_id: 'categoryId',
         image_url: 'imageUrl',
@@ -441,10 +582,19 @@ function fillForm(btn) {
     form.querySelector('[name="is_dine_in"]').checked = btn.dataset.isDineIn !== '0';
     form.querySelector('[name="is_delivery"]').checked = btn.dataset.isDelivery !== '0';
 
+    const rawMenu = btn.dataset.menuData || '';
     const menuDataInput = form.querySelector('[name="menu_data"]');
     if (menuDataInput) {
-        menuDataInput.value = btn.dataset.menuData || '';
+        menuDataInput.value = rawMenu;
     }
+
+    let parsedMenu = null;
+    if (rawMenu) {
+        try {
+            parsedMenu = JSON.parse(rawMenu);
+        } catch (_) {}
+    }
+    renderMenuBuilder(parsedMenu);
 
     toggleMenuEditor(btn.dataset.type || 'simple');
 }
@@ -468,6 +618,9 @@ function resetForm() {
     form.querySelector('[name="is_delivery"]').checked = true;
     form.querySelector('[name="type"]').value = 'simple';
 
+    renderMenuBuilder(null);
+    syncMenuBuilderToJson();
+
     toggleMenuEditor('simple');
 
     // Clear image preview if present
@@ -485,8 +638,6 @@ document.querySelector('[data-type-select]')?.addEventListener('change', (e) => 
 
 // ── Pre-fill Sample Menu Template ──────────────────────────────────
 document.querySelector('[data-btn-template-menu]')?.addEventListener('click', () => {
-    const textarea = document.querySelector('[name="menu_data"]');
-    if (!textarea) return;
     const sample = {
         badge: "De lunes a viernes (Suplemento de +3€ en fin de semana)",
         includes: "Incluye agua, refresco, vino o cerveza",
@@ -496,10 +647,8 @@ document.querySelector('[data-btn-template-menu]')?.addEventListener('click', ()
                 items_es: [
                     "Pasta con boloñesa artesana",
                     "Ensaladilla rusa clásica",
-                    "Ensalada César de pollo crujiente",
                     "Croquetas caseras de pollo y jamón",
-                    "Fideuá con sabor a mediterráneo",
-                    "Plato de la semana"
+                    "Fideuá con sabor a mediterráneo"
                 ]
             },
             {
@@ -508,25 +657,22 @@ document.querySelector('[data-btn-template-menu]')?.addEventListener('click', ()
                     "Cuarto de pollo a l'ast, la joya de la casa",
                     "Arroz con verduras y pollo al curry suave",
                     "Fingers de pollo con salsa de yogur, miel y mostaza",
-                    "Berenjena rellena gratinada al horno",
-                    "Canelones de rustido al estilo de la abuela",
-                    "Plato de la semana"
+                    "Canelones de rustido al estilo de la abuela"
                 ]
             },
             {
                 title_es: "POSTRES",
                 items_es: [
-                    "Flan",
+                    "Flan casero",
                     "Tarta de Queso",
-                    "Brownie de chocolate",
-                    "Yogurt con mermelada de frambuesa",
-                    "Helado",
-                    "Café"
+                    "Yogurt con mermelada",
+                    "Helado o Café"
                 ]
             }
         ]
     };
-    textarea.value = JSON.stringify(sample, null, 2);
+    renderMenuBuilder(sample);
+    syncMenuBuilderToJson();
 });
 
 // ── Create Button ────────────────────────────────────────────────

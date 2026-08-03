@@ -43,7 +43,7 @@ class Dashboard
 
         // Products per category
         $stmt = $pdo->prepare(
-            'SELECT c.name_es, c.name_en, COUNT(p.id) AS cnt
+            'SELECT c.name_ca, c.name_es, c.name_en, c.name_uk, COUNT(p.id) AS cnt
              FROM categories c
              LEFT JOIN products p ON p.category_id = c.id AND p.is_active = 1
              WHERE c.is_active = 1
