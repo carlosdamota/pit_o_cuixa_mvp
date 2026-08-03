@@ -113,6 +113,93 @@ function registerServiceWorker() {
 }
 
 /**
+ * Product image fallback chain.
+ *
+ * Product images come from the scraper (Cloudinary) and can break at any time
+ * (removed, renamed, network). Each broken product image first falls back to
+ * its own local image (named after the product slug) inside img/pic/, then to
+ * the generic local placeholder:
+ *
+ *   Cloudinary URL → /img/pic/{slug}.webp → /img/fallback_img.webp
+ *
+ * The slug is read from the element's own data-image-slug attribute, or from
+ * an ancestor [data-product-slug] (product cards already carry it), so the
+ * local leaf is keyed per product.
+ *
+ * Implemented with event delegation in the CAPTURE phase because the `error`
+ * event does NOT bubble — but it does pass through capture, so a
+ * document-level listener catches every broken <img>. This also keeps the
+ * fallback out of the templates, which the Content-Security-Policy
+ * (script-src 'self') would otherwise block with inline onerror handlers.
+ */
+const GENERIC_IMAGE_FALLBACKS = ['/img/fallback_img.webp'];
+
+/**
+ * Resolve the product slug for an image, used to name the per-product local
+ * image (/img/pic/{slug}.webp). Looks for data-image-slug on the element
+ * first, then an ancestor [data-product-slug].
+ * @param {HTMLImageElement} img
+ * @returns {string}
+ */
+function productImageSlug(img) {
+  if (img.dataset.imageSlug) {
+    return img.dataset.imageSlug;
+  }
+  const holder = img.closest('[data-product-slug]');
+  return holder ? holder.dataset.productSlug : '';
+}
+
+/**
+ * Build the full fallback chain for an image: per-product local image first
+ * (when a slug is known), then the generic placeholders.
+ * @param {HTMLImageElement} img
+ * @returns {string[]}
+ */
+function buildProductImageFallbacks(img) {
+  const slug = productImageSlug(img);
+  const local = slug ? [`/img/pic/${encodeURIComponent(slug)}.webp`] : [];
+  return local.concat(GENERIC_IMAGE_FALLBACKS);
+}
+
+/**
+ * Swap a broken product image to the next fallback in its chain, or hide it
+ * once every fallback is exhausted.
+ * @param {HTMLImageElement} img
+ */
+function handleProductImageError(img) {
+  const currentPath = new URL(img.src).pathname;
+  const fallbacks = buildProductImageFallbacks(img);
+  const currentIndex = fallbacks.indexOf(currentPath);
+  const nextIndex = currentIndex + 1;
+
+  if (nextIndex < fallbacks.length) {
+    img.src = fallbacks[nextIndex];
+    return;
+  }
+
+  // All fallbacks exhausted — hide the broken image instead of showing the
+  // browser's broken-image icon. The layout keeps its shape via the wrapper.
+  img.style.visibility = 'hidden';
+}
+
+/**
+ * Attach the image fallback listener. Only product images (scraped sources)
+ * participate; logos, slider and admin images are left untouched.
+ */
+function initImageFallback() {
+  document.addEventListener('error', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement)) {
+      return;
+    }
+    if (!target.classList.contains('product-card__image') && !target.classList.contains('listview-item__img')) {
+      return;
+    }
+    handleProductImageError(target);
+  }, true);
+}
+
+/**
  * Initialise all modules when DOM is ready.
  */
 function init() {
@@ -120,6 +207,7 @@ function init() {
   initLangDropdown();
   initMenuFilter();
   initMenuSlider();
+  initImageFallback();
   registerServiceWorker();
 }
 
