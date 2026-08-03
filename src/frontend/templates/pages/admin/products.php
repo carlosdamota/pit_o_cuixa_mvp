@@ -106,10 +106,14 @@ $lang       = $pageData['locale'] ?? LANG;
                         </div>
 
                         <div class="admin-field">
-                            <label class="admin-field__label" for="prod-image">Image URL</label>
-                            <div style="display:flex;gap:8px;align-items:flex-start;">
-                                <input id="prod-image" name="image_url" type="url" class="admin-field__input"
-                                       placeholder="https://..." style="flex:1;">
+                            <label class="admin-field__label" for="prod-image">Imagen del Producto</label>
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <input id="prod-image" name="image_url" class="admin-field__input"
+                                       placeholder="https://... o sube una imagen" style="flex:1;min-width:200px;">
+                                <input type="file" id="prod-image-file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden>
+                                <button type="button" class="admin-btn-sm admin-btn-sm--secondary" data-btn-upload-file style="white-space:nowrap;">
+                                    📁 Subir Imagen
+                                </button>
                                 <div class="admin-image-preview" data-preview="image" aria-hidden="true"></div>
                             </div>
                         </div>
@@ -876,6 +880,60 @@ const imagePreview = document.querySelector('[data-preview="image"]');
 if (imageInput && imagePreview) {
     bindImagePreview(imageInput, imagePreview);
 }
+
+// ── Image Upload Handling ────────────────────────────────────────
+const uploadBtn = document.querySelector('[data-btn-upload-file]');
+const fileInput = document.getElementById('prod-image-file');
+
+uploadBtn?.addEventListener('click', () => {
+    fileInput?.click();
+});
+
+fileInput?.addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('La imagen supera los 5 MB permitidos', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('csrf_token', getCsrfToken());
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = '⏳ Subiendo...';
+
+    try {
+        const response = await fetch('/api/admin/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': getCsrfToken(),
+            },
+        });
+
+        const json = await response.json();
+
+        if (json.error) {
+            showToast(json.message || 'Error al subir imagen', 'error');
+        } else if (json.url) {
+            if (imageInput) {
+                imageInput.value = json.url;
+                imageInput.dispatchEvent(new Event('input', { bubbles: true }));
+                imageInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            showToast('Imagen subida y optimizada a WebP', 'success');
+        }
+    } catch (err) {
+        showToast('Error de conexión al subir la imagen', 'error');
+    } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = '📁 Subir Imagen';
+        fileInput.value = '';
+    }
+});
 
 // ── Form Field Validation on Blur ───────────────────────────────
 const productForm = document.querySelector('[data-product-form]');

@@ -24,6 +24,7 @@ use Pit\Cuixa\Backend\Api\AdminProducts;
 use Pit\Cuixa\Backend\Api\AdminCategories;
 use Pit\Cuixa\Backend\Api\AdminIO;
 use Pit\Cuixa\Backend\Api\WebScraper;
+use Pit\Cuixa\Backend\Api\AdminUpload;
 use Pit\Cuixa\Backend\Pages\Home;
 use Pit\Cuixa\Backend\Pages\Menu as MenuPage;
 use Pit\Cuixa\Backend\Pages\Admin\Login as AdminLogin;
@@ -164,6 +165,7 @@ $router->add('POST',   '/api/admin/import',         static function (array $para
 $router->add('GET',    '/api/admin/export',         static function (array $params): void { AdminIO::export(); });
 $router->add('GET',    '/api/admin/settings',       static function (array $params): void { AdminSettings::get(); });
 $router->add('PUT',    '/api/admin/settings',       static function (array $params): void { AdminSettings::update(); });
+$router->add('POST',   '/api/admin/upload',         static function (array $params): void { AdminUpload::uploadImage(); });
 
 // ── 4b. Sitemap and Robots (Phase 4) ──────────────────────────────────
 $router->add('GET', '/sitemap.xml', static function (array $params): void {

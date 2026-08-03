@@ -43,7 +43,9 @@ body {
 
 /* ── Typography ─────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading, var(--font-family));
   font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
   line-height: var(--line-height-tight);
   color: var(--color-on-surface);
 }

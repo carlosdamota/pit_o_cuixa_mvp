@@ -94,3 +94,17 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Mobile responsive safe zone */
+@media (max-width: 767px) {
+  .whatsapp-float {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .whatsapp-float__link,
+  .whatsapp-float__icon {
+    width: 48px;
+    height: 48px;
+  }
+}

@@ -59,6 +59,31 @@
     gap: 4px;
     border-radius: 9px;
   }
+
+  .accordion-header {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .accordion-header__title {
+    font-size: 1.1rem;
+  }
+
+  .accordion-header__meta {
+    gap: 8px;
+  }
+
+  .accordion-header__price {
+    font-size: 1.15rem;
+  }
+
+  .listview-item {
+    gap: 10px;
+  }
+
+  .listview-item__price {
+    font-size: 0.95rem;
+  }
 }
 
 /* Accordion Component */
@@ -92,6 +117,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 16px 20px;
   font-family: inherit;
   background: transparent;
@@ -109,6 +135,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
 .accordion-header__title {
@@ -126,12 +154,16 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .accordion-header__price {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--color-primary, #d97706);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .accordion-header__icon {

@@ -122,6 +122,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   white-space: nowrap;
+  flex-shrink: 0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 

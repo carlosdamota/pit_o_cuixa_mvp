@@ -112,7 +112,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
     <?php if ($dineInMenus !== []): ?>
         <section style="margin-bottom:var(--space-xl, 32px);" data-category="all">
             <h2 class="section__title">
-                🗂️ Menús del Día y Promociones
+                Menús del Día y Promociones
             </h2>
             <div class="accordion-list">
                 <?php foreach ($dineInMenus as $index => $m):
@@ -176,7 +176,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
     <!-- Carta en local por Secciones / Categorías (ListView colapsable) -->
     <section>
         <h2 class="section__title">
-            📖 A la Carta en Restaurante
+            A la Carta en Restaurante
         </h2>
         <div class="accordion-list">
             <?php foreach ($dineInGroups as $catIndex => $group):
@@ -282,7 +282,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
     <div class="container">
         <header class="delivery-map-section__header">
             <h2 id="delivery-map-heading" class="delivery-map-section__title">
-                🛵 <?= __('menu.map.title') ?>
+                <?= __('menu.map.title') ?>
             </h2>
             <p class="delivery-map-section__subtitle">
                 <?= __('menu.map.subtitle') ?>

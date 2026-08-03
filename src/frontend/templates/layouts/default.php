@@ -87,6 +87,11 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <link rel="apple-touch-icon" href="/img/apple-touch-icon.svg">
 
+    <!-- ── Typography (Google Fonts: Outfit & Inter) ────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
     <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
     <?php $v = '?v=1.5.0'; ?>
     <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">

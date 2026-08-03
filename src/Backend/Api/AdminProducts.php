@@ -183,11 +183,11 @@ class AdminProducts
             }
         }
 
-        // Validate image_url scheme (prevents javascript: XSS)
+        // Validate image_url scheme (prevents javascript: XSS, allows http, https, or relative local path /)
         if (!empty($input['image_url'])) {
             $imageUrl = trim((string) $input['image_url']);
-            if (!preg_match('#^https?://#i', $imageUrl)) {
-                $errors[] = 'image_url must start with https:// or http://';
+            if (!preg_match('#^(https?://|/)#i', $imageUrl)) {
+                $errors[] = 'image_url debe comenzar con http://, https:// o una ruta local como /img/...';
             }
         }
 
