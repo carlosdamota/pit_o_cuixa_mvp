@@ -230,37 +230,36 @@ class AdminProducts
             $menuDataJson = is_array($input['menu_data']) ? json_encode($input['menu_data'], JSON_UNESCAPED_UNICODE) : $input['menu_data'];
         }
 
-        $pdo  = \Pit\Cuixa\Backend\Db\Connection::get();
-        $stmt = $pdo->prepare(
-            'INSERT INTO products (category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
-             VALUES (:category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
-        );
-
-        $stmt->execute([
-            ':category_id'    => (int) ($input['category_id'] ?? 0),
-            ':slug'           => trim((string) ($input['slug'] ?? '')),
-            ':name_es'        => trim((string) ($input['name_es'] ?? '')),
-            ':name_en'        => trim((string) ($input['name_en'] ?? '')),
-            ':name_ca'        => trim((string) ($input['name_ca'] ?? '')),
-            ':name_uk'        => trim((string) ($input['name_uk'] ?? '')),
-            ':description_es' => trim((string) ($input['description_es'] ?? '')),
-            ':description_en' => trim((string) ($input['description_en'] ?? '')),
-            ':description_ca' => trim((string) ($input['description_ca'] ?? '')),
-            ':description_uk' => trim((string) ($input['description_uk'] ?? '')),
-            ':price'          => (float) ($input['price'] ?? 0),
-            ':image_url'      => trim((string) ($input['image_url'] ?? '')),
-            ':last_shop_url'  => trim((string) ($input['last_shop_url'] ?? '')),
-            ':sort_order'     => (int) ($input['sort_order'] ?? 0),
-            ':is_active'      => !empty($input['is_active']) ? 1 : 0,
-            ':is_featured'    => !empty($input['is_featured']) ? 1 : 0,
-            ':is_dine_in'     => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
-            ':is_delivery'    => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
-            ':source'         => trim((string) ($input['source'] ?? 'manual')),
-            ':type'           => trim((string) ($input['type'] ?? 'simple')),
-            ':menu_data'      => $menuDataJson,
+        // Persist through the centralized Product repository — the single write
+        // path for the products table — instead of inline SQL. The values below
+        // mirror exactly what the previous inline INSERT wrote, so the stored
+        // row is unchanged.
+        $repo = new ProductRepo();
+        $repo->insert([
+            'category_id'    => (int) ($input['category_id'] ?? 0),
+            'slug'           => trim((string) ($input['slug'] ?? '')),
+            'name_es'        => trim((string) ($input['name_es'] ?? '')),
+            'name_en'        => trim((string) ($input['name_en'] ?? '')),
+            'name_ca'        => trim((string) ($input['name_ca'] ?? '')),
+            'name_uk'        => trim((string) ($input['name_uk'] ?? '')),
+            'description_es' => trim((string) ($input['description_es'] ?? '')),
+            'description_en' => trim((string) ($input['description_en'] ?? '')),
+            'description_ca' => trim((string) ($input['description_ca'] ?? '')),
+            'description_uk' => trim((string) ($input['description_uk'] ?? '')),
+            'price'          => (float) ($input['price'] ?? 0),
+            'image_url'      => trim((string) ($input['image_url'] ?? '')),
+            'last_shop_url'  => trim((string) ($input['last_shop_url'] ?? '')),
+            'sort_order'     => (int) ($input['sort_order'] ?? 0),
+            'is_active'      => !empty($input['is_active']) ? 1 : 0,
+            'is_featured'    => !empty($input['is_featured']) ? 1 : 0,
+            'is_dine_in'     => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
+            'is_delivery'    => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
+            'source'         => trim((string) ($input['source'] ?? 'manual')),
+            'type'           => trim((string) ($input['type'] ?? 'simple')),
+            'menu_data'      => $menuDataJson,
         ]);
 
-        $newId = (int) $pdo->lastInsertId();
+        $newId = (int) \Pit\Cuixa\Backend\Db\Connection::get()->lastInsertId();
 
         // Fetch the created product with category info
         $pdo2  = \Pit\Cuixa\Backend\Db\Connection::get();
@@ -326,56 +325,34 @@ class AdminProducts
             $menuDataJson = is_array($input['menu_data']) ? json_encode($input['menu_data'], JSON_UNESCAPED_UNICODE) : $input['menu_data'];
         }
 
-        $stmt = $pdo->prepare(
-            'UPDATE products SET
-                category_id    = :category_id,
-                slug           = :slug,
-                name_es        = :name_es,
-                name_en        = :name_en,
-                name_ca        = :name_ca,
-                name_uk        = :name_uk,
-                description_es = :description_es,
-                description_en = :description_en,
-                description_ca = :description_ca,
-                description_uk = :description_uk,
-                price          = :price,
-                image_url      = :image_url,
-                last_shop_url  = :last_shop_url,
-                sort_order     = :sort_order,
-                is_active      = :is_active,
-                is_featured    = :is_featured,
-                is_dine_in     = :is_dine_in,
-                is_delivery    = :is_delivery,
-                source         = :source,
-                type           = :type,
-                menu_data      = :menu_data,
-                updated_at     = datetime(\'now\')
-             WHERE id = :id'
-        );
-
-        $stmt->execute([
-            ':id'              => $id,
-            ':category_id'     => (int) ($input['category_id'] ?? 0),
-            ':slug'            => trim((string) ($input['slug'] ?? '')),
-            ':name_es'         => trim((string) ($input['name_es'] ?? '')),
-            ':name_en'         => trim((string) ($input['name_en'] ?? '')),
-            ':name_ca'         => trim((string) ($input['name_ca'] ?? '')),
-            ':name_uk'         => trim((string) ($input['name_uk'] ?? '')),
-            ':description_es'  => trim((string) ($input['description_es'] ?? '')),
-            ':description_en'  => trim((string) ($input['description_en'] ?? '')),
-            ':description_ca'  => trim((string) ($input['description_ca'] ?? '')),
-            ':description_uk'  => trim((string) ($input['description_uk'] ?? '')),
-            ':price'           => (float) ($input['price'] ?? 0),
-            ':image_url'       => trim((string) ($input['image_url'] ?? '')),
-            ':last_shop_url'   => trim((string) ($input['last_shop_url'] ?? '')),
-            ':sort_order'      => (int) ($input['sort_order'] ?? 0),
-            ':is_active'       => !empty($input['is_active']) ? 1 : 0,
-            ':is_featured'     => !empty($input['is_featured']) ? 1 : 0,
-            ':is_dine_in'      => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
-            ':is_delivery'     => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
-            ':source'          => trim((string) ($input['source'] ?? 'manual')),
-            ':type'            => trim((string) ($input['type'] ?? 'simple')),
-            ':menu_data'       => $menuDataJson,
+        // Overwrite through the centralized Product repository (single write
+        // path for the products table). A full 21-column overwrite preserves
+        // the exact row the inline UPDATE used to produce, including a slug
+        // change, which is why updateById() is used instead of update() (the
+        // latter keys on slug and would clobber a renamed slug).
+        $repo = new ProductRepo();
+        $repo->updateById($id, [
+            'category_id'    => (int) ($input['category_id'] ?? 0),
+            'slug'           => trim((string) ($input['slug'] ?? '')),
+            'name_es'        => trim((string) ($input['name_es'] ?? '')),
+            'name_en'        => trim((string) ($input['name_en'] ?? '')),
+            'name_ca'        => trim((string) ($input['name_ca'] ?? '')),
+            'name_uk'        => trim((string) ($input['name_uk'] ?? '')),
+            'description_es' => trim((string) ($input['description_es'] ?? '')),
+            'description_en' => trim((string) ($input['description_en'] ?? '')),
+            'description_ca' => trim((string) ($input['description_ca'] ?? '')),
+            'description_uk' => trim((string) ($input['description_uk'] ?? '')),
+            'price'          => (float) ($input['price'] ?? 0),
+            'image_url'      => trim((string) ($input['image_url'] ?? '')),
+            'last_shop_url'  => trim((string) ($input['last_shop_url'] ?? '')),
+            'sort_order'     => (int) ($input['sort_order'] ?? 0),
+            'is_active'      => !empty($input['is_active']) ? 1 : 0,
+            'is_featured'    => !empty($input['is_featured']) ? 1 : 0,
+            'is_dine_in'     => !isset($input['is_dine_in']) || !empty($input['is_dine_in']) ? 1 : 0,
+            'is_delivery'    => !isset($input['is_delivery']) || !empty($input['is_delivery']) ? 1 : 0,
+            'source'         => trim((string) ($input['source'] ?? 'manual')),
+            'type'           => trim((string) ($input['type'] ?? 'simple')),
+            'menu_data'      => $menuDataJson,
         ]);
 
         // Fetch updated product with category info
@@ -415,10 +392,9 @@ class AdminProducts
             return;
         }
 
-        $stmt = $pdo->prepare(
-            'UPDATE products SET is_active = 0, updated_at = datetime(\'now\') WHERE id = :id'
-        );
-        $stmt->execute([':id' => $id]);
+        // Soft-delete through the centralized Product repository (same write
+        // path as create/update for the products table).
+        (new ProductRepo())->setStatusById($id, false);
 
         Response::json([
             'error' => false,
