@@ -210,6 +210,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                             <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
                                                  alt="<?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?>"
                                                  class="listview-item__img"
+                                                 <?php if (!empty($p['slug'])): ?>data-image-slug="<?= htmlspecialchars($p['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
                                                  loading="lazy" width="52" height="52">
                                         <?php endif; ?>
                                         <div class="listview-item__info">
