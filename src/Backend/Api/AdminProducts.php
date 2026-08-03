@@ -198,6 +198,48 @@ class AdminProducts
     }
 
     /**
+     * Apply the cross-type slug rule before persisting.
+     *
+     * The slug is the product's identity — and the base of its local image
+     * file /img/pic/{slug}.webp — so two products can never share one
+     * (UNIQUE constraint). When the proposed slug collides with a product of
+     * a DIFFERENT type, the incoming product is renamed with its own type
+     * suffix (-local for menus, -delivery for simple products) and persisted
+     * under that slug. When it collides with the SAME type, the slug is a
+     * validation error (422) instead of a silent UNIQUE constraint crash.
+     * $excludeId lets an update keep its own slug without self-colliding.
+     *
+     * @param  array $input      Product payload (mutated: 'slug' may be renamed)
+     * @param  int   $excludeId  Product id to ignore (self on update, 0 on create)
+     * @return bool True when the slug is safe to persist; false when the
+     *              response was already sent (same-type collision, 422)
+     */
+    private static function applySlugRule(array &$input, int $excludeId = 0): bool
+    {
+        $slug = trim((string) ($input['slug'] ?? ''));
+        $type = trim((string) ($input['type'] ?? 'simple'));
+
+        if ($slug === '') {
+            return true; // validated elsewhere (required when a name is present)
+        }
+
+        $resolved = (new ProductRepo())->resolveSlugCollision($slug, $type, $excludeId);
+
+        if ($resolved === null) {
+            Response::json([
+                'error'  => true,
+                'errors' => ['El slug "' . $slug . '" ya está en uso por otro producto del mismo tipo'],
+                'code'   => 422,
+            ], 422);
+            return false;
+        }
+
+        $input['slug'] = $resolved;
+
+        return true;
+    }
+
+    /**
      * POST /api/admin/products — Create a new product.
      */
     public static function create(): void
@@ -224,6 +266,13 @@ class AdminProducts
         }
 
         self::resolveTranslations($input);
+
+        // Slug collisions with a product of the same type are a 422 here; a
+        // collision with a product of a different type renames this one with
+        // its own type suffix (see applySlugRule()).
+        if (!self::applySlugRule($input)) {
+            return;
+        }
 
         $menuDataJson = null;
         if (isset($input['menu_data']) && (is_array($input['menu_data']) || is_string($input['menu_data']))) {
@@ -317,6 +366,15 @@ class AdminProducts
 
         if ($check->fetch() === false) {
             Response::error('Product not found', 404);
+            return;
+        }
+
+        // Slug collisions with a product of the same type are a 422 here; a
+        // collision with a product of a different type renames this one with
+        // its own type suffix (see applySlugRule()). $id is excluded so the
+        // product can keep its own slug while renaming is still applied when
+        // the proposed slug belongs to ANOTHER product.
+        if (!self::applySlugRule($input, $id)) {
             return;
         }
 
