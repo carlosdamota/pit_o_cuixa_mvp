@@ -226,6 +226,25 @@ class Product
      * @return void
      */
 
+    /**
+     * Insert a product row.
+     *
+     * Contract (asymmetric by design, must be documented):
+     *   REQUIRED  — category_id, slug, name_es, price, last_shop_url.
+     *               A caller that omits one of these gets a PHP error / NULL
+     *               insert that fails the NOT NULL constraint: fail early,
+     *               never publish a catalog row missing its primary language.
+     *   OPTIONAL  — every other column falls back to a sane default:
+     *               names/descriptions in other languages → '' (the translate
+     *               API fills them later), description_es → '', image_url → ''
+     *               (a broken scrape link must not abort the fill),
+     *               sort_order → 0 (schema default), plus the existing
+     *               is_active/is_featured/channel/source/type/menu_data
+     *               fallbacks below.
+     *
+     * @param  array $product
+     * @return void
+     */
     public function insert(array $product): void{
 
         //Preparamos la insercion
@@ -242,7 +261,7 @@ class Product
             ':name_en' => $product['name_en'] ?? '',
             ':name_ca' => $product['name_ca'] ?? '',
             ':name_uk' => $product['name_uk'] ?? '',
-            ':description_es' => $product['description_es'],
+            ':description_es' => $product['description_es'] ?? '',
             ':description_en' => $product['description_en'] ?? '',
             ':description_ca' => $product['description_ca'] ?? '',
             ':description_uk' => $product['description_uk'] ?? '',
@@ -251,9 +270,9 @@ class Product
             // corrupted prices in the REAL column (see getChanges() for the
             // re-sync repair path).
             ':price' => $this->normalizePrice($product['price'] ?? 0),
-            ':image_url' => $product['image_url'],
+            ':image_url' => $product['image_url'] ?? '',
             ':last_shop_url' => $product['last_shop_url'],
-            ':sort_order' => $product['sort_order'],
+            ':sort_order' => $product['sort_order'] ?? 0,
             // Active/featured now respect an explicit caller value and only
             // fall back when absent. `sync()` sends neither key, so scraped
             // products are unchanged (is_active=1, is_featured=0), while the
