@@ -32,8 +32,10 @@ class WebScraper{
         //Config Handler
         curl_setopt_array($curl_handler, [
             CURLOPT_RETURNTRANSFER => true, #Devolver HTML como texto
-            //CURLOPT_FOLLOWLOCATION => true, #Habilitar auto-redireccionamiento
-            CURLOPT_USERAGENT => "Mozilla/5.0" #Agente Mozilla por mayor compabilidad
+            CURLOPT_USERAGENT => "Mozilla/5.0", #Agente Mozilla por mayor compabilidad
+            CURLOPT_TIMEOUT => 15,            #Tiempo máximo total de descarga
+            CURLOPT_CONNECTTIMEOUT => 5,      #Tiempo máximo para conectar
+            CURLOPT_FAILONERROR => true       #Error ante respuestas HTTP 4xx/5xx
         ]);
 
         //Ejecutamos Handler
@@ -50,11 +52,11 @@ class WebScraper{
 
     /**
      * Procesador de datos html para convertirlos en JSON
-     * @param string $url
+     * @param string $html
      * @return array
      */
 
-    private function parseHtml(string $url) : array{
+    private function parseHtml(string $html) : array{
         
         //Ignoramos los warnings generados por fallos en el HTML
         libxml_use_internal_errors(true);
@@ -62,7 +64,7 @@ class WebScraper{
         //Instanciamos la clase DOM
         $dom = new \DOMDocument();
 
-        $dom->loadHTML($url);
+        $dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
 
         $counter = 1;
@@ -72,7 +74,7 @@ class WebScraper{
 
         //Bloque de control
         if($carta->length !== 1){
-            throw new \RuntimeException("Error al obtener datos:\nDatos esperados: 1\n Datos encontrados: {carta->length}");
+            throw new \RuntimeException("Error al obtener datos:\nDatos esperados: 1\n Datos encontrados: {$carta->length}");
         }
         else{
             $carta = $carta->item(0); #Convierte de DOMNodeList a DOMElement
@@ -91,7 +93,7 @@ class WebScraper{
             //Asignamos categoria normalizada
             if($c->tagName === "div"){
                 $h2 = $xpath->query(".//h2", $c)->item(0);
-                $category = $this->mapCategory($h2->textContent);
+                $category = $this->mapCategory($h2?->textContent ?? '');
                 continue;
             }
 
@@ -102,20 +104,26 @@ class WebScraper{
 
                 //datos
                 $name = trim($xpath->query(".//h3", $c)->item(0)?->textContent ?? '');
-                $price = trim($xpath->query(".//p[contains(text(),'€')]", $c)->item(0)->textContent ?? '');
-                $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $c)->item(0)->textContent ?? '');
-                $urL_image = $xpath->query(".//img", $c)->item(0)?->getAttribute('src') ?? '';
+                $price = trim($xpath->query(".//p[contains(text(),'€')]", $c)->item(0)?->textContent ?? '');
+                $descr = trim($xpath->query(".//p[not(contains(text(),'€'))]", $c)->item(0)?->textContent ?? '');
 
-                //limpiamos el link de cualquier formato
-                $id_image = basename($urL_image);
-                $image = "https://res.cloudinary.com/lastpos/image/upload/" . $id_image;
+                //La URL de la imagen: getAttribute('src') devuelve '' (no null)
+                //cuando el <img> no tiene atributo src. Tratamos como "sin imagen"
+                //(null) cualquier src vacío, de solo espacios, "#", data-URI o
+                //con basename vacío (p.ej. "https://x.com/") — todo eso produciría
+                //una URL de Cloudinary rota (barra final, sin nombre de archivo).
+                $rawImageSrc = trim($xpath->query(".//img", $c)->item(0)?->getAttribute('src') ?? '');
+                $imageBasename = basename($rawImageSrc);
+                $image_url = ($rawImageSrc !== '' && $rawImageSrc !== '#' && $imageBasename !== '' && !str_starts_with($rawImageSrc, 'data:'))
+                    ? "https://res.cloudinary.com/lastpos/image/upload/" . $imageBasename
+                    : null;
 
                 $data[] = [
                     'slug' => $slug,
                     'name_es' => $name,
                     'price' => $price,
                     'description_es' => $descr,
-                    'image_url' => $image,
+                    'image_url' => $image_url,
                     'last_shop_url' => $link,
                     'category' => $category,
                     'sort_order' => $counter++,
@@ -150,4 +158,3 @@ class WebScraper{
         };
     }
 }
-?>
