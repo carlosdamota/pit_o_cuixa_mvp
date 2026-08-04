@@ -606,13 +606,15 @@ body:has(.landing--onboarding) .main {
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  padding-top: var(--space-xs);
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  gap: var(--space-md);
 }
 
 /* FAQ Pill Button */
 .onboarding__faq-btn {
   height: 36px;
-  padding: 0 14px;
+  padding: 0 16px;
   border-radius: var(--radius-full);
   background-color: var(--color-on-surface);
   color: var(--color-surface-container-lowest);
@@ -631,45 +633,66 @@ body:has(.landing--onboarding) .main {
   background-color: #000000;
 }
 
-/* PWA Installation CTA Button */
+/* Floating PWA Installation CTA Button (Bottom-Left above FAQ) */
 .onboarding__pwa-wrapper {
+  position: fixed;
+  bottom: 80px;
+  left: 32px;
+  z-index: 9990;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  animation: pwaBounce 3s ease-in-out infinite;
+}
+
+@keyframes pwaBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .onboarding__pwa-btn {
-  height: 36px;
-  padding: 0 16px;
-  border: 1px solid rgba(211, 47, 47, 0.25);
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  background: linear-gradient(135deg, #e30613 0%, #b71c1c 100%);
   color: #ffffff;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-family: var(--font-family, 'Quicksand', sans-serif);
   font-size: var(--font-size-xs, 12px);
   font-weight: var(--font-weight-bold, 700);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.25);
+  box-shadow: 0 6px 20px rgba(227, 6, 19, 0.4);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .onboarding__pwa-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(211, 47, 47, 0.35);
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(227, 6, 19, 0.55);
 }
 
 .onboarding__pwa-btn svg {
   flex-shrink: 0;
 }
 
+@media (max-width: 767px) {
+  .onboarding__pwa-wrapper {
+    bottom: 72px;
+    left: 16px;
+  }
+}
+
 /* Language Selector Group with Transparent Background for Flag Favicons */
 .onboarding__lang-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   background: transparent;
   padding: 2px;
   border-radius: var(--radius-full);

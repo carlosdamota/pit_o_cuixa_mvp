@@ -16,8 +16,8 @@
 
 .whatsapp-float {
   position: fixed;
-  bottom: 60px;
-  right: 40px;
+  bottom: 80px;
+  right: 32px;
   z-index: var(--z-whatsapp);
 
   /* WF-008: Prevent horizontal overflow on narrow viewports */
@@ -36,17 +36,21 @@
   box-shadow: var(--shadow-lg);
   text-decoration: none;
   position: relative;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  opacity: 0.85;
+  backdrop-filter: blur(4px);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
 }
 
 .whatsapp-float__link:hover {
+  opacity: 1;
   transform: scale(1.1);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
 }
 
 .whatsapp-float__link:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
+  opacity: 1;
   transform: scale(1.1);
 }
 
@@ -98,7 +102,7 @@
 /* Mobile responsive safe zone */
 @media (max-width: 767px) {
   .whatsapp-float {
-    bottom: 16px;
+    bottom: 72px;
     right: 16px;
   }
 

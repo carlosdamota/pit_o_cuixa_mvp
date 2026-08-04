@@ -42,11 +42,11 @@ class Menu
 
         $showSlider = ($sliderEnabled === '1') && count($sliderImages) > 0;
 
-        // Extract Dine-In Menus (type = 'menu')
+        // Extract Dine-In Menus & Cartas (type = 'menu' || type = 'carta')
         $dineInMenus = array_values(
             array_filter(
                 $dineInProducts,
-                fn(array $p): bool => ($p['type'] ?? 'simple') === 'menu'
+                fn(array $p): bool => in_array($p['type'] ?? 'simple', ['menu', 'carta'], true)
             )
         );
 
@@ -56,7 +56,7 @@ class Menu
             $catProducts = array_values(
                 array_filter(
                     $deliveryProducts,
-                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && !in_array($p['type'] ?? 'simple', ['menu', 'carta'], true)
                 )
             );
 
@@ -76,7 +76,7 @@ class Menu
             $catProducts = array_values(
                 array_filter(
                     $dineInProducts,
-                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && ($p['type'] ?? 'simple') !== 'menu'
+                    fn(array $p): bool => (int) $p['category_id'] === (int) $category['id'] && !in_array($p['type'] ?? 'simple', ['menu', 'carta'], true)
                 )
             );
 

@@ -56,7 +56,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                        placeholder="<?= __('menu.search.placeholder') ?>">
             </div>
 
-            <div class="channel-switcher" role="tablist" aria-label="Canales de carta">
+            <div class="channel-switcher" role="tablist" aria-label="<?= __('menu.channel.aria') ?>">
                 <button class="channel-switcher__btn<?= !$isDeliveryMode ? ' channel-switcher__btn--active' : '' ?>"
                         data-channel-target="dine_in"
                         type="button"
@@ -64,7 +64,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                         aria-selected="<?= !$isDeliveryMode ? 'true' : 'false' ?>"
                         aria-pressed="<?= !$isDeliveryMode ? 'true' : 'false' ?>">
                     <span class="channel-switcher__icon">🍽️</span>
-                    <span class="channel-switcher__label">Local</span>
+                    <span class="channel-switcher__label"><?= __('menu.channel.dine_in') ?></span>
                 </button>
                 <button class="channel-switcher__btn<?= $isDeliveryMode ? ' channel-switcher__btn--active' : '' ?>"
                         data-channel-target="delivery"
@@ -73,7 +73,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                         aria-selected="<?= $isDeliveryMode ? 'true' : 'false' ?>"
                         aria-pressed="<?= $isDeliveryMode ? 'true' : 'false' ?>">
                     <span class="channel-switcher__icon">🛵</span>
-                    <span class="channel-switcher__label">Llevar</span>
+                    <span class="channel-switcher__label"><?= __('menu.channel.takeaway') ?></span>
                 </button>
             </div>
         </div>
@@ -137,7 +137,9 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                 <?php endif; ?>
                             </div>
                             <div class="accordion-header__meta">
-                                <span class="accordion-header__price"><?= number_format((float) $m['price'], 2) ?> €</span>
+                                <?php if ((float) $m['price'] > 0): ?>
+                                    <span class="accordion-header__price"><?= number_format((float) $m['price'], 2) ?> €</span>
+                                <?php endif; ?>
                                 <svg class="accordion-header__icon" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
                             </div>
                         </button>
@@ -152,8 +154,20 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                         <div class="menu-section-block">
                                             <h4 class="menu-section-block__title"><?= htmlspecialchars($secTitle, ENT_QUOTES, 'UTF-8') ?></h4>
                                             <ul class="menu-section-block__list">
-                                                <?php foreach ($secItems as $itemStr): ?>
-                                                    <li class="menu-section-block__item">• <?= htmlspecialchars($itemStr, ENT_QUOTES, 'UTF-8') ?></li>
+                                                <?php foreach ($secItems as $item): ?>
+                                                    <?php if (is_array($item)):
+                                                        $itemName = $item["name_{$locale}"] ?? $item['name_es'] ?? $item['name'] ?? '';
+                                                        $itemPrice = (float) ($item['price'] ?? 0);
+                                                    ?>
+                                                        <li class="menu-section-block__item" style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                                                            <span>• <?= htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8') ?></span>
+                                                            <?php if ($itemPrice > 0): ?>
+                                                                <strong style="margin-left:12px;white-space:nowrap;color:var(--color-primary, #d97706);"><?= number_format($itemPrice, 2) ?> €</strong>
+                                                            <?php endif; ?>
+                                                        </li>
+                                                    <?php else: ?>
+                                                        <li class="menu-section-block__item">• <?= htmlspecialchars((string) $item, ENT_QUOTES, 'UTF-8') ?></li>
+                                                    <?php endif; ?>
                                                 <?php endforeach; ?>
                                             </ul>
                                         </div>

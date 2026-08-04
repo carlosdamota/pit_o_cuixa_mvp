@@ -150,6 +150,7 @@ $lang       = $pageData['locale'] ?? LANG;
                             <select id="prod-type" name="type" class="admin-field__select" data-type-select>
                                 <option value="simple">Producto Simple (A la carta)</option>
                                 <option value="menu">Menú / Pack Combo</option>
+                                <option value="carta">Carta (Precios por plato)</option>
                             </select>
                         </div>
 
@@ -251,7 +252,7 @@ $lang       = $pageData['locale'] ?? LANG;
                             if (!empty($p['is_dine_in'])) $channels[] = '🍽️ Local';
                             if (!empty($p['is_delivery'])) $channels[] = '🛵 Delivery';
                             $channelStr = implode(' ', $channels) ?: 'Ninguno';
-                            $typeStr = ($p['type'] ?? 'simple') === 'menu' ? '🗂️ Menú' : 'Simple';
+                            $typeStr = ($p['type'] ?? 'simple') === 'menu' ? '🗂️ Menú' : (($p['type'] ?? 'simple') === 'carta' ? '📋 Carta' : 'Simple');
                             $menuDataAttr = is_array($p['menu_data']) ? json_encode($p['menu_data'], JSON_UNESCAPED_UNICODE) : (string)($p['menu_data'] ?? '');
                         ?>
                             <tr data-product-id="<?= (int) $p['id'] ?>">
@@ -349,7 +350,7 @@ function buildRow(p) {
     if (p.is_dine_in) channels.push('🍽️ Local');
     if (p.is_delivery) channels.push('🛵 Delivery');
     const channelStr = channels.join(' ') || 'Ninguno';
-    const typeStr = (p.type === 'menu') ? '🗂️ Menú' : 'Simple';
+    const typeStr = (p.type === 'menu') ? '🗂️ Menú' : ((p.type === 'carta') ? '📋 Carta' : 'Simple');
     const menuDataAttr = (typeof p.menu_data === 'object' && p.menu_data !== null) ? JSON.stringify(p.menu_data) : (p.menu_data || '');
 
     return `<tr data-product-id="${p.id}">
@@ -395,11 +396,13 @@ const menuBuilderBadgeInput = document.querySelector('[data-menu-builder-badge]'
 const menuBuilderIncludesInput = document.querySelector('[data-menu-builder-includes]');
 const menuBuilderSectionsContainer = document.querySelector('[data-menu-builder-sections]');
 
-function createItemRow(value = '') {
+function createItemRow(name = '', price = '') {
     const div = document.createElement('div');
+    div.className = 'menu-item-row';
     div.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
     div.innerHTML = `
-        <input type="text" class="admin-field__input data-item-name" placeholder="Ej: Ensalada César" value="${escHtml(value)}" style="flex:1;font-size:0.8rem;padding:4px 8px;">
+        <input type="text" class="admin-field__input data-item-name" placeholder="Nombre del plato (Ej: Ensalada)" value="${escHtml(name)}" style="flex:2;font-size:0.8rem;padding:4px 8px;">
+        <input type="number" step="0.01" min="0" class="admin-field__input data-item-price" placeholder="€ (Opcional)" value="${price !== '' && price !== null ? escHtml(String(price)) : ''}" style="flex:1;max-width:110px;font-size:0.8rem;padding:4px 8px;">
         <button type="button" class="admin-btn-sm admin-btn-sm--danger data-btn-remove-item" title="Eliminar plato" style="padding:2px 6px;font-size:0.75rem;">&times;</button>
     `;
     div.querySelector('.data-btn-remove-item').addEventListener('click', () => {
@@ -407,6 +410,7 @@ function createItemRow(value = '') {
         syncMenuBuilderToJson();
     });
     div.querySelector('.data-item-name').addEventListener('input', syncMenuBuilderToJson);
+    div.querySelector('.data-item-price').addEventListener('input', syncMenuBuilderToJson);
     return div;
 }
 
@@ -426,11 +430,17 @@ function createSectionCard(title = '', items = []) {
 
     const itemsContainer = card.querySelector('.data-section-items');
     items.forEach(item => {
-        itemsContainer.appendChild(createItemRow(item));
+        if (typeof item === 'object' && item !== null) {
+            const iName = item.name_es || item.name || '';
+            const iPrice = item.price !== undefined ? item.price : '';
+            itemsContainer.appendChild(createItemRow(iName, iPrice));
+        } else {
+            itemsContainer.appendChild(createItemRow(String(item || ''), ''));
+        }
     });
 
     card.querySelector('.data-btn-add-item').addEventListener('click', () => {
-        itemsContainer.appendChild(createItemRow(''));
+        itemsContainer.appendChild(createItemRow('', ''));
         syncMenuBuilderToJson();
     });
 
@@ -465,6 +475,7 @@ function syncMenuBuilderToJson() {
     const textarea = document.querySelector('[name="menu_data"]');
     if (!textarea) return;
 
+    const currentType = document.querySelector('[name="type"]')?.value || 'simple';
     const badge = menuBuilderBadgeInput?.value.trim() || '';
     const includes = menuBuilderIncludesInput?.value.trim() || '';
     const sections = [];
@@ -473,9 +484,28 @@ function syncMenuBuilderToJson() {
         menuBuilderSectionsContainer.querySelectorAll('.menu-section-card').forEach(card => {
             const secTitle = card.querySelector('.data-section-title')?.value.trim() || '';
             const items = [];
-            card.querySelectorAll('.data-item-name').forEach(input => {
-                const val = input.value.trim();
-                if (val !== '') items.push(val);
+            card.querySelectorAll('.menu-item-row').forEach(row => {
+                const nameInput = row.querySelector('.data-item-name');
+                const priceInput = row.querySelector('.data-item-price');
+                if (nameInput) {
+                    const nameVal = nameInput.value.trim();
+                    const priceVal = priceInput?.value.trim();
+                    if (nameVal !== '') {
+                        if (priceVal !== '' && priceVal !== null && !isNaN(parseFloat(priceVal))) {
+                            items.push({
+                                name_es: nameVal,
+                                price: parseFloat(priceVal)
+                            });
+                        } else if (currentType === 'carta') {
+                            items.push({
+                                name_es: nameVal,
+                                price: 0
+                            });
+                        } else {
+                            items.push(nameVal);
+                        }
+                    }
+                }
             });
             if (secTitle !== '' || items.length > 0) {
                 sections.push({
@@ -510,7 +540,8 @@ menuBuilderIncludesInput?.addEventListener('input', syncMenuBuilderToJson);
 
 /** Collect form data into object */
 function getFormData(form) {
-    if (form.querySelector('[name="type"]')?.value === 'menu') {
+    const typeVal = form.querySelector('[name="type"]')?.value;
+    if (typeVal === 'menu' || typeVal === 'carta') {
         syncMenuBuilderToJson();
     }
 
@@ -547,7 +578,7 @@ function getFormData(form) {
 /** Toggle menu editor visibility */
 function toggleMenuEditor(type) {
     const editor = document.querySelector('[data-menu-editor]');
-    if (editor) editor.hidden = (type !== 'menu');
+    if (editor) editor.hidden = (type !== 'menu' && type !== 'carta');
 }
 
 /** Fill form with product data for editing */

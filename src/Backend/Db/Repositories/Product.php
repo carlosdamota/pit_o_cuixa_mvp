@@ -451,8 +451,8 @@ class Product
         }
 
         // Cross-type collision: rename with the suffix of the incoming type.
-        // Anything that is not an admin menu behaves like a simple product.
-        $suffix    = $type === 'menu' ? 'local' : 'delivery';
+        // Anything that is not an admin menu/carta behaves like a simple product.
+        $suffix    = ($type === 'menu' || $type === 'carta') ? 'local' : 'delivery';
         $candidate = $slug . '-' . $suffix;
 
         for ($n = 2; $this->slugOccupantType($candidate, $excludeId, $reservedSlugs) !== null; $n++) {
