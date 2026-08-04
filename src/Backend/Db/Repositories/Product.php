@@ -236,8 +236,8 @@ class Product
      *               never publish a catalog row missing its primary language.
      *   OPTIONAL  — every other column falls back to a sane default:
      *               names/descriptions in other languages → '' (the translate
-     *               API fills them later), description_es → '', image_url → ''
-     *               (a broken scrape link must not abort the fill),
+     *               API fills them later), description_es → '', image_url → NULL
+     *               (a missing/broken scrape image must not abort the fill),
      *               sort_order → 0 (schema default), plus the existing
      *               is_active/is_featured/channel/source/type/menu_data
      *               fallbacks below.
@@ -270,7 +270,9 @@ class Product
             // corrupted prices in the REAL column (see getChanges() for the
             // re-sync repair path).
             ':price' => $this->normalizePrice($product['price'] ?? 0),
-            ':image_url' => $product['image_url'] ?? '',
+            // "No image" is stored as NULL, never '' — normalize BEFORE binding
+            // so scraper/admin '' (or whitespace) converges to NULL.
+            ':image_url' => self::normalizeImageUrl($product['image_url'] ?? null),
             ':last_shop_url' => $product['last_shop_url'],
             ':sort_order' => $product['sort_order'] ?? 0,
             // Active/featured now respect an explicit caller value and only
@@ -328,6 +330,12 @@ class Product
 
         if(empty($changes)){
             return;
+        }
+
+        // "No image" is stored as NULL, never '' — normalize here so every
+        // updateById caller (admin API, CSV import) converges on NULL.
+        if (array_key_exists('image_url', $changes)) {
+            $changes['image_url'] = self::normalizeImageUrl($changes['image_url'] ?? null);
         }
 
         $params = $this->buildUpdateParams($changes);
@@ -699,22 +707,15 @@ class Product
             $changes['name_es'] = $scrap['name_es'];
         }
 
-
-        /*if($db['name_ca'] !== $scrap['name_ca']){
-            $changes['name_ca'] = $scrap['name_ca'];
-        }*/
+        // The scraper only syncs the fields below (name_es, description_es,
+        // price, image_url, last_shop_url, sort_order, channels). The other
+        // locale fields (name_en/ca/uk, description_en/ca/uk) are owned by
+        // the translate API and the admin panel, so a re-sync must never
+        // overwrite them.
 
         if($db['description_es'] !== $scrap['description_es']){
             $changes['description_es'] = $scrap['description_es'];
         }
-
-        /*if($db['description_en'] !== $scrap['description_en']){
-            $changes['description_en'] = $scrap['description_en'];
-        }*/
-
-        /*if($db['description_ca'] !== $scrap['description_ca']){
-            $changes['description_ca'] = $scrap['description_ca'];
-        }*/
 
         // Normalize the scraped price BEFORE comparing: a naive (float) cast
         // on raw DOM text ("19,50 €") truncates it to 19.0, so a change would
@@ -726,8 +727,15 @@ class Product
             $changes['price'] = $scrapedPrice;
         }
 
-        if($db['image_url'] !== $scrap['image_url']){
-            $changes['image_url'] = $scrap['image_url'];
+        // image_url: NULL and '' both mean "no image". Normalize both sides
+        // before comparing so a DB stored as NULL and a scrape emitting ''
+        // (or vice versa) are EQUAL — no spurious UPDATE every night. When
+        // they genuinely differ, emit the normalized scrap value, which is
+        // NULL for empty input.
+        $dbImage    = self::normalizeImageUrl($db['image_url'] ?? null);
+        $scrapImage = self::normalizeImageUrl($scrap['image_url'] ?? null);
+        if ((string) $dbImage !== (string) $scrapImage) {
+            $changes['image_url'] = $scrapImage;
         }
 
         if($db['last_shop_url'] !== $scrap['last_shop_url']){
@@ -833,6 +841,23 @@ class Product
         }
 
         return (float) $raw;
+    }
+
+    /**
+     * Normalize an image URL before it reaches the image_url column.
+     *
+     * "No image" is stored as NULL, never ''. The scraper emits NULL when the
+     * <img> src is missing or empty, and legacy rows/admin input may still
+     * carry '' (or whitespace) — every writer converges on NULL via this
+     * helper, and getChanges() uses it to compare both sides normalized.
+     *
+     * @param  mixed $value
+     * @return string|null Normalized URL, or null when empty/whitespace
+     */
+    public static function normalizeImageUrl(mixed $value): ?string
+    {
+        $value = trim((string) ($value ?? ''));
+        return $value === '' ? null : $value;
     }
 
 }

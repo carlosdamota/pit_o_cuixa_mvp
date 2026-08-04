@@ -24,6 +24,10 @@
  *      text "19,50 €" (comma decimal + NBSP + €) round-trips as numeric 19.5,
  *      plain dot-decimal numbers pass through unchanged, and a re-sync
  *      repairs rows previously corrupted with raw price TEXT.
+ *   7. Image URL null handling: image_url=null stores NULL, ''/whitespace
+ *      converges to NULL on insert, re-syncs with null/'' images are
+ *      idempotent (NULL and '' compare EQUAL, so no spurious UPDATE), and a
+ *      real image change (URL → null) still updates the row.
  *
  * Usage: php scripts/test-sync.php
  * Exit code: 0 when every check passes, 1 otherwise.
@@ -365,6 +369,94 @@ try {
         $row !== null && is_float($row['price']) && (string) $row['price'] === '11',
         'Case 6c: integer-valued TEXT price ("11,00 €") repaired to REAL 11.0 on re-sync',
         'got ' . gettype($row['price'] ?? 'null') . ' ' . ($row['price'] ?? 'null')
+    );
+
+    // ── Case 7: image_url NULL handling ────────────────────────────────────
+    // Contract: "no image" is stored as NULL, never ''. The scraper emits
+    // null for missing/empty src, the admin/CSV paths normalize '' → NULL,
+    // and getChanges() treats NULL and '' as EQUAL so a re-sync never fires
+    // a spurious UPDATE when one side is '' and the other NULL.
+    // updated_at (second precision) is the observable: a spurious UPDATE
+    // bumps it, so each equivalence case sleeps 1s before the re-sync.
+
+    // Case 7a: insert with image_url=null stores NULL.
+    resetDb($pdo);
+    $nullImg          = makeProduct('null-img');
+    $nullImg['image_url'] = null;
+    $repo->sync([$nullImg]);
+
+    $row = productRow($pdo, 'null-img');
+    record($row !== null, 'Case 7a: product with image_url=null inserted');
+    record(
+        $row !== null && $row['image_url'] === null,
+        'Case 7a: image_url=null stored as NULL',
+        'got ' . var_export($row['image_url'] ?? 'NULL', true)
+    );
+
+    // Case 7b: insert with image_url='' (and whitespace) converges to NULL.
+    resetDb($pdo);
+    $emptyImg          = makeProduct('empty-img');
+    $emptyImg['image_url'] = '';
+    $spaceImg          = makeProduct('space-img');
+    $spaceImg['image_url'] = '   ';
+    $repo->sync([$emptyImg, $spaceImg]);
+
+    $row = productRow($pdo, 'empty-img');
+    record($row !== null && $row['image_url'] === null, 'Case 7b: image_url=\'\' converges to NULL on insert');
+    $row = productRow($pdo, 'space-img');
+    record($row !== null && $row['image_url'] === null, 'Case 7b: whitespace-only image_url also converges to NULL');
+
+    // Case 7c: re-sync with a null image is idempotent — no spurious UPDATE.
+    resetDb($pdo);
+    $stableImg          = makeProduct('stable-null');
+    $stableImg['image_url'] = null;
+    $repo->sync([$stableImg]);
+    $before = productRow($pdo, 'stable-null');
+    sleep(1);
+    $repo->sync([$stableImg]); // same null image again
+    $after = productRow($pdo, 'stable-null');
+    record(
+        $after !== null && $after['updated_at'] === $before['updated_at'],
+        'Case 7c: re-sync with null image is idempotent (no spurious UPDATE)',
+        'before ' . ($before['updated_at'] ?? 'null') . ', after ' . ($after['updated_at'] ?? 'null')
+    );
+
+    // Case 7d: stored NULL vs scraped '' compares EQUAL — no spurious UPDATE.
+    resetDb($pdo);
+    $equivImg          = makeProduct('equiv-null');
+    $equivImg['image_url'] = null;
+    $repo->sync([$equivImg]);
+    $before = productRow($pdo, 'equiv-null');
+    sleep(1);
+    $equivImg['image_url'] = ''; // DB stores NULL, scrape emits '' → equal
+    $repo->sync([$equivImg]);
+    $after = productRow($pdo, 'equiv-null');
+    record(
+        $after !== null && $after['updated_at'] === $before['updated_at'],
+        'Case 7d: scraped \'\' vs stored NULL does not trigger an UPDATE',
+        'before ' . ($before['updated_at'] ?? 'null') . ', after ' . ($after['updated_at'] ?? 'null')
+    );
+
+    // Case 7e (positive control): a REAL image change (URL → null) still
+    // updates the row and stores NULL — the equivalence above must not
+    // suppress genuine changes.
+    resetDb($pdo);
+    $changedImg          = makeProduct('img-changes'); // has a Cloudinary-style URL
+    $repo->sync([$changedImg]);
+    $before = productRow($pdo, 'img-changes');
+    sleep(1);
+    $changedImg['image_url'] = null; // image disappears from the scrape
+    $repo->sync([$changedImg]);
+    $after = productRow($pdo, 'img-changes');
+    record(
+        $after !== null && $after['image_url'] === null,
+        'Case 7e: URL → null image change updates the row to NULL',
+        'got ' . var_export($after['image_url'] ?? 'NULL', true)
+    );
+    record(
+        $after !== null && $after['updated_at'] !== $before['updated_at'],
+        'Case 7e: genuine image change bumps updated_at',
+        'before ' . ($before['updated_at'] ?? 'null') . ', after ' . ($after['updated_at'] ?? 'null')
     );
 } catch (\Throwable $e) {
     record(false, 'Unexpected exception: ' . $e->getMessage());
