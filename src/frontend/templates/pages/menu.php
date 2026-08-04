@@ -216,17 +216,21 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                 $pName = $p["name_{$locale}"] ?? $p['name_es'];
                                 $pDesc = $p["description_{$locale}"] ?? $p['description_es'];
                                 $pSearchText = mb_strtolower($pName . ' ' . $pDesc);
-                                $imgUrl = $p['image_url'] ?? '';
+                                // Same image fallback chain as product-card.php:
+                                // scraped/Cloudinary URL → /img/fallback_img.webp.
+                                // data-image-slug keeps the client-side chain in
+                                // main.js working.
+                                $imgUrl = !empty($p['image_url'])
+                                    ? $p['image_url']
+                                    : '/img/fallback_img.webp';
                             ?>
                                 <div class="listview-item" data-search-text="<?= htmlspecialchars($pSearchText, ENT_QUOTES, 'UTF-8') ?>">
                                     <div class="listview-item__left">
-                                        <?php if (!empty($imgUrl)): ?>
-                                            <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                                 alt="<?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?>"
-                                                 class="listview-item__img"
-                                                 <?php if (!empty($p['slug'])): ?>data-image-slug="<?= htmlspecialchars($p['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
-                                                 loading="lazy" width="52" height="52">
-                                        <?php endif; ?>
+                                        <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                             alt="<?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?>"
+                                             class="listview-item__img"
+                                             <?php if (!empty($p['slug'])): ?>data-image-slug="<?= htmlspecialchars($p['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
+                                             loading="lazy" width="52" height="52">
                                         <div class="listview-item__info">
                                             <span class="listview-item__name"><?= htmlspecialchars($pName, ENT_QUOTES, 'UTF-8') ?></span>
                                             <?php if ($pDesc !== ''): ?>

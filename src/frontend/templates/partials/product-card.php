@@ -36,9 +36,13 @@ $description = !empty($product['description'])
 
 $price       = (float) ($product['price'] ?? 0);
 $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.') . ' €';
-$imageUrl    = $product['image_url']   ?? null;
-$orderUrl    = $product['last_shop_url'] ?? '#';
 $slug        = $product['slug']        ?? '';
+// Image fallback chain: scraped/Cloudinary URL → generic /img/fallback_img.webp.
+// Mirrors the client-side chain in public/js/main.js (which uses data-image-slug).
+$imageUrl    = !empty($product['image_url'])
+    ? $product['image_url']
+    : '/img/fallback_img.webp';
+$orderUrl    = $product['last_shop_url'] ?? '#';
 $productId   = (int) ($product['id']   ?? 0);
 
 // Build search corpus from both locales (lowercased, space-separated)

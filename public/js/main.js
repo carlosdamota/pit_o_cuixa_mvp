@@ -116,15 +116,10 @@ function registerServiceWorker() {
  * Product image fallback chain.
  *
  * Product images come from the scraper (Cloudinary) and can break at any time
- * (removed, renamed, network). Each broken product image first falls back to
- * its own local image (named after the product slug) inside img/pic/, then to
- * the generic local placeholder:
+ * (removed, renamed, network). A broken product image falls back to the
+ * generic local placeholder:
  *
- *   Cloudinary URL → /img/pic/{slug}.webp → /img/fallback_img.webp
- *
- * The slug is read from the element's own data-image-slug attribute, or from
- * an ancestor [data-product-slug] (product cards already carry it), so the
- * local leaf is keyed per product.
+ *   Cloudinary URL → /img/fallback_img.webp
  *
  * Implemented with event delegation in the CAPTURE phase because the `error`
  * event does NOT bubble — but it does pass through capture, so a
@@ -135,40 +130,13 @@ function registerServiceWorker() {
 const GENERIC_IMAGE_FALLBACKS = ['/img/fallback_img.webp'];
 
 /**
- * Resolve the product slug for an image, used to name the per-product local
- * image (/img/pic/{slug}.webp). Looks for data-image-slug on the element
- * first, then an ancestor [data-product-slug].
- * @param {HTMLImageElement} img
- * @returns {string}
- */
-function productImageSlug(img) {
-  if (img.dataset.imageSlug) {
-    return img.dataset.imageSlug;
-  }
-  const holder = img.closest('[data-product-slug]');
-  return holder ? holder.dataset.productSlug : '';
-}
-
-/**
- * Build the full fallback chain for an image: per-product local image first
- * (when a slug is known), then the generic placeholders.
- * @param {HTMLImageElement} img
- * @returns {string[]}
- */
-function buildProductImageFallbacks(img) {
-  const slug = productImageSlug(img);
-  const local = slug ? [`/img/pic/${encodeURIComponent(slug)}.webp`] : [];
-  return local.concat(GENERIC_IMAGE_FALLBACKS);
-}
-
-/**
  * Swap a broken product image to the next fallback in its chain, or hide it
  * once every fallback is exhausted.
  * @param {HTMLImageElement} img
  */
 function handleProductImageError(img) {
   const currentPath = new URL(img.src).pathname;
-  const fallbacks = buildProductImageFallbacks(img);
+  const fallbacks = GENERIC_IMAGE_FALLBACKS;
   const currentIndex = fallbacks.indexOf(currentPath);
   const nextIndex = currentIndex + 1;
 
