@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS products (
     description_en  TEXT    NOT NULL DEFAULT '',
     description_uk  TEXT    NOT NULL DEFAULT '',
     price           REAL    NOT NULL DEFAULT 0.00,
-    image_url       TEXT    NOT NULL DEFAULT '',
+    image_url       TEXT    DEFAULT NULL,
     last_shop_url   TEXT    NOT NULL DEFAULT '',
     sort_order      INTEGER NOT NULL DEFAULT 0,
     is_active       INTEGER NOT NULL DEFAULT 1,
