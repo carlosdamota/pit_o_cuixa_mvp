@@ -242,8 +242,8 @@ body:has(.landing--onboarding) .main {
   align-items: center;
   justify-content: flex-start;
   flex: 1;
-  min-height: 320px;
-  max-height: 430px;
+  min-height: 390px;
+  max-height: 540px;
   margin: var(--space-xs) 0;
 }
 
@@ -254,7 +254,7 @@ body:has(.landing--onboarding) .main {
   left: 50%;
   transform: translateX(-50%);
   width: 82%;
-  height: 190px;
+  height: 250px;
   z-index: 1;
   pointer-events: none;
 }
@@ -315,8 +315,8 @@ body:has(.landing--onboarding) .main {
 
 /* Fully Transparent Background for Drag Icons */
 .onboarding__drag-circle {
-  width: clamp(76px, 11vh, 90px);
-  height: clamp(76px, 11vh, 90px);
+  width: clamp(104px, 15vh, 130px);
+  height: clamp(104px, 15vh, 130px);
   border-radius: var(--radius-full);
   background: transparent;
   border: none;
@@ -390,7 +390,7 @@ body:has(.landing--onboarding) .main {
 /* Target: Icono del Local (Fully Transparent Container) */
 .onboarding__target {
   position: absolute;
-  top: 155px;
+  top: 200px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -425,8 +425,8 @@ body:has(.landing--onboarding) .main {
 }
 
 .onboarding__target-inner {
-  width: clamp(90px, 13vh, 108px);
-  height: clamp(90px, 13vh, 108px);
+  width: clamp(116px, 17vh, 150px);
+  height: clamp(116px, 17vh, 150px);
   border-radius: var(--radius-full);
   background: transparent;
   border: none;
@@ -483,7 +483,7 @@ body:has(.landing--onboarding) .main {
 /* Drag hint text */
 .onboarding__drag-hint {
   position: absolute;
-  top: 240px;
+  top: 290px;
   left: 0;
   right: 0;
   font-size: clamp(11px, 2.5vw, 13px);

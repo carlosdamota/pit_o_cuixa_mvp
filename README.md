@@ -93,8 +93,8 @@ En este proyecto, **los archivos CSS fuente no se modifican directamente en `pub
 | **Acceso Web** | Privado (fuera de la raíz del servidor web) | Público (Document Root servido por Nginx/Apache) |
 | **Modificación** | **Editar SIEMPRE aquí** | Nunca editar directamente (se sobrescribe) |
 
-#### ¿Por qué usamos `php scripts/sync-css.php`?
-
+#### ¿Por qué usamos `-css.php`?
+php scripts/sync
 1. **Seguridad y Separación de Arquitectura (Clean Architecture)**:
    El servidor web solo tiene acceso a la carpeta `public/`. Las tripas del backend (`src/`) y la base de datos están fuera de la raíz web para prevenir la exposición accidental de código fuente.
 

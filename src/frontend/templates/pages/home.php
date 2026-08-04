@@ -75,7 +75,7 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.in_local') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/en_local.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
+                    <img src="/img/icons/en_local.webp" width="84" height="84" alt="<?= __('home.onboarding.in_local') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.in_local') ?></span>
             </div>
@@ -90,7 +90,7 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.delivery') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/a_domicilio.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
+                    <img src="/img/icons/a_domicilio.webp" width="84" height="84" alt="<?= __('home.onboarding.delivery') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
             </div>
@@ -115,15 +115,15 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
                     </linearGradient>
                 </defs>
 
-                <!-- Left guide arrow pointing to lower target center (140, 170) -->
+                <!-- Left guide arrow pointing to lower target center (140, 210) -->
                 <path class="onboarding__arrow-path onboarding__arrow-path--left"
-                      d="M 60 30 Q 90 110 140 170"
+                      d="M 60 30 Q 90 135 140 210"
                       stroke="url(#arrow-gradient-left)" stroke-width="3.5" fill="none"
                       marker-end="url(#arrowhead-left)" />
 
-                <!-- Right guide arrow pointing to lower target center (160, 170) -->
+                <!-- Right guide arrow pointing to lower target center (160, 210) -->
                 <path class="onboarding__arrow-path onboarding__arrow-path--right"
-                      d="M 240 30 Q 210 110 160 170"
+                      d="M 240 30 Q 210 135 160 210"
                       stroke="url(#arrow-gradient-right)" stroke-width="3.5" fill="none"
                       marker-end="url(#arrowhead-right)" />
             </svg>
@@ -132,7 +132,7 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
             <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
                 <div class="onboarding__target-ring"></div>
                 <div class="onboarding__target-inner">
-                    <img src="/img/icons/local.webp" width="64" height="64" alt="<?= __('site.name') ?>">
+                    <img src="/img/icons/local.webp" width="100" height="100" alt="<?= __('site.name') ?>">
                 </div>
                 <span class="onboarding__target-label"><?= __('site.name') ?></span>
             </div>
