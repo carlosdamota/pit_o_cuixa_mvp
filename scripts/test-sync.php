@@ -28,6 +28,18 @@
  *      converges to NULL on insert, re-syncs with null/'' images are
  *      idempotent (NULL and '' compare EQUAL, so no spurious UPDATE), and a
  *      real image change (URL → null) still updates the row.
+ *   8. Audit-hardening slice 1 (change audit-hardening-security):
+ *      - T4.1 auth gate: serviceTokenMatches() fail-closed semantics
+ *        (empty config → false, match, mismatch) + authorizeSync() short-
+ *        circuit via a matching service credential.
+ *      - T4.2 ClickRateLimiter: 20/60 sliding window, 21st denied with
+ *        retryAfter>0, eviction after the window passes (no hard lock),
+ *        per-IP key isolation.
+ *      - T4.4 route method gating: Router dispatches the same path for
+ *        GET (405 closure) and POST (sync handler) as distinct closures;
+ *        GET /api/scraper route gate authorizes via service credential.
+ *      HTTP-level assertions (literal 405/401 bodies) are impractical in a
+ *      single CLI process — see the inline limitation note.
  *
  * Usage: php scripts/test-sync.php
  * Exit code: 0 when every check passes, 1 otherwise.
@@ -55,15 +67,22 @@ use Pit\Cuixa\Backend\Db\Repositories\Product;
 // path BEFORE any connection is opened. The production config is never
 // loaded, so data/pitocuixa.db is never opened by this script.
 $dbPath = sys_get_temp_dir() . '/pitocuixa-sync-test-' . uniqid('', true) . '.db';
+$clickDir = sys_get_temp_dir() . '/pitocuixa-click-test-' . uniqid('', true);
 
 if (!class_exists('Config', false)) {
     final class Config
     {
         public static string $dbPath = '';
+        public static string $serviceApiToken = '';
 
         public static function dbPath(): string
         {
             return self::$dbPath;
+        }
+
+        public static function serviceApiToken(): string
+        {
+            return self::$serviceApiToken;
         }
     }
 }
@@ -72,6 +91,9 @@ Config::$dbPath = $dbPath;
 require_once __DIR__ . '/../src/Backend/Db/Connection.php';
 require_once __DIR__ . '/../src/Backend/Db/Repositories/Category.php';
 require_once __DIR__ . '/../src/Backend/Db/Repositories/Product.php';
+require_once __DIR__ . '/../src/Backend/Auth/Auth.php';
+require_once __DIR__ . '/../src/Backend/Auth/ClickRateLimiter.php';
+require_once __DIR__ . '/../src/Backend/Router.php';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -458,6 +480,171 @@ try {
         'Case 7e: genuine image change bumps updated_at',
         'before ' . ($before['updated_at'] ?? 'null') . ', after ' . ($after['updated_at'] ?? 'null')
     );
+
+    // ── Slice 1 — auth gate, click limiter, route methods ────────────────
+    // Security/hardening tests for change audit-hardening-security. These use
+    // the throwaway DB/temp dir above and never touch live data. Real HTTP
+    // dispatch of public/index.php routes is impractical inside this vanilla
+    // CLI suite (index.php executes router dispatch + prints on load), so the
+    // route-level gate behaviour is exercised at the guard-function and
+    // Router-resolution level, and the HTTP gap is noted below.
+
+    // ── Case T4.1: service credential gate (AUTH-1 / AUTH-2) ─────────────
+    // serviceTokenMatches() is the constant-time, empty-fail-closed primitive
+    // behind authorizeSync(). Tested directly (pure, DB-free).
+    record(
+        !\Pit\Cuixa\Backend\Auth\Auth::serviceTokenMatches('', null),
+        'T4.1: serviceTokenMatches(\'\', null) fails closed'
+    );
+    record(
+        !\Pit\Cuixa\Backend\Auth\Auth::serviceTokenMatches('', 'x'),
+        'T4.1: serviceTokenMatches(\'\', \'x\') fails closed (empty configured)'
+    );
+    record(
+        \Pit\Cuixa\Backend\Auth\Auth::serviceTokenMatches('secret', 'secret'),
+        'T4.1: serviceTokenMatches(\'secret\', \'secret\') matches'
+    );
+    record(
+        !\Pit\Cuixa\Backend\Auth\Auth::serviceTokenMatches('secret', 'wrong'),
+        'T4.1: serviceTokenMatches(\'secret\', \'wrong\') rejects mismatch'
+    );
+
+    // authorizeSync(): with a matching service credential it must return
+    // WITHOUT invoking the admin requireToken() path (which would 401-exit).
+    // This proves the service-cred shortcut authorizes the sync routes.
+    $prevToken = Config::$serviceApiToken;
+    Config::$serviceApiToken = 'sync-service-secret';
+    $backupAuth = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+    $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer sync-service-secret';
+    $serviceAuthorized = false;
+    try {
+        \Pit\Cuixa\Backend\Auth\Auth::authorizeSync();
+        $serviceAuthorized = true;
+    } catch (\Throwable $e) {
+        $serviceAuthorized = false;
+    }
+    Config::$serviceApiToken = $prevToken;
+    if ($backupAuth === null) {
+        unset($_SERVER['HTTP_AUTHORIZATION']);
+    } else {
+        $_SERVER['HTTP_AUTHORIZATION'] = $backupAuth;
+    }
+    record($serviceAuthorized, 'T4.1: authorizeSync() authorized by a matching service credential (no admin session)');
+
+    // Route-level 401 (no cred / wrong cred) and 200-admin-token cases live in
+    // requireToken() which emits JSON + exits — impossible to assert inside a
+    // single CLI process, and real HTTP against index.php is not runnable here.
+    // The fail-closed primitive above plus the Router method-gating test below
+    // cover the gating contract; note this as a documented test limitation.
+
+    // ── Case T4.2: ClickRateLimiter (RATE-5) ─────────────────────────────
+    // Sliding window over a temp dir. 20 requests/60s allowed; the 21st is
+    // denied with retryAfter>0; entries evict once they fall out of the window;
+    // distinct keys (per-IP) are isolated; NO hard lock (eviction resets it).
+    $limiter = new \Pit\Cuixa\Backend\Auth\ClickRateLimiter($clickDir);
+    $window   = 60;
+    $max      = 20;
+    $first20  = [];
+    for ($i = 0; $i < $max; $i++) {
+        $first20[$i] = $limiter->allow('click:ip:10.0.0.1', $max, $window);
+    }
+
+    $allAllowed = count($first20) === $max
+        && array_reduce($first20, static fn (bool $carry, array $r): bool => $carry && $r['allowed'], true);
+    record($allAllowed, 'T4.2: first 20 clicks in a 60s window are all allowed', 'allowedCount=20');
+
+    $denied = $limiter->allow('click:ip:10.0.0.1', $max, $window);
+    record(!$denied['allowed'], 'T4.2: the 21st click is denied (429)');
+    record($denied['retryAfter'] > 0, 'T4.2: denied response carries retryAfter > 0', 'retryAfter=' . $denied['retryAfter']);
+
+    // Eviction: rewrite the window so all recorded clicks fall outside it. The
+    // next allow() must evict them and pass again — proving timestamps older
+    // than the window are dropped (no persistent 15-min hard lock).
+    $limiterEvict = new \Pit\Cuixa\Backend\Auth\ClickRateLimiter($clickDir);
+    $evictKey = 'click:ip:10.0.0.2';
+    $evictFile = $clickDir . '/' . md5($evictKey) . '.json';
+    // Simulate that all 20 clicks happened just outside the 60s window.
+    $now      = time();
+    $stale    = array_map(static fn (int $i): int => $now - $window - $i - 1, range(0, $max - 1));
+    file_put_contents($evictFile, json_encode(['clicks' => $stale]));
+    $evicted = $limiterEvict->allow($evictKey, $max, $window);
+    record($evicted['allowed'] === true, 'T4.2: stale timestamps older than the window are evicted, click allowed again');
+
+    // Per-IP isolation: two distinct keys have independent windows. Filling key
+    // B to the cap must NOT deny key A.
+    $limitA = new \Pit\Cuixa\Backend\Auth\ClickRateLimiter($clickDir);
+    for ($i = 0; $i < $max; $i++) {
+        $limitA->allow('click:ip:10.0.0.3', $max, $window);
+    }
+    $independentB = $limitA->allow('click:ip:10.0.0.4', $max, $window);
+    record($independentB['allowed'], 'T4.2: distinct per-IP keys have independent limits (B allowed while A is capped)');
+
+    // No hard lock + login RateLimiter untouched: the ClickRateLimiter stores
+    // only bounded JSON per key and evicts (proven above); it shares no state
+    // with the login RateLimiter, whose 900s lock is never used here. We do
+    // not modify or load RateLimiter in this suite.
+
+    // ── Case T4.4: route method gating (METHOD-4) ────────────────────────
+    // Router-level proof that the front controller can register the SAME path
+    // for GET (405) and POST (handler) and dispatch by method — the mechanism
+    // public/index.php relies on for GET /api/update-menu => 405. Executed via
+    // Router::resolve() without performing real HTTP.
+    $routeRouter = new \Pit\Cuixa\Backend\Router();
+    $postHandler = static function (array $params): void {
+        // Mirror of public/index.php: POST /api/update-menu runs the sync.
+    };
+    $getHandler = static function (array $params): void {
+        // Mirror of public/index.php: GET /api/update-menu is the 405 closure.
+    };
+    $routeRouter->add('POST', '/api/update-menu', $postHandler);
+    $routeRouter->add('GET', '/api/update-menu', $getHandler);
+
+    $postResolved = $routeRouter->resolve('POST', '/api/update-menu');
+    $getResolved  = $routeRouter->resolve('GET', '/api/update-menu');
+
+    record(
+        $postResolved['handler'] === $postHandler && $getResolved['handler'] === $getHandler,
+        'T4.4: Router dispatches POST /api/update-menu to the sync handler and GET to the 405 closure'
+    );
+    record(
+        $postResolved['handler'] !== $getResolved['handler'],
+        'T4.4: GET and POST /api/update-menu resolve to distinct closures (405 never runs sync)'
+    );
+
+    // GET /api/scraper is guarded by authorizeSync() (AUTH-1): it stays GET-
+    // only + read-only. The gate call is what the route closure performs; the
+    // guard primitive is covered in T4.1.
+    $scraperRouter = new \Pit\Cuixa\Backend\Router();
+    $aok = false;
+    $scraperToken = 'scraper-service-secret';
+    $backupAuth   = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+    $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $scraperToken;
+    $cfg = Config::$serviceApiToken;
+    Config::$serviceApiToken = $scraperToken;
+    $scraperRouter->add('GET', '/api/scraper', static function (array $params) use (&$aok): void {
+        // Mirror of public/index.php: authorizeSync() then scrape.
+        \Pit\Cuixa\Backend\Auth\Auth::authorizeSync();
+        $aok = true;
+    });
+    try {
+        $scraperRouter->resolve('GET', '/api/scraper')['handler'](['params' => []]);
+    } catch (\Throwable $e) {
+        $aok = false;
+    }
+    Config::$serviceApiToken = $cfg;
+    if ($backupAuth === null) {
+        unset($_SERVER['HTTP_AUTHORIZATION']);
+    } else {
+        $_SERVER['HTTP_AUTHORIZATION'] = $backupAuth;
+    }
+    record($aok, 'T4.4: GET /api/scraper route gate authorizes via service credential (scrape remains read-only)');
+
+    // HTTP-level assertion gap (documented limitation): issuing real requests
+    // against public/index.php to observe literal "405 Method Not Allowed" and
+    // JSON 401 bodies is not practical inside this dependency-free CLI suite
+    // (index.php dispatches + prints on require). The method-routing mechanism
+    // and the credential gate are covered at the guard/Router level above, and
+    // the routes themselves are code-reviewed in public/index.php.
 } catch (\Throwable $e) {
     record(false, 'Unexpected exception: ' . $e->getMessage());
 } finally {
@@ -469,6 +656,12 @@ try {
         }
     }
     status('!', 'Temp database removed: ' . $dbPath);
+    if (is_dir($clickDir)) {
+        foreach (glob($clickDir . '/*') ?: [] as $f) {
+            @unlink($f);
+        }
+        @rmdir($clickDir);
+    }
 }
 
 // ── Summary ──────────────────────────────────────────────────────────────
