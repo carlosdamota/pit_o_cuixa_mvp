@@ -17,14 +17,15 @@ require_once __DIR__ . '/../src/shared/bootstrap.php';
 use Pit\Cuixa\Backend\Router;
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Api\Products;
-use Pit\Cuixa\Backend\Db\Repositories\Product; #Borrar en Produ
 use Pit\Cuixa\Backend\Api\Menu;
 use Pit\Cuixa\Backend\Api\AuthController;
 use Pit\Cuixa\Backend\Api\AdminProducts;
 use Pit\Cuixa\Backend\Api\AdminCategories;
 use Pit\Cuixa\Backend\Api\AdminIO;
 use Pit\Cuixa\Backend\Api\WebScraper;
+use Pit\Cuixa\Backend\Api\UpdateMenu;
 use Pit\Cuixa\Backend\Api\AdminUpload;
+use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Pages\Home;
 use Pit\Cuixa\Backend\Pages\Menu as MenuPage;
 use Pit\Cuixa\Backend\Pages\Admin\Login as AdminLogin;
@@ -133,24 +134,32 @@ $router->add('POST', '/api/auth/logout', static function (array $params): void {
     AuthController::logout();
 });
 
-//Añadida ruta al Scraper
+//Añadida ruta al Scraper — read-only utility, requires auth (AUTH-1)
 $router->add('GET', '/api/scraper', static function(array $params): void{
+    Auth::authorizeSync();
+
     $scraper = new WebScraper();
 
     Response::json($scraper->scraper());
 });
 
-//Ruta del update_menu para dev, borrar cuando estemos en produccion
-$router->add('GET', '/api/update-menu', static function () {
-    
-    $scraper = new WebScraper();
+//POST /api/update-menu — state-mutating menu sync, requires auth, POST-only
+$router->add('POST', '/api/update-menu', static function (array $params): void {
+    Auth::authorizeSync();
 
-    $repo = new Product();
-    $repo->sync($scraper->scraper());
+    try {
+        $handler = new UpdateMenu();
+        Response::json($handler->update());
+    } catch (\Throwable $e) {
+        error_log('update-menu sync failed: ' . $e->getMessage());
+        Response::error('Sync failed', 500);
+    }
+});
 
-    Response::json([
-        'status' => 'ok'
-    ]);
+//GET /api/update-menu — 405: the sync is POST-only and MUST NOT trigger on GET (METHOD-4)
+$router->add('GET', '/api/update-menu', static function (array $params): void {
+    header('Allow: POST');
+    Response::error('Method Not Allowed', 405);
 });
 
 // Admin API CRUD
