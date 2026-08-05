@@ -15,6 +15,7 @@ namespace Pit\Cuixa\Backend\Api;
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Db\Repositories\Product as ProductRepo;
 use Pit\Cuixa\Backend\Db\Repositories\Category as CategoryRepo;
+use Pit\Cuixa\Backend\Auth\ClickRateLimiter;
 
 class Products
 {
@@ -90,11 +91,28 @@ class Products
 
     /**
      * POST /api/products/{id}/click
+     *
+     * RATE-5: windowed per-client-IP click rate limit (max 20 requests / 60s
+     * sliding window) applied BEFORE the counter is touched. The key is derived
+     * from REMOTE_ADDR only — proxy/X-Forwarded-For headers are untrusted, so no
+     * header spoofing can widen the window. On deny the caller receives HTTP 429
+     * with a Retry-After hint and the click is NOT recorded (no DB write).
      */
     public static function recordClick(int $productId): void
     {
         if ($productId <= 0) {
             Response::error('Invalid product ID', 400);
+            return;
+        }
+
+        $limiter = new ClickRateLimiter();
+        $ip      = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $result  = $limiter->allow("click:ip:{$ip}");
+
+        if (!$result['allowed']) {
+            // 429 + Retry-After; the click is skipped entirely.
+            header('Retry-After: ' . $result['retryAfter']);
+            Response::error('Too many requests', 429);
             return;
         }
 
