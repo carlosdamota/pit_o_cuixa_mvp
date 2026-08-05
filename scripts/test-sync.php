@@ -40,6 +40,12 @@
  *        GET /api/scraper route gate authorizes via service credential.
  *      HTTP-level assertions (literal 405/401 bodies) are impractical in a
  *      single CLI process — see the inline limitation note.
+ *   9. Audit-hardening slice 2 (change audit-hardening-security):
+ *      - T4.3 MenuTranslator whitelist: col('name','ca') resolves through
+ *        the LANGS whitelist, col('name','xx') throws, and
+ *        translateMissing(['xx']) throws BEFORE any SQL (TRANSL-6).
+ *        The private resolver is exercised via reflection; supported langs
+ *        run their queries normally as a positive control.
  *
  * Usage: php scripts/test-sync.php
  * Exit code: 0 when every check passes, 1 otherwise.
@@ -93,6 +99,8 @@ require_once __DIR__ . '/../src/Backend/Db/Repositories/Category.php';
 require_once __DIR__ . '/../src/Backend/Db/Repositories/Product.php';
 require_once __DIR__ . '/../src/Backend/Auth/Auth.php';
 require_once __DIR__ . '/../src/Backend/Auth/ClickRateLimiter.php';
+require_once __DIR__ . '/../src/Backend/Services/DeepLService.php';
+require_once __DIR__ . '/../src/Backend/Services/MenuTranslator.php';
 require_once __DIR__ . '/../src/Backend/Router.php';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -654,6 +662,55 @@ try {
         $_SERVER['HTTP_AUTHORIZATION'] = $backupAuth;
     }
     record($aok, 'T4.4: GET /api/scraper route gate authorizes via service credential (scrape remains read-only)');
+
+    // ── Case T4.3: MenuTranslator whitelist (TRANSL-6) ───────────────────
+    // Language-derived column names MUST resolve through the LANGS whitelist
+    // and never reach SQL as raw values. The `col()` resolver is private, so
+    // it is exercised via reflection; translateMissing(['xx']) proves the
+    // fail-closed path throws before any query runs.
+    $translator = new \Pit\Cuixa\Backend\Services\MenuTranslator();
+    $colMethod  = new \ReflectionMethod(\Pit\Cuixa\Backend\Services\MenuTranslator::class, 'col');
+    $colMethod->setAccessible(true);
+
+    $resolvedCa = $colMethod->invoke($translator, 'name', 'ca');
+    record($resolvedCa === 'name_ca', 'T4.3: col(\'name\', \'ca\') resolves to the whitelisted column name_ca', 'got ' . var_export($resolvedCa, true));
+
+    $resolvedEn = $colMethod->invoke($translator, 'description', 'en');
+    record($resolvedEn === 'description_en', 'T4.3: col(\'description\', \'en\') resolves to description_en', 'got ' . var_export($resolvedEn, true));
+
+    $badColThrew = false;
+    try {
+        $colMethod->invoke($translator, 'name', 'xx');
+    } catch (\InvalidArgumentException $e) {
+        $badColThrew = true;
+    }
+    record($badColThrew, 'T4.3: col(\'name\', \'xx\') throws for an unsupported language');
+
+    // translateMissing([]) with an unknown lang must throw BEFORE any SQL — the
+    // first thing the loop does is resolve the column via col(), which throws.
+    $badLangThrew = false;
+    try {
+        $translator->translateMissing(['xx']);
+    } catch (\InvalidArgumentException $e) {
+        $badLangThrew = true;
+    }
+    record($badLangThrew, 'T4.3: translateMissing([\'xx\']) throws before any SQL (fail-closed)');
+
+    // Positive control: a supported language runs the queries normally (no
+    // throw) — proving the whitelist admits the real CA/EN/UK path. Rows are
+    // wiped first so no missing translation triggers a DeepL API call (which
+    // would fail without DEEPL_API_KEY); the point is that the whitelisted
+    // column queries execute against SQLite without error.
+    $pdo->exec('DELETE FROM products');
+    $pdo->exec('DELETE FROM categories');
+    $supportedRan = false;
+    try {
+        $translator->translateMissing(['ca']);
+        $supportedRan = true;
+    } catch (\Throwable $e) {
+        $supportedRan = false;
+    }
+    record($supportedRan, 'T4.3: translateMissing([\'ca\']) runs queries normally (whitelist admits supported lang)');
 
     // HTTP-level assertion gap (documented limitation): issuing real requests
     // against public/index.php to observe literal "405 Method Not Allowed" and

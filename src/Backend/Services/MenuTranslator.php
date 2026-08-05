@@ -16,6 +16,17 @@ use Pit\Cuixa\Backend\Services\DeepLService;
 
 class MenuTranslator
 {
+    /**
+     * Whitelist of target languages whose columns are writable (TRANSL-6).
+     *
+     * `es` is deliberately absent: it is the source language, never a target,
+     * so `Config::supportedLocales()` (which includes it) is NOT the right
+     * whitelist here. Any language outside this list must fail before any
+     * SQL is built — dynamic interpolation of `$lang` into column names is a
+     * SQL injection surface.
+     */
+    private const LANGS = ['ca', 'en', 'uk'];
+
     private DeepLService $deepl;
     private \PDO $pdo;
 
@@ -23,6 +34,29 @@ class MenuTranslator
     {
         $this->deepl = new DeepLService($apiKey);
         $this->pdo   = Connection::get();
+    }
+
+    /**
+     * Resolve a language-derived column name against the whitelist.
+     *
+     * The ONLY place where `name_{$lang}` / `description_{$lang}` style column
+     * names are built. Throws for any language outside LANGS BEFORE the value
+     * can reach a query.
+     *
+     * @param  string $pfx Column prefix, e.g. 'name' or 'description'
+     * @param  string $l   Target language ('ca' | 'en' | 'uk')
+     * @return string      Whitelisted column name, e.g. 'name_ca'
+     * @throws \InvalidArgumentException When $l is not a supported target
+     */
+    private function col(string $pfx, string $l): string
+    {
+        if (!in_array($l, self::LANGS, true)) {
+            throw new \InvalidArgumentException(
+                "Unsupported target language '{$l}' — expected one of: " . implode(', ', self::LANGS)
+            );
+        }
+
+        return "{$pfx}_{$l}";
     }
 
     /**
@@ -36,8 +70,9 @@ class MenuTranslator
         $stats = ['categories' => 0, 'products' => 0];
 
         foreach ($targetLangs as $lang) {
-            // 1. Categories
-            $catCol = "name_{$lang}";
+            // Resolve columns through the whitelist — throws before any SQL
+            // for an unsupported language (TRANSL-6).
+            $catCol = $this->col('name', $lang);
             $categories = $this->pdo->query("SELECT id, name_es FROM categories WHERE {$catCol} IS NULL OR {$catCol} = ''")->fetchAll(\PDO::FETCH_ASSOC);
 
             if (!empty($categories)) {
@@ -54,8 +89,8 @@ class MenuTranslator
             }
 
             // 2. Products
-            $nameCol = "name_{$lang}";
-            $descCol = "description_{$lang}";
+            $nameCol = $this->col('name', $lang);
+            $descCol = $this->col('description', $lang);
             $products = $this->pdo->query("SELECT id, name_es, description_es, {$nameCol}, {$descCol} FROM products")->fetchAll(\PDO::FETCH_ASSOC);
 
             $payloadTexts = [];
