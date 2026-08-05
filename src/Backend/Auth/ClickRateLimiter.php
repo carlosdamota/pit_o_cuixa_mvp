@@ -22,6 +22,7 @@ namespace Pit\Cuixa\Backend\Auth;
 class ClickRateLimiter
 {
     private string $storageDir;
+    private bool $storageOk = true;
 
     public function __construct(?string $storageDir = null)
     {
@@ -29,6 +30,20 @@ class ClickRateLimiter
         if (!is_dir($this->storageDir)) {
             @mkdir($this->storageDir, 0750, true);
         }
+        // Fail closed when storage is unusable: a silently self-disabling rate
+        // limit is worse than no limit. read/write failures are caught in
+        // allow() and reported back so the caller can deny the request.
+        $this->storageOk = is_dir($this->storageDir) && is_writable($this->storageDir);
+    }
+
+    /**
+     * Whether the backing storage is writable right now.
+     *
+     * @return bool
+     */
+    public function storageAvailable(): bool
+    {
+        return $this->storageOk;
     }
 
     /**
@@ -45,40 +60,73 @@ class ClickRateLimiter
         $max    = max(1, $max);
         $window = max(1, $window);
 
+        // Fail closed: if we cannot reliably enforce the limit, deny.
+        if (!$this->storageOk) {
+            return ['allowed' => false, 'retryAfter' => $window, 'storage' => 'unavailable'];
+        }
+
         $file = $this->storageDir . '/' . md5($key) . '.json';
         $now  = time();
+        $cutoff = $now - $window;
+
+        // Acquire an exclusive lock around the ENTIRE read-modify-write so two
+        // concurrent requests from the same key cannot both read the same state
+        // and both be admitted (20/60s cap stays enforced under bursts).
+        $handle = fopen($file, 'c+');
+        if ($handle === false) {
+            return ['allowed' => false, 'retryAfter' => $window, 'storage' => 'unavailable'];
+        }
+        if (!flock($handle, LOCK_EX)) {
+            fclose($handle);
+            return ['allowed' => false, 'retryAfter' => $window, 'storage' => 'lock-failed'];
+        }
 
         $clicks = [];
-        if (is_file($file)) {
-            $decoded = json_decode((string) file_get_contents($file), true);
+        $raw = stream_get_contents($handle);
+        if ($raw !== false && $raw !== '') {
+            $decoded = json_decode($raw, true);
             if (is_array($decoded) && isset($decoded['clicks']) && is_array($decoded['clicks'])) {
                 $clicks = $decoded['clicks'];
             }
         }
 
         // Evict every timestamp that has fallen out of the sliding window.
-        $cutoff        = $now - $window;
-        $clicks        = array_values(array_filter(
+        $clicks = array_values(array_filter(
             $clicks,
             static fn (int $timestamp): bool => $timestamp > $cutoff
         ));
 
-        if (count($clicks) >= $max) {
-            // Denied: the window is full. The request is NOT recorded.
-            // retryAfter = seconds until the oldest click leaves the window.
-            $oldest     = min($clicks);
-            $retryAfter = max(1, $oldest - $cutoff);
+        $allowed       = count($clicks) < $max;
+        $retryAfter    = 0;
 
-            // Persist the eviction so repeated denials don't grow the file.
-            file_put_contents($file, json_encode(['clicks' => $clicks]), LOCK_EX);
-
-            return ['allowed' => false, 'retryAfter' => $retryAfter];
+        if ($allowed) {
+            // Record this click.
+            $clicks[] = $now;
+        } elseif (count($clicks) > 0) {
+            // Denied: window full. retryAfter = seconds until oldest leaves.
+            $retryAfter = max(1, min($clicks) - $cutoff);
+        } else {
+            $retryAfter = $window;
         }
 
-        // Allowed: record this click and keep going.
-        $clicks[] = $now;
-        file_put_contents($file, json_encode(['clicks' => $clicks]), LOCK_EX);
+        // Rewind and write under the held lock, truncating leftover bytes.
+        $payload = json_encode(['clicks' => $clicks]);
+        if ($payload === false) {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+            return ['allowed' => false, 'retryAfter' => $window, 'storage' => 'encode-failed'];
+        }
+        rewind($handle);
+        $writeOk = (bool) ftruncate($handle, 0)
+            && fwrite($handle, $payload) !== false;
+        flock($handle, LOCK_UN);
+        fclose($handle);
 
-        return ['allowed' => true, 'retryAfter' => 0];
+        // If writing failed, do not pretend we enforced anything: deny.
+        if (!$writeOk) {
+            return ['allowed' => false, 'retryAfter' => $window, 'storage' => 'write-failed'];
+        }
+
+        return ['allowed' => $allowed, 'retryAfter' => $retryAfter];
     }
 }

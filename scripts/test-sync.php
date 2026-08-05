@@ -584,6 +584,22 @@ try {
     // with the login RateLimiter, whose 900s lock is never used here. We do
     // not modify or load RateLimiter in this suite.
 
+    // Fail-closed on unwritable storage: point the limiter at a path that is a
+    // regular file (not a directory) so is_dir()/is_writable() report unusable.
+    // Every allow() must DENY instead of silently self-disabling the limit.
+    $fakeDir = $clickDir . '/not-a-dir';
+    @mkdir($clickDir, 0750, true);
+    file_put_contents($fakeDir, 'I am a file, not a directory');
+    $limiterBroken = new \Pit\Cuixa\Backend\Auth\ClickRateLimiter($fakeDir);
+    record(!$limiterBroken->storageAvailable(), 'T4.2: storageAvailable() is false when storage cannot be used');
+    $brokenResult = $limiterBroken->allow('click:ip:10.0.0.5', $max, $window);
+    record(
+        $brokenResult['allowed'] === false && ($brokenResult['retryAfter'] ?? 0) > 0,
+        'T4.2: allow() fails closed (denied) when storage is unwritable',
+        'allowed=' . var_export($brokenResult['allowed'], true)
+    );
+    @unlink($fakeDir);
+
     // ── Case T4.4: route method gating (METHOD-4) ────────────────────────
     // Router-level proof that the front controller can register the SAME path
     // for GET (405) and POST (handler) and dispatch by method — the mechanism
