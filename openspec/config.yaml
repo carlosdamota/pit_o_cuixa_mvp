@@ -16,15 +16,15 @@ context: |
 
 testing:
   strict_tdd: false
-  reason: "No test runner detected. PHP vanilla sin PHPUnit ni Pest. No Makefile test targets found."
-  runner: null
+  reason: "Vanilla PHP test script, not a TDD runner. scripts/test-sync.php runs a real dependency-free integration suite (SQLite sync contract, throwaway temp DB); 38 tests passing, 0 failed as of 2026-08-05."
+  runner: "php scripts/test-sync.php"
   layers:
     unit: { available: false, tool: "—" }
-    integration: { available: false, tool: "—" }
+    integration: { available: true, tool: "scripts/test-sync.php (vanilla PHP + SQLite)" }
     e2e: { available: false, tool: "—" }
   coverage: { available: false, command: "—" }
   quality:
-    linter: { available: false, command: "—" }
+    linter: { available: true, command: "php -l" }
     type_checker: { available: false, command: "—" }
     formatter: { available: false, command: "—" }
 
@@ -48,9 +48,9 @@ rules:
     - Follow existing code patterns
     - Maintain vanilla PHP+JS+CSS stack discipline
     tdd: false
-    test_command: ""
+    test_command: "php scripts/test-sync.php"
   verify:
-    test_command: ""
+    test_command: "php scripts/test-sync.php"
     build_command: "php -l"  # Syntax check as minimal validation
     coverage_threshold: 0
   archive:
