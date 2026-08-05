@@ -639,7 +639,10 @@ class Product
      */
     public function popular(int $limit = 5): array
     {
-        $totalClicksStmt = $this->pdo->query('SELECT SUM(clicks_count) FROM products WHERE is_active = 1');
+        // CLEAN-7: the aggregate is read through a prepared statement, matching
+        // repository hygiene (no raw interpolation of user/derived values).
+        $totalClicksStmt = $this->pdo->prepare('SELECT SUM(clicks_count) FROM products WHERE is_active = 1');
+        $totalClicksStmt->execute();
         $totalClicks = (int) $totalClicksStmt->fetchColumn();
 
         if ($totalClicks > 0) {
