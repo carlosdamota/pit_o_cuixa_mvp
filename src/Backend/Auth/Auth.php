@@ -198,6 +198,53 @@ class Auth
     }
 
     /**
+     * Authorize an automated sync request (AUTH-1 / AUTH-2).
+     *
+     * Accepts either the constant-time service credential (SERVICE_API_TOKEN)
+     * or a valid admin Bearer/session token. The service credential is checked
+     * FIRST via `serviceTokenMatches()` and short-circuits to success; an
+     * empty/unset service credential always fails (fail-closed), so a route
+     * is never authorized by misconfiguration. When no service credential
+     * matches, control falls through to `requireToken()` for the admin path,
+     * which sends 401 JSON and exits on failure.
+     *
+     * @return void
+     */
+    public static function authorizeSync(): void
+    {
+        $configured = \Config::serviceApiToken();
+
+        if (self::serviceTokenMatches($configured, self::extractBearerToken())) {
+            // Authorized via service credential — no admin session involved.
+            return;
+        }
+
+        // Admin path: returns the user row, or sends 401 JSON and exits.
+        self::requireToken();
+    }
+
+    /**
+     * Constant-time comparison of a configured service token against the one
+     * presented in the Authorization header.
+     *
+     * Fail-closed: an empty/unset configured value, or a missing/empty
+     * presented value, always returns false — a route can never be authorized
+     * through a blank credential.
+     *
+     * @param  string      $configured  The configured SERVICE_API_TOKEN
+     * @param  string|null $presented   Token presented by the caller
+     * @return bool
+     */
+    public static function serviceTokenMatches(string $configured, ?string $presented): bool
+    {
+        if ($configured === '' || $presented === null || $presented === '') {
+            return false;
+        }
+
+        return hash_equals($configured, $presented);
+    }
+
+    /**
      * Require a valid session cookie for admin HTML pages.
      * Redirects to /admin/login on failure.
      *

@@ -159,4 +159,14 @@ final class Config
     {
         return self::env() === 'prod';
     }
+
+    /**
+     * Service API token used by unattended cron sync (SERVICE_API_TOKEN).
+     * Empty by default so sync routes fail closed until a token is configured.
+     * Rotation = changing this one env value.
+     */
+    public static function serviceApiToken(): string
+    {
+        return self::get('SERVICE_API_TOKEN', '');
+    }
 }
