@@ -528,4 +528,8 @@ return [
 
     // ── PWA Installation ──────────────────────────────────────────
     'pwa.install' => 'Instalar App',
+    'pwa.ios.title' => 'Instalar app',
+    'pwa.ios.step1' => 'Toca el botón Compartir',
+    'pwa.ios.step2' => 'Selecciona "Añadir a inicio"',
+    'pwa.ios.gotit' => 'Entendido',
 ];

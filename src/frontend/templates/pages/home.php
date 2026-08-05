@@ -11,7 +11,7 @@
 $baseUri = $_SERVER['REQUEST_URI'] ?? '/';
 $baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
 $langSeparator = (strpos($baseUri, '?') !== false) ? '&' : '?';
-$langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
+$langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
 ?>
 <!-- ============================================================
      Landing Onboarding (fullscreen fixed 100dvh)
@@ -174,9 +174,12 @@ $langSuffix = LANG === 'ca' ? '' : '&amp;lang=' . LANG;
                 <span class="onboarding__faq-text"><?= __('nav.faq') ?></span>
             </a>
 
-            <!-- PWA Install CTA Button (Center) -->
-            <div id="pwa-install-container" class="onboarding__pwa-wrapper" hidden>
-                <install manifest="/manifest.json" class="onboarding__pwa-native"></install>
+            <!-- PWA Install CTA Button (Fixed Floating Bottom-Left) -->
+            <div id="pwa-install-container" class="onboarding__pwa-wrapper" hidden
+                 data-ios-title="<?= __('pwa.ios.title') ?>"
+                 data-ios-step1="<?= __('pwa.ios.step1') ?>"
+                 data-ios-step2="<?= __('pwa.ios.step2') ?>"
+                 data-ios-gotit="<?= __('pwa.ios.gotit') ?>">
                 <button type="button" id="pwa-install-btn" class="onboarding__pwa-btn" aria-label="<?= __('pwa.install') ?>">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>

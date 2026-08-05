@@ -306,8 +306,8 @@ return [
     'menu.heading' => 'Наше меню',
     'menu.subtitle' => 'Все готується на місці з інгредієнтів найвищої якості.',
     'menu.channel.aria' => 'Канали меню',
-    'menu.channel.dine_in' => 'У закладі',
-    'menu.channel.takeaway' => 'З собою',
+    'menu.channel.dine_in' => 'Місце',
+    'menu.channel.takeaway' => 'Додому',
     'menu.filter.all' => 'Все',
     'menu.filter.popular' => '🔥 Хіти продажу',
     'menu.order.cta' => 'Замовляй зараз!',
@@ -399,4 +399,8 @@ return [
 
     // ── PWA Installation ──────────────────────────────────────────
     'pwa.install' => 'Встановити додаток',
+    'pwa.ios.title' => 'Встановити додаток',
+    'pwa.ios.step1' => 'Натисніть кнопку «Поділитися»',
+    'pwa.ios.step2' => 'Оберіть «На екран Домашнього»',
+    'pwa.ios.gotit' => 'Зрозуміло',
 ];

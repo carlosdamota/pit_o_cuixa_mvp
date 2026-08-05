@@ -645,6 +645,10 @@ body:has(.landing--onboarding) .main {
   animation: pwaBounce 3s ease-in-out infinite;
 }
 
+.onboarding__pwa-wrapper[hidden] {
+  display: none !important;
+}
+
 @keyframes pwaBounce {
   0%, 100% {
     transform: translateY(0);
@@ -685,6 +689,89 @@ body:has(.landing--onboarding) .main {
   .onboarding__pwa-wrapper {
     bottom: 72px;
     left: 16px;
+  }
+}
+
+/* ── iOS "Add to Home Screen" Toast ─────────────────────────────────── */
+.onboarding__pwa-toast {
+  position: fixed;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 9995;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 340px;
+  width: calc(100% - 32px);
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.onboarding__pwa-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.onboarding__pwa-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboarding__pwa-toast-title {
+  display: block;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.onboarding__pwa-toast-steps {
+  margin: 0;
+  padding-left: 20px;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  line-height: 1.5;
+}
+
+.onboarding__pwa-toast-steps li {
+  margin-bottom: 2px;
+}
+
+.onboarding__pwa-toast-close {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary, #e30613);
+  color: #ffffff;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+
+.onboarding__pwa-toast-close:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.35);
+}
+
+@media (max-width: 767px) {
+  .onboarding__pwa-toast {
+    bottom: 120px;
+    max-width: 320px;
   }
 }
 

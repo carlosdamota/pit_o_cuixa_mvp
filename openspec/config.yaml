@@ -3,14 +3,16 @@ schema: spec-driven
 
 context: |
   Project: Pit o cuixa
-  Stack: PHP 8.x vanilla + HTML + CSS + JS vanilla + SQLite
+  Stack: PHP 8.2+ (strict_types=1) + HTML5 + CSS (Design Tokens, BEM) + JavaScript (ES Modules) + SQLite (WAL)
   Team: 8 personas, 2 subequipos (frontend / backend), monorepo GitHub con Actions protegiendo main
-  Language: Bilingüe ES/EN
-  Hosting: CMS-compatible (PHP + SQLite)
+  Language: Bilingüe ES/EN (i18n: es, en, ca)
+  Hosting: Dinahosting (Apache + PHP 8.2 + SQLite)
   Design System: Primary #f7e721, Secondary #d32f2f, Surface #f7f9ff, Container #edf4ff/#ffffff,
     On Surface #1a1c1e, Quicksand font, 8px border radius
-  Dependencies: None (sin Composer, sin frameworks)
-  CI: GitHub Actions
+  Dependencies: None (sin Composer, sin frameworks, sin Node)
+  CI: GitHub Actions (php -l, debug statement check, JSON validation, CSS brace matching)
+  Architecture: Clean Architecture, Front Controller (public/index.php), Repository Pattern (PDO), SSR with PHP templates
+  Features: PWA (Service Worker), SEO (JSON-LD, hreflang, sitemap), Admin Panel (token-based auth), CSV import/export
 
 testing:
   strict_tdd: false

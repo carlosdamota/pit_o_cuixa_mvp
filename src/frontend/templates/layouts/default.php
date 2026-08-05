@@ -30,9 +30,10 @@ $siteUrl = \Config::siteUrl();
 // og:locale mapping for 3 supported locales
 $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
 ?>
-<html lang="<?= $locale ?>" dir="ltr">
+<html lang="<?= $locale ?>" dir="ltr" translate="no">
 <head>
     <meta charset="utf-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <!-- ── Title & Description ──────────────────────────────────────── -->
@@ -84,8 +85,8 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="manifest" href="/manifest.json">
 
     <!-- ── Favicon ──────────────────────────────────────────────────── -->
-    <link rel="icon" type="image/png" href="/img/favicon.png">
-    <link rel="apple-touch-icon" href="/img/apple-touch-icon.svg">
+    <link rel="icon" type="image/png" href="/public/img/icons/icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/public/img/icons/apple-touch-icon.png">
 
     <!-- ── Typography (Google Fonts: Outfit & Inter) ────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

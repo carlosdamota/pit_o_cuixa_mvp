@@ -434,8 +434,8 @@ return [
     'menu.heading' => 'La nostra carta',
     'menu.subtitle' => 'Tot fet al moment amb ingredients de primera qualitat.',
     'menu.channel.aria' => 'Canals de carta',
-    'menu.channel.dine_in' => 'Al local',
-    'menu.channel.takeaway' => 'Per emportar',
+    'menu.channel.dine_in' => 'Local',
+    'menu.channel.takeaway' => 'Domicili',
     'menu.filter.all' => 'Tot',
     'menu.filter.popular' => '🔥 Més venuts',
     'menu.order.cta' => 'Demana ara!',
@@ -527,4 +527,8 @@ return [
 
     // ── PWA Installation ──────────────────────────────────────────
     'pwa.install' => 'Instal·lar App',
+    'pwa.ios.title' => 'Instal·lar app',
+    'pwa.ios.step1' => 'Toca el botó Compartir',
+    'pwa.ios.step2' => 'Selecciona "Afegir a l\'inici"',
+    'pwa.ios.gotit' => 'Entès',
 ];

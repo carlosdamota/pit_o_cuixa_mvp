@@ -227,7 +227,7 @@
   }
 }
 
-/* ── Menu Page Specific Header Components ────────────────────── */
+/* ── Inner Pages Header (menu, faq) ──────────────────────────── */
 .header__nav--menu-page {
   display: grid;
   grid-template-columns: 44px 1fr 44px;

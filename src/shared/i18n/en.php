@@ -529,4 +529,8 @@ return [
 
     // ── PWA Installation ──────────────────────────────────────────
     'pwa.install' => 'Install App',
+    'pwa.ios.title' => 'Install app',
+    'pwa.ios.step1' => 'Tap the Share button',
+    'pwa.ios.step2' => 'Select "Add to Home Screen"',
+    'pwa.ios.gotit' => 'Got it',
 ];

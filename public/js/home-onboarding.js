@@ -210,43 +210,117 @@ document.addEventListener('DOMContentLoaded', () => {
     const pwaBtn = document.getElementById('pwa-install-btn');
     let deferredPrompt = null;
 
-    // Check if already installed / running in standalone mode
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                         window.navigator.standalone === true;
+    // Detect iOS (iPadOS reports as MacIntel with touch capabilities)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    if (!isStandalone && pwaContainer) {
-        // Check for native <install> element support (Origin Trial in Chromium 148+)
-        const supportsNativeInstall = 'HTMLInstallElement' in window || Boolean(customElements && customElements.get('install'));
-        const nativeInstallEl = pwaContainer.querySelector('.onboarding__pwa-native');
+    // Check if already installed / running in standalone mode or previously recorded in localStorage
+    const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone === true ||
+                        localStorage.getItem('pwa_installed') === 'true';
 
-        if (supportsNativeInstall && nativeInstallEl) {
-            pwaContainer.hidden = false;
-            if (pwaBtn) pwaBtn.style.display = 'none';
-        } else {
-            // Fallback beforeinstallprompt event
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                pwaContainer.hidden = false;
-            });
+    if (isInstalled && pwaContainer) {
+        pwaContainer.hidden = true;
+    } else if (pwaContainer) {
+        // Show button by default on all platforms — not gated behind beforeinstallprompt
+        pwaContainer.hidden = false;
 
-            if (pwaBtn) {
-                pwaBtn.addEventListener('click', async () => {
-                    if (!deferredPrompt) return;
+        // Check for native installed related apps API (Chrome/Android/Desktop)
+        if ('getInstalledRelatedApps' in navigator) {
+            navigator.getInstalledRelatedApps().then((apps) => {
+                if (apps && apps.length > 0) {
+                    localStorage.setItem('pwa_installed', 'true');
+                    pwaContainer.hidden = true;
+                    return;
+                }
+            }).catch(() => {});
+        }
+
+        // Chromium: capture beforeinstallprompt for native install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        if (pwaBtn) {
+            pwaBtn.addEventListener('click', async () => {
+                // Chromium path: use deferred prompt for native install dialog
+                if (deferredPrompt) {
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     if (outcome === 'accepted') {
+                        localStorage.setItem('pwa_installed', 'true');
                         pwaContainer.hidden = true;
                     }
                     deferredPrompt = null;
-                });
-            }
+                    return;
+                }
+
+                // iOS / non-Chromium path: show manual "Add to Home Screen" instructions
+                if (isIOS) {
+                    showIOSInstallInstructions(pwaContainer);
+                }
+            });
         }
 
         // Hide button automatically if app is installed
         window.addEventListener('appinstalled', () => {
+            localStorage.setItem('pwa_installed', 'true');
             pwaContainer.hidden = true;
             deferredPrompt = null;
         });
+    }
+
+    /**
+     * Show a toast with manual "Add to Home Screen" instructions for iOS.
+     * Reads translated strings from data attributes on the PWA container.
+     */
+    function showIOSInstallInstructions(anchor) {
+        // Remove any existing toast first
+        const existing = document.getElementById('pwa-ios-toast');
+        if (existing) existing.remove();
+
+        const title = anchor.dataset.iosTitle || 'Install App';
+        const step1 = anchor.dataset.iosStep1 || 'Tap the Share button';
+        const step2 = anchor.dataset.iosStep2 || 'Select "Add to Home Screen"';
+        const gotit = anchor.dataset.iosGotit || 'Got it';
+
+        const toast = document.createElement('div');
+        toast.id = 'pwa-ios-toast';
+        toast.className = 'onboarding__pwa-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        toast.innerHTML =
+            '<div class="onboarding__pwa-toast-content">' +
+                '<strong class="onboarding__pwa-toast-title">' + title + '</strong>' +
+                '<ol class="onboarding__pwa-toast-steps">' +
+                    '<li>' + step1 + '</li>' +
+                    '<li>' + step2 + '</li>' +
+                '</ol>' +
+            '</div>' +
+            '<button type="button" class="onboarding__pwa-toast-close" aria-label="' + gotit + '">' +
+                gotit +
+            '</button>';
+
+        document.body.appendChild(toast);
+
+        // Animate in on next frame
+        requestAnimationFrame(function () {
+            toast.classList.add('onboarding__pwa-toast--visible');
+        });
+
+        // Close button handler
+        toast.querySelector('.onboarding__pwa-toast-close').addEventListener('click', function () {
+            toast.classList.remove('onboarding__pwa-toast--visible');
+            toast.addEventListener('transitionend', function () { toast.remove(); }, { once: true });
+        });
+
+        // Auto-dismiss after 10 seconds
+        setTimeout(function () {
+            if (toast.parentNode) {
+                toast.classList.remove('onboarding__pwa-toast--visible');
+                toast.addEventListener('transitionend', function () { toast.remove(); }, { once: true });
+            }
+        }, 10000);
     }
 });
