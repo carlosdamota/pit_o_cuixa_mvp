@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 #
-# Pit o Cuixa — Install Nightly Menu Fill Cron Job
+# Pit o Cuixa — Install Cron Menu Sync Job
 #
-# Installs a cron entry that re-fills the database from the external menu
-# every day at 02:00, appending output to data/fill-menu-cron.log.
+# Installs a cron entry that refreshes the menu TWICE daily (00:00 and 12:00
+# server local time) via the session-free service-credential sync
+# (scripts/cron-sync.php), appending output to data/cron-sync.log.
 #
-# Idempotent: if a fill-menu.php entry already exists in the crontab,
-# nothing is changed.
+# Idempotent: if a cron-sync.php entry already exists in the crontab, nothing
+# is changed. As a migration step, any legacy fill-menu.php entry (the old
+# nightly 02:00 job) is removed/retired from the crontab.
 #
 # Usage:
 #   ./scripts/install-cron.sh
@@ -31,27 +33,37 @@ if ! command -v crontab >/dev/null 2>&1; then
     exit 1
 fi
 
-# The cron job appends to data/fill-menu-cron.log — make sure data/ exists
+# The cron job appends to data/cron-sync.log — make sure data/ exists
 # before cron tries to redirect into it.
 mkdir -p "$PROJECT_DIR/data"
 
-CRON_LINE="0 2 * * * ${PHP_BIN} ${PROJECT_DIR}/scripts/fill-menu.php >> ${PROJECT_DIR}/data/fill-menu-cron.log 2>&1"
+CRON_LINE="0 0,12 * * * ${PHP_BIN} ${PROJECT_DIR}/scripts/cron-sync.php >> ${PROJECT_DIR}/data/cron-sync.log 2>&1"
 
 # NOTE: the log grows indefinitely — rotate it (e.g. logrotate) or truncate
-# periodically with: > "$PROJECT_DIR/data/fill-menu-cron.log"
+# periodically with: > "$PROJECT_DIR/data/cron-sync.log"
 
 # Idempotency check: -F matches the exact script path as a fixed string
-# (no regex interpretation of '.' in fill-menu.php).
-if crontab -l 2>/dev/null | grep -F -q 'fill-menu.php'; then
-    echo "[install-cron] A fill-menu.php cron job is already installed — nothing to do."
+# (no regex interpretation of '.' in cron-sync.php). If the new job is already
+# installed, nothing to do.
+if crontab -l 2>/dev/null | grep -F -q 'cron-sync.php'; then
+    echo "[install-cron] A cron-sync.php cron job is already installed — nothing to do."
     echo "[install-cron] Current entries:"
-    crontab -l 2>/dev/null | grep -F 'fill-menu.php'
+    crontab -l 2>/dev/null | grep -F 'cron-sync.php'
     exit 0
 fi
 
-( crontab -l 2>/dev/null; echo "$CRON_LINE" ) | crontab -
+# Migrate: drop any legacy fill-menu.php job (old nightly 02:00 line) so the
+# retired fill-menu cron path is not left running alongside the new sync.
+CURRENT="$(crontab -l 2>/dev/null || true)"
+if printf '%s\n' "$CURRENT" | grep -F -q 'fill-menu.php'; then
+    echo "[install-cron] Removing legacy fill-menu.php cron job (retired)."
+    CURRENT="$(printf '%s\n' "$CURRENT" | grep -F -v 'fill-menu.php' || true)"
+fi
 
-echo "[install-cron] Installed nightly menu fill (02:00)."
+# Install: keep all other entries, append the new sync job.
+{ printf '%s\n' "$CURRENT"; [ -n "$CURRENT" ] && printf '\n'; printf '%s\n' "$CRON_LINE"; } | sed '/^[[:space:]]*$/d' | crontab -
+
+echo "[install-cron] Installed twice-daily menu sync (00:00 and 12:00)."
 echo "[install-cron] Line added:"
 echo "  $CRON_LINE"
-echo "[install-cron] Log file: ${PROJECT_DIR}/data/fill-menu-cron.log"
+echo "[install-cron] Log file: ${PROJECT_DIR}/data/cron-sync.log"
