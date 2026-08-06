@@ -611,6 +611,19 @@ body:has(.landing--onboarding) .main {
   gap: var(--space-md);
 }
 
+/* Fix children to their grid columns (prevents shift when CTA is hidden) */
+.onboarding__faq-btn {
+  grid-column: 1;
+}
+
+.onboarding__pwa-wrapper {
+  grid-column: 2;
+}
+
+.onboarding__lang-dropdown {
+  grid-column: 3;
+}
+
 /* FAQ Pill Button */
 .onboarding__faq-btn {
   justify-self: start;
@@ -785,38 +798,35 @@ body:has(.landing--onboarding) .main {
 .onboarding__lang-toggle {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
   min-width: 44px;
   min-height: 44px;
-  padding: 0 12px;
-  background-color: var(--color-on-surface);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-full);
-  color: var(--color-surface-container-lowest);
+  padding: 4px 10px;
+  background-color: var(--color-surface-container-low, #f8f9fa);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .onboarding__lang-toggle:hover,
 .onboarding__lang-toggle[aria-expanded="true"] {
-  background-color: #000000;
-  border-color: #ffffff;
+  background-color: var(--color-surface-container, #e2e8f0);
+  border-color: var(--color-primary, #d97706);
 }
 
 .onboarding__lang-flag {
-  width: 26px;
+  width: 58px;
   height: 26px;
   object-fit: cover;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 .onboarding__lang-arrow {
   font-size: 0.65rem;
-  color: var(--color-surface-container-lowest);
-  transition: transform var(--transition-fast);
+  color: var(--color-text-muted, #64748b);
+  transition: transform 0.2s ease;
 }
 
 .onboarding__lang-toggle[aria-expanded="true"] .onboarding__lang-arrow {
