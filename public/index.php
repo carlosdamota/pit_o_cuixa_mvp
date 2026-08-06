@@ -143,6 +143,11 @@ $router->add('GET', '/api/scraper', static function(array $params): void{
     Response::json($scraper->scraper());
 });
 
+//aÑADIR ROUTER A API
+$router->add('GET','/api/chat', static function(array $params): void{
+    require_once __DIR__ . '/../src/Backend/Api/chat.php';
+});
+
 //POST /api/update-menu — state-mutating menu sync, requires auth, POST-only
 $router->add('POST', '/api/update-menu', static function (array $params): void {
     Auth::authorizeSync();
