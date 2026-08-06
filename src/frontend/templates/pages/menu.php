@@ -309,7 +309,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 
         <div class="delivery-map-card">
             <!-- Leaflet Interactive Canvas Container -->
-            <div id="delivery-map" class="delivery-map-container" role="region" aria-label="<?= __('menu.map.title') ?>"></div>
+            <div id="delivery-map" class="delivery-map-container" role="region" aria-label="<?= __('menu.map.title') ?>" data-popup-link-label="<?= htmlspecialchars(__('menu.map.cta_view'), ENT_QUOTES, 'UTF-8') ?>"></div>
 
             <!-- Town Badges Bar -->
             <div class="delivery-map-towns">
@@ -323,6 +323,15 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     <li class="delivery-map-towns__tag">🛵 La Riera de Gaià</li>
                 </ul>
             </div>
+
+            <!-- Directions CTA (DMC-001) — plain anchor, no JS; destination mirrors layout $localBusinessJsonLd.geo -->
+            <a class="delivery-map-card__cta"
+               href="https://www.google.com/maps/dir/?api=1&destination=41.1413,1.3894"
+               target="_blank"
+               rel="noopener"
+               aria-label="<?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>
+            </a>
         </div>
 
         <div class="delivery-map-note">
@@ -338,6 +347,14 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
   "@type": "FoodEstablishment",
   "name": "Pit o Cuixa",
   "telephone": "+34977642010",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Carrer Hort de l'Oca, 12",
+    "addressLocality": "Torredembarra",
+    "postalCode": "43830",
+    "addressCountry": "ES"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 41.1413, "longitude": 1.3894 },
   "areaServed": [
     {
       "@type": "AdministrativeArea",
