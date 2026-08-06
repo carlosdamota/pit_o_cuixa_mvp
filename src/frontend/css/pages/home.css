@@ -816,11 +816,11 @@ body:has(.landing--onboarding) .main {
 }
 
 .onboarding__lang-flag {
-  width: 58px;
-  height: 26px;
-  object-fit: cover;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .onboarding__lang-arrow {
