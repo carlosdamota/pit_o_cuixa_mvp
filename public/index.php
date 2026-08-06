@@ -148,16 +148,10 @@ $router->add('GET', '/api/scraper', static function(array $params): void{
     Response::json($scraper->scraper());
 });
 
-//AÑADIR ROUTER A API
-$router->add('GET','/api/chat', static function(array $params): void{
+//AÑADIR ROUTER A CHAT
+$router->add('POST','/api/chat', static function(array $params): void{
     require_once __DIR__ . '/../src/Backend/Api/chat.php';
 });
-
- //Añadir ROUTER A FRONTEND
- $router->add('GET','/ai-assistant', static function(array $params): void {
-    require_once __DIR__. '/../src/frontend/templates/pages/partials/assistant.php';
-});
-
 
 //POST /api/update-menu — state-mutating menu sync, requires auth, POST-only
 $router->add('POST', '/api/update-menu', static function (array $params): void {
@@ -287,6 +281,11 @@ $router->add('GET', '/{lang}/terms', static function (array $params): void {
 
     Response::error('Not Found', 404);
 });
+
+//Chatbot page
+ $router->add('GET','/ai-assistant', static function(array $params): void {
+    require_once __DIR__. '/../src/frontend/templates/partials/assistant.php';
+ });
 
 // Admin pages
 $router->add('GET', '/admin', static function (array $params): void {

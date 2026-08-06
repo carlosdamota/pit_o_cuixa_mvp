@@ -231,14 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.appendChild(botDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-        try {
-            // 3. Request router API endpoint
-            const response = await fetch('/api/chat', {
-                method: 'POST',
+try {
+            // 3. Request router API endpoint (provisional GET endpoint)
+            const response = await fetch('/api/chat?message=' + encodeURIComponent(text), {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: text })
+                }
             });
 
             if (!response.ok) {

@@ -5,8 +5,13 @@ header('Content-Type: application/json; charset=utf-8');
 // ==========================================
 // 1. GET USER MESSAGE
 // ==========================================
-$data = json_decode(file_get_contents('php://input'), true);
-$rawMessage = trim($data['message'] ?? '');
+// Accept the message as a GET query param (provisional GET endpoint) or,
+// falling back, from a JSON POST body.
+$rawMessage = trim($_GET['message'] ?? '');
+if ($rawMessage === '') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $rawMessage = trim($data['message'] ?? '');
+}
 $userMessage = mb_strtolower($rawMessage, 'UTF-8');
 
 if ($userMessage === '') {
