@@ -275,13 +275,14 @@
 }
 
 .header__lang-toggle {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
+  gap: 10px;
+  min-width: 60px; /* <--- Esto ensancha el óvalo a la fuerza hacia la derecha */
+  padding: 3px 12px 3px 4px;
   background-color: var(--color-surface-container-low, #f8f9fa);
   border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 20px;
+  border-radius: 25px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -293,8 +294,10 @@
 }
 
 .header__lang-flag {
-  width: 24px;
-  height: 24px;
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important; /* <--- Evita que el flexbox aplaste el círculo */
+  min-height: 26px !important;
   object-fit: cover;
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
