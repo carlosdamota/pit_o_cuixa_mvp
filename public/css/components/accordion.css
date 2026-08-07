@@ -4,7 +4,6 @@
   display: flex;
   justify-content: center;
   gap: var(--space-xs, 8px);
-  margin-bottom: var(--space-md, 24px);
   padding: 4px;
   background-color: var(--color-surface, #f8f9fa);
   border-radius: 30px;
