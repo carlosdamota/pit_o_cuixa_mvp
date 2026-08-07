@@ -57,6 +57,18 @@ $searchText = strtolower(
          data-product-id="<?= $productId ?>"
          data-product-slug="<?= htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') ?>"
          data-search-text="<?= htmlspecialchars($searchText, ENT_QUOTES, 'UTF-8') ?>">
+
+    <?php if ($orderUrl && $orderUrl !== '#'): ?>
+        <a href="<?= htmlspecialchars($orderUrl, ENT_QUOTES, 'UTF-8') ?>"
+           class="product-card__link"
+           data-track-click
+           data-product-id="<?= $productId ?>"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
+        </a>
+    <?php endif; ?>
+
     <div class="product-card__image-wrap">
         <?php if ($imageUrl): ?>
             <img class="product-card__image"
@@ -81,17 +93,6 @@ $searchText = strtolower(
 
         <div class="product-card__footer">
             <span class="product-card__price"><?= htmlspecialchars($priceFmt, ENT_QUOTES, 'UTF-8') ?></span>
-
-            <?php if ($orderUrl && $orderUrl !== '#'): ?>
-                <a href="<?= htmlspecialchars($orderUrl, ENT_QUOTES, 'UTF-8') ?>"
-                   class="product-card__cta"
-                   data-track-click
-                   data-product-id="<?= $productId ?>"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    <?= __('menu.order.cta') ?>
-                </a>
-            <?php endif; ?>
         </div>
     </div>
 </article>

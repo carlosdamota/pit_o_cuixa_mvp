@@ -94,11 +94,28 @@ body:has(.landing--onboarding) .main {
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(44, 24, 16, 0.15);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  animation: call-ring 0.8s ease-in-out infinite;
 }
 
 .onboarding__call-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(44, 24, 16, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(44, 24, 16, 0.25);
+  animation-play-state: paused;
+}
+
+@keyframes call-ring {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  10%, 30%, 50% {
+    transform: rotate(-3deg) scale(1.01);
+  }
+  20%, 40% {
+    transform: rotate(3deg) scale(1.01);
+  }
+  60%, 80% {
+    transform: rotate(0deg) scale(1);
+  }
 }
 
 .onboarding__call-icon {
