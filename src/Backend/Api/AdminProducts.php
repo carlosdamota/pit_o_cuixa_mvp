@@ -247,9 +247,14 @@ class AdminProducts
         Auth::requireToken();
         Auth::validateCsrfToken();
 
-        $input = json_decode(file_get_contents('php://input'), true);
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
 
         if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        if (!is_array($input) || empty($input)) {
             Response::error('Invalid JSON body', 400);
             return;
         }
@@ -338,9 +343,14 @@ class AdminProducts
         Auth::requireToken();
         Auth::validateCsrfToken();
 
-        $input = json_decode(file_get_contents('php://input'), true);
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
 
         if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        if (!is_array($input) || empty($input)) {
             Response::error('Invalid JSON body', 400);
             return;
         }
