@@ -173,6 +173,23 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
                 </svg>
                 <span class="onboarding__faq-text"><?= __('nav.faq') ?></span>
             </a>
+            
+            <!-- Floating Cookie Settings Button -->
+            <button
+                id="cookie-settings-home"
+                class="onboarding__cookie-btn"
+                data-cookie-settings
+                hidden
+                aria-label="Configuración de cookies"
+                title="Configuración de cookies">
+
+                <img
+                    src="/img/icons/galleta.png"
+                    alt=""
+                    width="24"
+                    height="24">
+
+            </button>
 
             <!-- PWA Install CTA Button (Fixed Floating Bottom-Left) -->
             <div id="pwa-install-container" class="onboarding__pwa-wrapper" hidden
@@ -216,5 +233,7 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
         </footer>
 
     </div>
+
+    <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
 </section>
 <script type="module" src="/js/home-onboarding.js?v=1.2.0"></script>

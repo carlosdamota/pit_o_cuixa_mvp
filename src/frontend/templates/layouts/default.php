@@ -102,6 +102,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/components/product-card.css<?= $v ?>">
     <link rel="stylesheet" href="/css/components/filter-bar.css<?= $v ?>">
     <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= $v ?>">
     <link rel="stylesheet" href="/css/pages/error.css<?= $v ?>">
 
     <!-- Home landing CSS (only on home page) -->
@@ -200,6 +201,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
+    <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>
     <script type="module" src="/js/main.js"></script>
 </body>
 </html>

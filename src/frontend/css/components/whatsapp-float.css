@@ -112,3 +112,16 @@
     height: 48px;
   }
 }
+
+/* ==========================================================
+   Hidden while Cookie Banner is open
+   ========================================================== */
+
+body.cookie-banner-open .whatsapp-float {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
+}

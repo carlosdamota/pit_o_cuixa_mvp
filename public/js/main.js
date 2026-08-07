@@ -9,6 +9,7 @@
 
 import { initMenuFilter } from './menu-filter.js';
 import { initMenuSlider } from './menu-slider.js';
+import { initCookieBanner } from './cookie-banner.js';
 
 /**
  * Initialise mobile menu toggle.
@@ -177,6 +178,7 @@ function init() {
   initMenuSlider();
   initImageFallback();
   registerServiceWorker();
+  initCookieBanner();
 }
 
 // ── Wait for DOM ────────────────────────────────────────────────

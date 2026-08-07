@@ -366,3 +366,5 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
   ]
 }
 </script>
+
+<?php require __DIR__ . '/../components/cookie-banner.php'; ?>
