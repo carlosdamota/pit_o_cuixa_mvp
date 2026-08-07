@@ -97,7 +97,7 @@ $lang            = $pageData['locale'] ?? LANG;
 </div>
 
 <script type="module">
-    import { api, showToast, withLoading } from '/js/admin.js';
+    import { api, showToast, withLoading } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
     const btn = document.getElementById('btn-update-menu');
     if (!btn) throw new Error('Update-menu button not found');

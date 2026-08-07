@@ -94,3 +94,22 @@ function __(string $key, array $params = []): string|array
 
 // ── 6. Set timezone ─────────────────────────────────────────────────────
 date_default_timezone_set('Europe/Madrid');
+
+// ── 7. Asset Versioning (cache-busting via filemtime) ───────────────────
+/**
+ * Returns a cache-busting query string based on the file's last modification time.
+ * Usage: <?= assetVersion('/css/tokens.css') ?>  →  ?v=1717523400
+ *
+ * When the file changes on disk, the mtime changes, the URL changes,
+ * and the Service Worker fetches the new version automatically.
+ */
+function assetVersion(string $urlPath): string
+{
+    static $publicDir;
+    $publicDir ??= dirname(__DIR__, 2) . '/public';
+
+    $filePath = $publicDir . '/' . ltrim($urlPath, '/');
+    $mtime = @filemtime($filePath);
+
+    return $mtime ? '?v=' . $mtime : '';
+}

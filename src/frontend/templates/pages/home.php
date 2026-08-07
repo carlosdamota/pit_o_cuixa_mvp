@@ -225,4 +225,4 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
     </div>
 </section>
-<script type="module" src="/js/home-onboarding.js?v=1.2.0"></script>
+<script type="module" src="/js/home-onboarding.js<?= assetVersion('/js/home-onboarding.js') ?>"></script>

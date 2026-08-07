@@ -161,7 +161,7 @@ import {
     validateForm, validateField,
     Drawer, insertTableRow, removeTableRow, updateTableRow, toggleEmptyState,
     initKeyboardShortcuts
-} from '/js/admin.js';
+} from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
 const API_BASE = '/api/admin/categories';
 const TBODY = document.querySelector('[data-categories-tbody]');
