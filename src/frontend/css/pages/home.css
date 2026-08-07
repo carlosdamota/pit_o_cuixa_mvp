@@ -40,6 +40,20 @@ body:has(.landing--onboarding) .main {
   z-index: 9999;
 }
 
+/* ── Soft Decorative Background (fondo.webp, very subtle) ───────── */
+.landing--onboarding::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("/img/fondo.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
 /* ── Dominant Yellow Oval Background Arc (~75% height) ───────────── */
 .onboarding__bg-yellow {
   position: absolute;
