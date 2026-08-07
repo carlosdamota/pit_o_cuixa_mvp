@@ -232,12 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
 try {
-            // 3. Request router API endpoint (provisional GET endpoint)
-            const response = await fetch('/api/chat?message=' + encodeURIComponent(text), {
-                method: 'GET',
+            // 3. Request router API endpoint (POST — message goes in the body)
+            const response = await fetch('/api/chat', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ message: text })
             });
 
             if (!response.ok) {
