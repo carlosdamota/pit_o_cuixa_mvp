@@ -9,6 +9,7 @@
 
 import { initMenuFilter } from './menu-filter.js';
 import { initMenuSlider } from './menu-slider.js';
+import { initAnimatedFavicon } from './animated-favicon.js';
 
 /**
  * Initialise mobile menu toggle.
@@ -198,6 +199,7 @@ function init() {
   initMenuFilter();
   initMenuSlider();
   initImageFallback();
+  initAnimatedFavicon();
   registerServiceWorker();
 }
 

@@ -85,8 +85,8 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="manifest" href="/manifest.json">
 
     <!-- ── Favicon ──────────────────────────────────────────────────── -->
-    <link rel="icon" type="image/png" href="/public/img/icons/icon-192.png" sizes="192x192">
-    <link rel="apple-touch-icon" href="/public/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="/img/icons/favicon.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/img/icons/favicon.png">
 
     <!-- ── Typography (Google Fonts: Outfit & Inter) ────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

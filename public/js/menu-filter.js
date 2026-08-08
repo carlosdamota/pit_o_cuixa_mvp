@@ -1,12 +1,12 @@
 /**
  * Pit o Cuixa — Menu Category Filter + Search
  *
- * ESM module: unified filter (category + search text) with "All" reset.
+ * ESM module: unified filter (category + search text) with first-category default.
  * Progressive enhancement: server HTML renders without JS.
  *
  * Data attributes:
  *   [data-filter-bar]       — container with category tab buttons + search
- *   [data-filter]           — category slug on each tab button ('all' for reset)
+ *   [data-filter]           — category slug on each tab button ('popular' for best-sellers)
  *   [data-menu-search]      — search input
  *   [data-menu-products]    — container holding all product-group sections
  *   [data-category]         — category slug on each product-group section
@@ -36,7 +36,9 @@ export function initMenuFilter() {
   }
 
   // ── Filter state ────────────────────────────────────────────
-  let activeCategory     = 'all';  // 'all' | 'popular' | category slug
+  const firstCategoryTab = filterBar.querySelector('[data-filter]:not([data-filter="popular"])');
+  const firstCategorySlug = firstCategoryTab ? firstCategoryTab.getAttribute('data-filter') : '';
+  let activeCategory     = firstCategorySlug;  // '' | 'popular' | category slug
   let searchQuery        = '';     // lowercased, applied only if length >= 2
   let popularProductIds  = null;   // Set of product ID strings when popular tab is loaded
 
@@ -77,10 +79,10 @@ export function initMenuFilter() {
       } else if (searchQuery.length < 2 && activeCategory !== 'popular') {
         // In delivery mode when not searching/popular, keep ALL category blocks in DOM for scrollspy
         categoryMatch = true;
-      } else if (activeCategory === 'all') {
-        categoryMatch = true;
+      } else if (activeCategory === '') {
+        categoryMatch = true;  // Edge case: no categories, show all blocks
       } else if (activeCategory === 'popular') {
-        categoryMatch = true; // Block matches conditionally based on inner products
+        categoryMatch = true;  // Block matches conditionally based on inner products
       } else {
         categoryMatch = (category === activeCategory);
       }
@@ -188,17 +190,16 @@ export function initMenuFilter() {
 
     sections.forEach((section) => observer.observe(section));
 
-    // Scroll fallback to re-activate 'all' when user scrolls back to top
+    // Scroll fallback to re-activate first category when user scrolls back to top
     window.addEventListener('scroll', () => {
       if (isProgrammaticScrolling || deliveryView.hidden || searchQuery.length >= 2 || activeCategory === 'popular') return;
       const firstSection = sections[0];
       if (firstSection) {
         const rect = firstSection.getBoundingClientRect();
-        if (rect.top > 160 && activeCategory !== 'all') {
-          const allTab = filterBar.querySelector('[data-filter="all"]');
-          if (allTab) {
-            activeCategory = 'all';
-            setActiveTab(allTab, true);
+        if (rect.top > 160 && activeCategory !== firstCategorySlug) {
+          activeCategory = firstCategorySlug;
+          if (firstCategoryTab) {
+            setActiveTab(firstCategoryTab, true);
           }
         }
       }
@@ -227,16 +228,7 @@ export function initMenuFilter() {
     }
 
     // Smooth scroll to category section when clicking category tab
-    if (filter === 'all') {
-      const deliveryView = document.querySelector('[data-channel-view="delivery"]');
-      if (deliveryView) {
-        isProgrammaticScrolling = true;
-        const yOffset = -120;
-        const y = deliveryView.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-        setTimeout(() => { isProgrammaticScrolling = false; }, 800);
-      }
-    } else if (filter !== 'popular') {
+    if (filter !== 'popular') {
       const targetSection = document.querySelector(`[data-channel-view="delivery"] .product-group[data-category="${CSS.escape(filter)}"]`);
       if (targetSection) {
         isProgrammaticScrolling = true;
@@ -318,10 +310,10 @@ export function initMenuFilter() {
 
   // ── Preselect category from URL (?cat=slug) ─────────────────
   // Landing buttons link here with a preselected filter.
-  // Unknown slugs fall back silently to 'all'.
+  // Unknown slugs and legacy ?cat=all fall back silently to the first category.
   const catParam = new URLSearchParams(window.location.search).get('cat');
 
-  if (catParam && catParam !== 'all') {
+  if (catParam && catParam !== 'popular') {
     const target = filterBar.querySelector(`[data-filter="${CSS.escape(catParam)}"]`);
 
     if (target) {
@@ -337,11 +329,10 @@ export function initMenuFilter() {
         applyFilters();
       }
     } else {
-      // Fallback for unknown slugs (e.g. picapica): reset to 'all' & render all categories
-      activeCategory = 'all';
-      const allTab = filterBar.querySelector('[data-filter="all"]');
-      if (allTab) {
-        setActiveTab(allTab);
+      // Unknown slug or legacy ?cat=all — fall back to first category
+      activeCategory = firstCategorySlug;
+      if (firstCategoryTab) {
+        setActiveTab(firstCategoryTab);
       }
       applyFilters();
     }
