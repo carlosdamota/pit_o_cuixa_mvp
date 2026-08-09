@@ -196,6 +196,10 @@ function initImageFallback() {
  * (new tab) or the embedded chat widget (chat-widget.php). The menu closes
  * on outside click and on Escape.
  */
+// Shared handle so the launcher can close the chat widget when the user
+// clicks the floating button while the chat is open.
+let chatController = null;
+
 function initContactLauncher() {
   const launcher = document.querySelector('[data-contact-launcher]');
   if (!launcher) {
@@ -222,6 +226,14 @@ function initContactLauncher() {
 
   toggle.addEventListener('click', (event) => {
     event.stopPropagation();
+
+    // If the chat widget is open, the launcher button closes the chat
+    // instead of toggling the menu (keeps launcher and chat exclusive).
+    if (chatController && chatController.isOpen()) {
+      chatController.close();
+      return;
+    }
+
     if (isOpen()) {
       close();
     } else {
@@ -291,6 +303,9 @@ function initChatWidget() {
   }
 
   closeBtn.addEventListener('click', close);
+
+  // Expose state to the launcher so its toggle can close the chat when open.
+  chatController = { isOpen, close };
 
   // Escape also closes the chat widget (open state only)
   document.addEventListener('keydown', (event) => {

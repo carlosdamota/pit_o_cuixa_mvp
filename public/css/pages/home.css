@@ -13,7 +13,8 @@ body:has(.landing--onboarding) .footer {
   display: none !important;
 }
 
-body:has(.landing--onboarding) .whatsapp-float {
+body:has(.landing--onboarding) .whatsapp-float,
+body:has(.landing--onboarding) .chat-widget {
   z-index: 10000 !important;
 }
 

@@ -142,7 +142,8 @@
   height: 100%;
 }
 
-/* WF-005, WF-006: Tooltip visible on hover and keyboard focus */
+/* Tooltip follows launcher state: visible only while the WhatsApp menu is
+   expanded, hidden when the launcher is at rest (cf. aria-expanded). */
 .whatsapp-float__tooltip {
   position: absolute;
   right: calc(100% + 10px);
@@ -159,8 +160,7 @@
   transition: opacity var(--transition-normal);
 }
 
-.whatsapp-float__toggle:hover .whatsapp-float__tooltip,
-.whatsapp-float__toggle:focus-visible .whatsapp-float__tooltip {
+.whatsapp-float__toggle[aria-expanded="true"] .whatsapp-float__tooltip {
   opacity: 1;
 }
 

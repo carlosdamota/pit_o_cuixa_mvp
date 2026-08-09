@@ -52,12 +52,12 @@
   gap: var(--space-sm);
   flex-shrink: 0;
   padding: var(--space-md);
-  background-color: var(--color-secondary);
+  background-color: var(--color-on-surface);
   color: #fff;
 }
 
 .chat-widget__title {
-  font-family: var(--font-family-heading);
+  font-family: var(--font-family);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
 }
@@ -94,6 +94,13 @@
   gap: var(--space-sm);
   padding: var(--space-md);
   background-color: var(--color-surface);
+  /* CW-005: subtle fondo.webp pattern, like the index/landing
+     (white veil ~0.92 ≈ same 0.08 opacity effect as .landing--onboarding::before) */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
+    url("/img/fondo.webp");
+  background-size: cover;
+  background-position: bottom center;
 }
 
 .bot-message,
@@ -152,7 +159,7 @@
   padding: var(--space-sm) var(--space-md);
   border: 0;
   border-radius: var(--radius);
-  background-color: var(--color-secondary);
+  background-color: var(--color-on-surface);
   color: #fff;
   font: inherit;
   font-size: var(--font-size-sm);
@@ -162,7 +169,7 @@
 }
 
 .chat-widget__input button:hover {
-  background-color: #b71c1c;
+  background-color: #000000;
 }
 
 .chat-widget__input button:focus-visible {
