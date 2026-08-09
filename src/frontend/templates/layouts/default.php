@@ -101,6 +101,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="stylesheet" href="/css/components/product-card.css<?= assetVersion('/css/components/product-card.css') ?>">
     <link rel="stylesheet" href="/css/components/filter-bar.css<?= assetVersion('/css/components/filter-bar.css') ?>">
     <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= assetVersion('/css/components/whatsapp-float.css') ?>">
+    <link rel="stylesheet" href="/css/components/chat-widget.css<?= assetVersion('/css/components/chat-widget.css') ?>">
     <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
 
     <!-- Home landing CSS (only on home page) -->
@@ -193,8 +194,9 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <?php require __DIR__ . '/../partials/footer.php'; ?>
     <?php endif; ?>
 
-    <!-- ── Floating WhatsApp (hidden on admin pages) ────────────────── -->
+    <!-- ── Floating WhatsApp launcher + embedded chat widget (hidden on admin) ── -->
     <?php if (!$isAdmin): ?>
+    <?php require __DIR__ . '/../partials/chat-widget.php'; ?>
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
 
