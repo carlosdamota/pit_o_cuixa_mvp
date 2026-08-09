@@ -282,11 +282,6 @@ $router->add('GET', '/{lang}/terms', static function (array $params): void {
     Response::error('Not Found', 404);
 });
 
-//Chatbot page
- $router->add('GET','/ai-assistant', static function(array $params): void {
-    require_once __DIR__. '/../src/frontend/templates/partials/assistant.php';
- });
-
 // Admin pages
 $router->add('GET', '/admin', static function (array $params): void {
     AdminDashboard::render();

@@ -257,8 +257,7 @@ function initContactLauncher() {
  *
  * The widget is hidden by default and opened from the launcher menu
  * ([data-chat-open]). It POSTs { message } to /api/chat and renders the
- * reply with simple markdown (bold / line breaks), mirroring the standalone
- * /ai-assistant page.
+ * reply with simple markdown (bold / line breaks).
  */
 function initChatWidget() {
   const widget = document.querySelector('[data-chat-widget]');
