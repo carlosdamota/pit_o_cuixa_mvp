@@ -22,101 +22,198 @@ if ($userMessage === '') {
 }
 
 // ==========================================
-// 2. ALL RESPONSES
+// 2. LANGUAGE DETECTION
+// ==========================================
+// The chatbot speaks the SAME locales as the website: ca, es, en, uk.
+function detectLanguage(string $msg): string {
+    // Ukrainian script (Cyrillic) is unambiguous.
+    if (preg_match('/[\x{0400}-\x{04FF}]/u', $msg)) return 'uk';
+    // Catalan keywords (checked before Spanish; 'hola' is shared, default 'es' still catches Spanish).
+    if (preg_match('/\b(horari|horaris|obert|oberta|tancat|tancada|adreça|telèfon|lloc|on és|on esteu|esteu|ubicats|on sou|repartiment|repart|menú|carta|hola|gràcies|ajuda|faq|pregunta|dubte|al·lèrgia|targeta|pagament|reserva|reservar|quan|obren)\b/u', $msg)) return 'ca';
+    // English keywords.
+    if (preg_match('/\b(hello|hi|hey|good morning|good afternoon|hours|open|opening|closed|menu|food|chicken|price|prices|address|location|phone|delivery|where|when|thanks|thank you|help|what can you|question|questions|allergy|allergies|gluten|celiac|payment|pay|reserve|booking|order|vegetarian|card|faq)\b/u', $msg)) return 'en';
+    // Spanish keywords (and default).
+    if (preg_match('/\b(hola|buenos|buenas|horario|horarios|abre|abren|abierto|cerrado|hora|dias|días|cuando|donde|dónde|direccion|dirección|ubicacion|ubicación|telefono|teléfono|contacto|llamar|reparto|domicilio|envio|envío|portes|zonas|menu|precio|precios|pollo|combos|croquetas|bebida|bebidas|ensalada|comida|gracias|ayuda|pregunta|preguntas|duda|dudas|alergia|gluten|pago|pagar|reserva|reservar|tarjeta)\b/u', $msg)) return 'es';
+    return 'es';
+}
+
+// ==========================================
+// 3. INTENT DETECTION
+// ==========================================
+function detectIntent(string $msg, string $lang): ?string {
+    $keywords = [
+        'hours' => [
+            'ca'  => ['horari', 'horaris', 'obert', 'oberta', 'tancat', 'tancada', 'hora', 'obren', 'quan'],
+            'es'  => ['horario', 'horarios', 'abre', 'abren', 'abierto', 'cerrado', 'hora', 'dias', 'días', 'cuando'],
+            'en'  => ['hours', 'open', 'opening', 'close', 'closed', 'time', 'when'],
+            'uk'  => ['графік', 'розклад', 'години', 'відчинені', 'працюєте', 'відкрито', 'закрито', 'коли'],
+        ],
+        'location' => [
+            'ca'  => ['on és', 'on esteu', 'esteu', 'ubicats', 'adreça', 'direcció', 'ubicació', 'telèfon', 'contacte', 'trucar', 'lloc'],
+            'es'  => ['donde', 'dónde', 'direccion', 'dirección', 'ubicacion', 'ubicación', 'telefono', 'teléfono', 'contacto', 'llamar'],
+            'en'  => ['where', 'address', 'location', 'phone', 'call', 'contact', 'number'],
+            'uk'  => ['де', 'адреса', 'розташування', 'телефон', 'подзвонити', 'контакт', 'номер'],
+        ],
+        'delivery' => [
+            'ca'  => ['repartiment', 'repart', 'domicili', 'enviament', 'portes', 'zones', 'lliurament'],
+            'es'  => ['reparto', 'domicilio', 'envio', 'envío', 'portes', 'zonas', 'entrega'],
+            'en'  => ['delivery', 'shipping', 'area', 'zones', 'deliver'],
+            'uk'  => ['доставка', 'доставляєте', 'зони', 'доставки'],
+        ],
+        'menu' => [
+            'ca'  => ['carta', 'menú', 'preu', 'preus', 'pollastre', 'combos', 'croquetes', 'canelons', 'beguda', 'begudes', 'amanida', 'fideuà', 'paella', 'menjar'],
+            'es'  => ['menu', 'menú', 'carta', 'precio', 'precios', 'pollo', 'combos', 'croquetas', 'paella', 'bebida', 'bebidas', 'ensalada', 'comida'],
+            'en'  => ['menu', 'food', 'price', 'prices', 'chicken', 'combos', 'paella', 'drink', 'drinks', 'salad', 'what do you have'],
+            'uk'  => ['меню', 'страви', 'ціни', 'курка', 'комбо', 'крокети', 'напій', 'салат', 'їжа'],
+        ],
+        'greeting' => [
+            'ca'  => ['hola', 'bon dia', 'bona tarda', 'bona nit', 'hey'],
+            'es'  => ['hola', 'buenos', 'buenas', 'hey'],
+            'en'  => ['hello', 'hi', 'hey', 'good morning', 'good afternoon'],
+            'uk'  => ['привіт', 'вітаю', 'добрий день', 'доброго дня'],
+        ],
+        'thanks' => [
+            'ca'  => ['gràcies', 'merci', 'moltes gràcies'],
+            'es'  => ['gracias', 'merci', 'thanks', 'thank'],
+            'en'  => ['thanks', 'thank you', 'thank', 'thx'],
+            'uk'  => ['дякую', 'спасибі'],
+        ],
+        'faq' => [
+            'ca'  => ['faq', 'pregunta', 'preguntes', 'dubte', 'dubtes', 'al·lèrgia', 'al·lèrgies', 'gluten', 'celíac', 'celiac', 'pagament', 'pagar', 'reserva', 'reservar', 'encarregar', 'demanar', 'vegan', 'vegetarià', 'targeta', 'tarjeta'],
+            'es'  => ['faq', 'pregunta', 'preguntas', 'duda', 'dudas', 'alergia', 'alergias', 'gluten', 'celiac', 'celíac', 'pago', 'pagos', 'pagar', 'reserva', 'reservar', 'encargar', 'pedir', 'vegano', 'vegetariano', 'tarjeta'],
+            'en'  => ['faq', 'question', 'questions', 'doubt', 'allergy', 'allergies', 'gluten', 'celiac', 'payment', 'payments', 'pay', 'reserve', 'booking', 'order', 'vegetarian', 'card'],
+            'uk'  => ['faq', 'питання', 'запитання', 'алергія', 'алергії', 'глютен', 'целіакія', 'оплата', 'платіж', 'картка', 'бронювання', 'замовлення', 'веган', 'вегетаріанський'],
+        ],
+        'help' => [
+            'ca'  => ['ajuda', 'ajudar', 'opcions', 'què pots'],
+            'es'  => ['ayuda', 'help', 'ayudar', 'opciones', 'qué puedes'],
+            'en'  => ['help', 'options', 'what can you', 'commands'],
+            'uk'  => ['допомога', 'допоможіть', 'опції', 'що ви можете'],
+        ],
+    ];
+
+    $bestIntent = null;
+    $bestScore = 0;
+
+    foreach ($keywords as $intent => $langs) {
+        $words = $langs[$lang] ?? $langs['en'] ?? [];
+        $score = 0;
+        foreach ($words as $word) {
+            if (mb_strpos($msg, $word) !== false) {
+                $score++;
+            }
+        }
+        if ($score > $bestScore) {
+            $bestScore = $score;
+            $bestIntent = $intent;
+        }
+    }
+
+    return $bestScore > 0 ? $bestIntent : null;
+}
+
+// ==========================================
+// 4. MAIN LOGIC
+// ==========================================
+$lang   = detectLanguage($userMessage);
+$intent = detectIntent($userMessage, $lang);
+
+// Answer using the REAL site i18n for the detected language when possible.
+// Files are pure `return [...]` arrays — safe to require repeatedly.
+$enStrings = require __DIR__ . '/../../shared/i18n/en.php';
+$i18nFile  = __DIR__ . '/../../shared/i18n/' . $lang . '.php';
+if ($lang !== 'en' && is_file($i18nFile)) {
+    // Detected locale wins; English fills any missing key (never an empty string).
+    $siteI18n = array_merge($enStrings, require $i18nFile);
+} else {
+    $siteI18n = $enStrings;
+}
+
+$phone = class_exists('Config') ? Config::phone() : '+34 977 64 20 10';
+
+// ==========================================
+// 5. ALL RESPONSES (buckets: ca, es, en, uk)
 // ==========================================
 $responses = [
 
     'hours' => [
-        'es' => "🕒 **Horarios de apertura:**\n" .
-                "- Lunes, Martes, Jueves y Viernes: 09:00 - 15:30\n" .
-                "- Miércoles: CERRADO ❌\n" .
-                "- Sábados y Domingos: 09:00 - 16:30\n" .
-                "- Reparto: 12:30 - 16:00",
+        'ca' => "🕒 **Horari d'obertura:**\n" .
+                $siteI18n['home.info.hours'],
+
+        'es' => "🕒 **Horario de apertura:**\n" .
+                $siteI18n['home.info.hours'],
 
         'en' => "🕒 **Opening Hours:**\n" .
-                "- Mon, Tue, Thu, Fri: 09:00 - 15:30\n" .
-                "- Wednesday: CLOSED ❌\n" .
-                "- Sat & Sun: 09:00 - 16:30\n" .
-                "- Delivery Hours: 12:30 - 16:00",
+                $siteI18n['home.info.hours'],
 
-        'zh' => "🕒 **营业时间:**\n" .
-                "- 周一、周二、周四、周五: 09:00 - 15:30\n" .
-                "- 周三: 休息 ❌\n" .
-                "- 周六、周日: 09:00 - 16:30\n" .
-                "- 外卖派送时间: 12:30 - 16:00",
-
-        'hi' => "🕒 **खुलने का समय:**\n" .
-                "- सोमवार, मंगलवार, गुरुवार, शुक्रवार: 09:00 - 15:30\n" .
-                "- बुधवार: बंद ❌\n" .
-                "- शनिवार और रविवार: 09:00 - 16:30\n" .
-                "- डिलीवरी का समय: 12:30 - 16:00",
-
-        'fr' => "🕒 **Heures d'ouverture:**\n" .
-                "- Lun, Mar, Jeu, Ven: 09:00 - 15:30\n" .
-                "- Mercredi: FERMÉ ❌\n" .
-                "- Sam & Dim: 09:00 - 16:30\n" .
-                "- Livraison: 12:30 - 16:00",
-
-        'pcm' => "🕒 **Time Wey We Dey Open:**\n" .
-                 "- Mon, Tue, Thu, Fri: 09:00 - 15:30\n" .
-                 "- Wednesday: WE CLOSING ❌\n" .
-                 "- Sat & Sun: 09:00 - 16:30\n" .
-                 "- Delivery time: 12:30 - 16:00",
+        'uk' => "🕒 **Графік роботи:**\n" .
+                $siteI18n['home.info.hours'],
     ],
 
     'location' => [
+        'ca' => "📍 **Ubicació i contacte:**\n" .
+                "- **Adreça:** " . $siteI18n['home.info.address'] . "\n" .
+                "- **Telèfon:** " . $phone,
+
         'es' => "📍 **Ubicación y Contacto:**\n" .
-                "- **Dirección:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                "- **Teléfono:** +34 977 64 20 10",
+                "- **Dirección:** " . $siteI18n['home.info.address'] . "\n" .
+                "- **Teléfono:** " . $phone,
 
         'en' => "📍 **Location & Contact:**\n" .
-                "- **Address:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                "- **Phone:** +34 977 64 20 10",
+                "- **Address:** " . $siteI18n['home.info.address'] . "\n" .
+                "- **Phone:** " . $phone,
 
-        'zh' => "📍 **地址与联系方式:**\n" .
-                "- **地址:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                "- **电话:** +34 977 64 20 10",
-
-        'hi' => "📍 **पता और संपर्क:**\n" .
-                "- **पता:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                "- **फोन:** +34 977 64 20 10",
-
-        'fr' => "📍 **Adresse et Contact:**\n" .
-                "- **Adresse:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                "- **Téléphone:** +34 977 64 20 10",
-
-        'pcm' => "📍 **Where We Dey & How To Call Us:**\n" .
-                 "- **Address:** Carrer Major, 25, 43800 Torredembarra, Tarragona\n" .
-                 "- **Phone:** +34 977 64 20 10",
+        'uk' => "📍 **Розташування та контакти:**\n" .
+                "- **Адреса:** " . $siteI18n['home.info.address'] . "\n" .
+                "- **Телефон:** " . $phone,
     ],
 
     'delivery' => [
-        'es' => "🚚 **Zonas de Reparto y Portes:**\n" .
-                "- **Zonas:** Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                "- **Gastos de envío:** Local 1,95€ | Fuera 2,95€",
+        'ca' => "🚚 **" . $siteI18n['menu.map.title'] . ":**\n" .
+                $siteI18n['menu.map.delivery_note'],
 
-        'en' => "🚚 **Delivery Areas:**\n" .
-                "- Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                "- **Fee:** Local €1.95 | Outside €2.95",
+        'es' => "🚚 **" . $siteI18n['menu.map.title'] . ":**\n" .
+                $siteI18n['menu.map.delivery_note'],
 
-        'zh' => "🚚 **配送区域:**\n" .
-                "- Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                "- **配送费:** 本地 €1.95 | 其他区域 €2.95",
+        'en' => "🚚 **" . $siteI18n['menu.map.title'] . ":**\n" .
+                $siteI18n['menu.map.delivery_note'],
 
-        'hi' => "🚚 **डिलीवरी क्षेत्र:**\n" .
-                "- Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                "- **शुल्क:** स्थानीय €1.95 | बाहर €2.95",
-
-        'fr' => "🚚 **Zones de livraison:**\n" .
-                "- Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                "- **Frais:** Local 1,95€ | Extérieur 2,95€",
-
-        'pcm' => "🚚 **Delivery Areas:**\n" .
-                 "- Altafulla, Creixell, La Mora, Pobla Montornés, Torredembarra, Riera de Gaià.\n" .
-                 "- **Fee:** Local €1.95 | Outside €2.95",
+        'uk' => "🚚 **" . $siteI18n['menu.map.title'] . ":**\n" .
+                $siteI18n['menu.map.delivery_note'],
     ],
 
     'menu' => [
+        'ca' => "🍗 **Carta completa – Pit o Cuixa**\n\n" .
+                "**Combos de Pollastre a l'ast:**\n" .
+                "- Pollastre sencer: **16,90€**\n" .
+                "- Pollastre + Patates + Allioli: **22,90€**\n" .
+                "- Pollastre + Amanida + Allioli: **22,90€**\n" .
+                "- Pollastre + Patates + 1 Plat Preparat (o 6 Croquetes) + Allioli: **27,90€**\n" .
+                "- Pollastre + 6 Canelons + Patates + Allioli: **28,50€**\n" .
+                "- Pollastre + Patates + 12 Croquetes + Allioli: **31,90€**\n" .
+                "- Pollastre + Patates + 6 Croquetes + Amanida Russa + Allioli: **31,90€**\n" .
+                "- Pollastre + Patates + 2 Plats Preparats + Allioli: **31,90€**\n\n" .
+                "🍽️ **Menú Diari (Dilluns a Divendres):**\n" .
+                "- 2 Plats Preparats + Beguda: **12,50€**\n\n" .
+                "🥟 **Croquetes (6 unitats):**\n" .
+                "- Pollastre Rostit / Bolets i Tòfona / Formatge Cabrales: **7,90€**\n\n" .
+                "🍟 **Patates:**\n" .
+                "- Casolanes: **5,80€** | Especials: **7,00€** | Al Forn: **2,00€**\n\n" .
+                "🍗 **Plats Preparats:**\n" .
+                "- Aletes (8 ud): **8,00€** | Aletes BBQ (8 ud): **7,50€**\n" .
+                "- Nuggets (8 ud): **6,50€** | Chicken Bites (12 ud): **6,00€**\n" .
+                "- Chicken Fingers: **7,80€** | Canelons: **8,00€**\n" .
+                "- Callos: **8,00€** | Fideuà: **7,50€** | Pollastre al Curri: **6,50€**\n" .
+                "- Albergínia Farcida: **5,50€** | Pasta Bolonyesa: **5,50€**\n\n" .
+                "🥗 **Amanides:**\n" .
+                "- Cèsar: **7,90€** | Russa amb Tonyina: **6,90€** | Pasta amb Feta: **5,95€**\n\n" .
+                "🥤 **Begudes:**\n" .
+                "- Coca-Cola / Coca-Cola Zero / Nestea: **2,00€**\n" .
+                "- Aquarius: **2,10€** | Estrella Galicia: **2,00€**\n" .
+                "- Aigua 1,5L: **3,00€**\n" .
+                "- Vi Negre de la Casa: **6,00€** | Verdejo: **7,00€** | Lambrusco: **7,00€**\n" .
+                "- Ampolla Peñalosa: **8,00€**",
+
         'es' => "🍗 **Carta completa – Pit o Cuixa**\n\n" .
                 "**Combos Pollo a l'ast:**\n" .
                 "- Pollo entero: **16,90€**\n" .
@@ -179,188 +276,152 @@ $responses = [
                 "- House Red Wine: **€6.00** | Verdejo: **€7.00** | Lambrusco: **€7.00**\n" .
                 "- Peñalosa Bottle: **€8.00**",
 
-        'zh' => "🍗 **菜单 – Pit o Cuixa**\n\n" .
-                "**烤鸡套餐:**\n" .
-                "- 整只烤鸡: **€16.90**\n" .
-                "- 烤鸡 + 薯条 + 蒜蓉酱: **€22.90**\n" .
-                "- 烤鸡 + 沙拉 + 蒜蓉酱: **€22.90**\n" .
-                "- 工作日套餐 (2个菜+饮料): **€12.50**\n\n" .
-                "**其他热门:**\n" .
-                "- 炸鸡块 / 鸡翅 / 意面等\n" .
-                "- 可乐 / 啤酒: **€2.00**\n" .
-                "- Peñalosa 酒: **€8.00**",
-
-        'hi' => "🍗 **मेनू – Pit o Cuixa**\n\n" .
-                "**चिकन कॉम्बो:**\n" .
-                "- होल रोस्ट चिकन: **€16.90**\n" .
-                "- चिकन + फ्राइज़ + अलियोली: **€22.90**\n" .
-                "- डेली मेनू (2 डिश + ड्रिंक): **€12.50**\n\n" .
-                "**ड्रिंक्स:**\n" .
-                "- कोक / बीयर: **€2.00**\n" .
-                "- Peñalosa बोतल: **€8.00**",
-
-        'fr' => "🍗 **Menu – Pit o Cuixa**\n\n" .
-                "**Combos Poulet:**\n" .
-                "- Poulet entier: **16,90€**\n" .
-                "- Poulet + Frites + Aioli: **22,90€**\n" .
-                "- Menu du jour (2 plats + boisson): **12,50€**\n\n" .
-                "**Boissons:**\n" .
-                "- Coca / Bière: **2,00€**\n" .
-                "- Bouteille Peñalosa: **8,00€**",
-
-        'pcm' => "🍗 **Full Menu – Pit o Cuixa**\n\n" .
-                 "**Chicken Combos:**\n" .
-                 "- Whole Chicken: **€16.90**\n" .
-                 "- Chicken + Chips + Alioli: **€22.90**\n" .
-                 "- Daily Menu (2 dishes + drink): **€12.50**\n\n" .
-                 "**Drinks:**\n" .
-                 "- Coke / Beer: **€2.00**\n" .
-                 "- Peñalosa Bottle: **€8.00**",
+        'uk' => "🍗 **Повне меню – Pit o Cuixa**\n\n" .
+                "**Комбінації з куркою на рожні:**\n" .
+                "- Ціла курка: **16,90€**\n" .
+                "- Курка + Картопля + Айолі: **22,90€**\n" .
+                "- Курка + Салат + Айолі: **22,90€**\n" .
+                "- Курка + Картопля + 1 Готова страва (або 6 Крокетів) + Айолі: **27,90€**\n" .
+                "- Курка + 6 Канолонів + Картопля + Айолі: **28,50€**\n" .
+                "- Курка + Картопля + 12 Крокетів + Айолі: **31,90€**\n" .
+                "- Курка + Картопля + 6 Крокетів + Російський салат + Айолі: **31,90€**\n" .
+                "- Курка + Картопля + 2 Готові страви + Айолі: **31,90€**\n\n" .
+                "🍽️ **Щоденне меню (понеділок–п’ятниця):**\n" .
+                "- 2 Готові страви + Напій: **12,50€**\n\n" .
+                "🥟 **Крокети (6 штук):**\n" .
+                "- Смажена курка / Гриби та трюфель / Сир Кабралес: **7,90€**\n\n" .
+                "🍟 **Картопля:**\n" .
+                "- Домашня: **5,80€** | Спеціальна: **7,00€** | Запечена: **2,00€**\n\n" .
+                "🍗 **Готові страви:**\n" .
+                "- Крильця (8 шт): **8,00€** | Крильця BBQ (8 шт): **7,50€**\n" .
+                "- Нагетси (8 шт): **6,50€** | Chicken Bites (12 шт): **6,00€**\n" .
+                "- Chicken Fingers: **7,80€** | Канолони: **8,00€**\n" .
+                "- Кальос: **8,00€** | Фідеуа: **7,50€** | Курка з каррі: **6,50€**\n" .
+                "- Фаршировані баклажани: **5,50€** | Паста болоньєзе: **5,50€**\n\n" .
+                "🥗 **Салати:**\n" .
+                "- Цезар: **7,90€** | Російський з тунцем: **6,90€** | Паста з фетою: **5,95€**\n\n" .
+                "🥤 **Напої:**\n" .
+                "- Coca-Cola / Coca-Cola Zero / Nestea: **2,00€**\n" .
+                "- Aquarius: **2,10€** | Estrella Galicia: **2,00€**\n" .
+                "- Вода 1,5 л: **3,00€**\n" .
+                "- Домашнє червоне вино: **6,00€** | Verdejo: **7,00€** | Lambrusco: **7,00€**\n" .
+                "- Пляшка Peñalosa: **8,00€**",
     ],
 
     'greeting' => [
+        'ca' => "👋 Hola! Benvingut/da a **Pit o Cuixa**.\n\nPots preguntar-me per la carta, els horaris, el repartiment o la ubicació.",
         'es' => "👋 ¡Hola! Bienvenido a **Pit o Cuixa**.\n\nPuedes preguntarme por el menú, horarios, reparto o ubicación.",
         'en' => "👋 Hello! Welcome to **Pit o Cuixa**.\n\nYou can ask me about the menu, opening hours, delivery or location.",
-        'zh' => "👋 你好！欢迎来到 **Pit o Cuixa**。\n\n你可以问我菜单、营业时间、外卖或地址。",
-        'hi' => "👋 नमस्ते! **Pit o Cuixa** में आपका स्वागत है।\n\nआप मेनू, समय, डिलीवरी या पता पूछ सकते हैं।",
-        'fr' => "👋 Bonjour ! Bienvenue chez **Pit o Cuixa**.\n\nVous pouvez me demander le menu, les horaires, la livraison ou l'adresse.",
-        'pcm' => "👋 How far! Welcome to **Pit o Cuixa**.\n\nYou fit ask me about menu, time, delivery or location.",
+        'uk' => "👋 Привіт! Ласкаво просимо до **Pit o Cuixa**.\n\nВи можете запитати мене про меню, графік роботи, доставку чи розташування.",
     ],
 
     'thanks' => [
+        'ca' => "De res! 😊 Si necessites qualsevol altra cosa, aquí estic.\n\nTambé pots trucar al **+34 977 64 20 10**.",
         'es' => "¡De nada! 😊 Si necesitas algo más, aquí estoy.\n\nTambién puedes llamar al **+34 977 64 20 10**.",
         'en' => "You're welcome! 😊 If you need anything else, just ask.\n\nYou can also call **+34 977 64 20 10**.",
-        'zh' => "不客气！😊 还有其他问题随时问我。\n\n也可以打电话 **+34 977 64 20 10**。",
-        'hi' => "आपका स्वागत है! 😊 और कुछ चाहिए तो पूछिए।\n\nआप **+34 977 64 20 10** पर कॉल भी कर सकते हैं।",
-        'fr' => "De rien ! 😊 Si vous avez besoin d'autre chose, je suis là.\n\nVous pouvez aussi appeler le **+34 977 64 20 10**.",
-        'pcm' => "You welcome! 😊 If you need anytin else, just ask.\n\nYou fit call **+34 977 64 20 10** too.",
+        'uk' => "Будь ласка! 😊 Якщо вам потрібно ще щось, я тут.\n\nТакож можете зателефонувати нам: **+34 977 64 20 10**.",
     ],
 
     'help' => [
+        'ca' => "Et puc ajudar amb:\n• Horaris\n• Ubicació i telèfon\n• Zones de repartiment\n• Carta i preus\n\nEscriu una d'aquestes paraules o truca al **+34 977 64 20 10**.",
         'es' => "Puedo ayudarte con:\n• Horarios\n• Ubicación y teléfono\n• Zonas de reparto\n• Menú y precios\n\nEscribe una de estas palabras o llama al **+34 977 64 20 10**.",
         'en' => "I can help you with:\n• Opening hours\n• Location & phone\n• Delivery areas\n• Menu & prices\n\nJust type one of these or call **+34 977 64 20 10**.",
-        'zh' => "我可以帮你查询：\n• 营业时间\n• 地址和电话\n• 配送区域\n• 菜单和价格\n\n直接问我，或拨打 **+34 977 64 20 10**。",
-        'hi' => "मैं इनमें मदद कर सकता हूँ:\n• खुलने का समय\n• पता और फोन\n• डिलीवरी क्षेत्र\n• मेनू और कीमतें\n\nया कॉल करें **+34 977 64 20 10**।",
-        'fr' => "Je peux vous aider avec :\n• Les horaires\n• L'adresse et le téléphone\n• Les zones de livraison\n• Le menu et les prix\n\nAppelez le **+34 977 64 20 10** si besoin.",
-        'pcm' => "I fit help you with:\n• Opening time\n• Location & phone\n• Delivery areas\n• Menu & prices\n\nOr call **+34 977 64 20 10**.",
+        'uk' => "Я можу допомогти вам з:\n• Графіком роботи\n• Розташуванням і телефоном\n• Зонами доставки\n• Меню та цінами\n\nНапишіть одне з цих питань або зателефонуйте: **+34 977 64 20 10**.",
     ],
 ];
 
-// ==========================================
-// 3. LANGUAGE DETECTION
-// ==========================================
-function detectLanguage(string $msg): string {
-    if (preg_match('/[\x{4e00}-\x{9fff}]/u', $msg)) return 'zh';
-    if (preg_match('/[\x{0900}-\x{097F}]/u', $msg)) return 'hi';
-    if (preg_match('/\b(bonjour|salut|heures|horaire|ouvert|fermé|ferme|adresse|telephone|téléphone|poulet|prix|menu|carte)\b/u', $msg)) return 'fr';
-    if (preg_match('/\b(una|wey|dey|chop|how far|abeg|correct food|wetin)\b/u', $msg)) return 'pcm';
-    if (preg_match('/\b(hello|hi|hey|hours|open|opening|closed|menu|food|chicken|price|prices|address|location|phone|delivery|where|when|thanks|thank you|help)\b/u', $msg)) return 'en';
-    return 'es';
-}
+// Fallback reply per site locale (defined here so both the FAQ block and the
+// main logic below can reuse it).
+$fallbacks = [
+    'ca' => "Ho sento, no he entès la teva pregunta.\n\nEt puc ajudar amb: **horaris**, **ubicació**, **repartiment** o **carta**.\n\nTambé pots trucar al **+34 977 64 20 10**.",
+    'es' => "Lo siento, no he entendido tu pregunta.\n\nPuedo ayudarte con: **horarios**, **ubicación**, **reparto** o **menú**.\n\nTambién puedes llamar al **+34 977 64 20 10**.",
+    'en' => "Sorry, I didn't understand your question.\n\nI can help you with: **hours**, **location**, **delivery** or **menu**.\n\nYou can also call **+34 977 64 20 10**.",
+    'uk' => "Вибачте, я не зрозумів вашого питання.\n\nЯ можу допомогти з: **графіком**, **розташуванням**, **доставкою** або **меню**.\n\nТакож можете зателефонувати нам: **+34 977 64 20 10**.",
+];
 
-// ==========================================
-// 4. INTENT DETECTION
-// ==========================================
-function detectIntent(string $msg, string $lang): ?string {
-    $keywords = [
-        'hours' => [
-            'es'  => ['horario', 'horarios', 'horari', 'abre', 'abren', 'abierto', 'obert', 'cerrado', 'tancat', 'hora', 'dias', 'días', 'cuando', 'quan'],
-            'en'  => ['hours', 'open', 'opening', 'close', 'closed', 'time', 'when'],
-            'zh'  => ['时间', '营业', '几点', '开门', '休息'],
-            'hi'  => ['समय', 'कब', 'खुलता', 'बंद'],
-            'fr'  => ['heures', 'horaire', 'ouvert', 'ferme', 'fermé', 'quand'],
-            'pcm' => ['open', 'time', 'when', 'day', 'close', 'closing'],
-        ],
-        'location' => [
-            'es'  => ['donde', 'dónde', 'direccion', 'dirección', 'adreça', 'ubicacion', 'ubicación', 'telefono', 'teléfono', 'telèfon', 'contacto', 'llamar', 'on és', 'on'],
-            'en'  => ['where', 'address', 'location', 'phone', 'call', 'contact', 'number'],
-            'zh'  => ['地址', '电话', '位置', '在哪', '哪里'],
-            'hi'  => ['पता', 'फोन', 'कहाँ', 'लोकेशन'],
-            'fr'  => ['adresse', 'emplacement', 'telephone', 'téléphone', 'appeler', 'contact'],
-            'pcm' => ['where', 'location', 'place', 'phone', 'call', 'number'],
-        ],
-        'delivery' => [
-            'es'  => ['reparto', 'domicilio', 'envio', 'envío', 'portes', 'zonas', 'repartiment'],
-            'en'  => ['delivery', 'shipping', 'area', 'zones', 'deliver'],
-            'zh'  => ['外卖', '配送', '送餐'],
-            'hi'  => ['डिलीवरी', 'डिलिवरी'],
-            'fr'  => ['livraison', 'livrer', 'zones'],
-            'pcm' => ['delivery', 'deliver', 'bring'],
-        ],
-        'menu' => [
-            'es'  => ['menu', 'menú', 'carta', 'precio', 'precios', 'pollo', 'combos', 'croquetas', 'paella', 'bebida', 'bebidas', 'ensalada', 'comida'],
-            'en'  => ['menu', 'food', 'price', 'prices', 'chicken', 'combos', 'paella', 'drink', 'drinks', 'salad', 'what do you have'],
-            'zh'  => ['菜单', '价格', '烤鸡', '多少钱', '吃的'],
-            'hi'  => ['मेनू', 'कीमत', 'चिकन', 'खाना', 'प्राइस'],
-            'fr'  => ['menu', 'carte', 'prix', 'poulet', 'combos', 'nourriture'],
-            'pcm' => ['food', 'chicken', 'chop', 'price', 'how much', 'menu'],
-        ],
-        'greeting' => [
-            'es'  => ['hola', 'buenos', 'buenas', 'hey'],
-            'en'  => ['hello', 'hi', 'hey', 'good morning', 'good afternoon'],
-            'zh'  => ['你好', '您好', '哈喽'],
-            'hi'  => ['नमस्ते', 'हेलो', 'हाय'],
-            'fr'  => ['bonjour', 'salut', 'bonsoir'],
-            'pcm' => ['how far', 'hello', 'hi'],
-        ],
-        'thanks' => [
-            'es'  => ['gracias', 'merci', 'thanks', 'thank'],
-            'en'  => ['thanks', 'thank you', 'thank', 'thx'],
-            'zh'  => ['谢谢', '多谢'],
-            'hi'  => ['धन्यवाद', 'शुक्रिया'],
-            'fr'  => ['merci', 'thanks'],
-            'pcm' => ['thanks', 'thank you', 'thank'],
-        ],
-        'help' => [
-            'es'  => ['ayuda', 'help', 'ayudar', 'opciones', 'qué puedes'],
-            'en'  => ['help', 'options', 'what can you', 'commands'],
-            'zh'  => ['帮助', '帮我'],
-            'hi'  => ['मदद', 'हेल्प'],
-            'fr'  => ['aide', 'help', 'aider'],
-            'pcm' => ['help', 'abeg'],
-        ],
+// FAQ reply: compose from the SAME i18n source the /faq page renders,
+// so the chatbot never drifts from the site's real FAQ content.
+// Returns a specific FAQ answer, or the FAQ index, or null when $specificOnly
+// and there is no real FAQ overlap.
+function buildFaqReply(string $faqLang, string $userMessage, bool $specificOnly = false): ?string
+{
+    $faqLocaleMap = [
+        'ca' => 'ca',
+        'es' => 'es',
+        'en' => 'en',
+        'uk' => 'uk',
     ];
 
-    $bestIntent = null;
-    $bestScore = 0;
+    $faqLocale = $faqLocaleMap[$faqLang] ?? 'en';
+    $faqFile   = __DIR__ . '/../../shared/i18n/' . $faqLocale . '.php';
 
-    foreach ($keywords as $intent => $langs) {
-        $words = $langs[$lang] ?? $langs['en'] ?? [];
-        $score = 0;
-        foreach ($words as $word) {
-            if (mb_strpos($msg, $word) !== false) {
-                $score++;
-            }
-        }
+    if (!is_file($faqFile)) {
+        return null;
+    }
+
+    $faqStrings = require $faqFile;
+    $faqItems   = $faqStrings['faq.items'] ?? [];
+
+    if ($faqItems === []) {
+        return null;
+    }
+
+    // Try to match the user's question to a specific FAQ item.
+    $bestIndex = null;
+    $bestScore = 0;
+    $msgWords  = preg_split('/\s+/u', mb_strtolower($userMessage, 'UTF-8')) ?: [];
+
+    foreach ($faqItems as $index => $item) {
+        $qWords = preg_split('/\s+/u', mb_strtolower($item['q'], 'UTF-8')) ?: [];
+        $score  = count(array_intersect($msgWords, $qWords));
+
         if ($score > $bestScore) {
             $bestScore = $score;
-            $bestIntent = $intent;
+            $bestIndex = $index;
         }
     }
 
-    return $bestScore > 0 ? $bestIntent : null;
+    // A real overlap (>= 2 shared words) is a targeted match; otherwise list the FAQ index.
+    if ($bestIndex !== null && $bestScore >= 2) {
+        $item  = $faqItems[$bestIndex];
+        return "**" . $item['q'] . "**\n\n" . $item['a'];
+    }
+
+    if ($specificOnly) {
+        return null;
+    }
+
+    $faqTitle = $faqStrings['faq.title'] ?? 'FAQ';
+    $lines    = ["❓ **" . $faqTitle . ":**\n"];
+    foreach ($faqItems as $index => $item) {
+        $lines[] = ($index + 1) . ". **" . $item['q'] . "**";
+    }
+    $faqPrompts = [
+        'ca' => "\nEscriu la pregunta que t'interessi i et respondré amb més detall. 😊",
+        'es' => "\nEscribe la pregunta que te interese y te respondo con más detalle. 😊",
+        'en' => "\nType the question you're interested in and I'll answer in more detail. 😊",
+        'uk' => "\nНапишіть питання, яке вас цікавить, і я відповім детальніше. 😊",
+    ];
+    $lines[] = $faqPrompts[$faqLocale] ?? $faqPrompts['en'];
+
+    return implode("\n", $lines);
 }
 
-// ==========================================
-// 5. MAIN LOGIC
-// ==========================================
-$lang   = detectLanguage($userMessage);
-$intent = detectIntent($userMessage, $lang);
-
-if ($intent && isset($responses[$intent][$lang])) {
+// ── Main logic ──────────────────────────────────────────────────────────
+if ($intent === 'faq') {
+    // Explicit FAQ request: always answer from the real FAQ source.
+    $reply = buildFaqReply($lang, $userMessage) ?: ($fallbacks[$lang] ?? $fallbacks['en']);
+} elseif ($intent && isset($responses[$intent][$lang])) {
     $reply = $responses[$intent][$lang];
 } elseif ($intent && isset($responses[$intent]['en'])) {
     $reply = $responses[$intent]['en'];
 } else {
-    $fallbacks = [
-        'es'  => "Lo siento, no he entendido tu pregunta.\n\nPuedo ayudarte con: **horarios**, **ubicación**, **reparto** o **menú**.\n\nTambién puedes llamar al **+34 977 64 20 10**.",
-        'en'  => "Sorry, I didn't understand your question.\n\nI can help you with: **hours**, **location**, **delivery** or **menu**.\n\nYou can also call **+34 977 64 20 10**.",
-        'zh'  => "抱歉，我没有理解你的问题。\n\n我可以帮你查询：营业时间、地址、外卖或菜单。\n\n也可以拨打 **+34 977 64 20 10**。",
-        'hi'  => "माफ़ करें, मैं आपका सवाल नहीं समझ पाया।\n\nआप समय, पता, डिलीवरी या मेनू पूछ सकते हैं।\n\nया कॉल करें **+34 977 64 20 10**।",
-        'fr'  => "Désolé, je n'ai pas compris votre question.\n\nJe peux vous aider avec les **horaires**, **adresse**, **livraison** ou **menu**.\n\nAppelez le **+34 977 64 20 10**.",
-        'pcm' => "Sorry, I no understand your question.\n\nI fit help you with **time**, **location**, **delivery** or **menu**.\n\nYou fit call **+34 977 64 20 10**.",
-    ];
-    $reply = $fallbacks[$lang] ?? $fallbacks['en'];
+    // No intent: before giving up, try a FAQ-specific match (real overlap
+    // only, never the index) so natural questions still get real answers.
+    $reply = buildFaqReply($lang, $userMessage, true);
+    if ($reply === null) {
+        $reply = $fallbacks[$lang] ?? $fallbacks['en'];
+    }
 }
 
 echo json_encode(['reply' => $reply], JSON_UNESCAPED_UNICODE);
