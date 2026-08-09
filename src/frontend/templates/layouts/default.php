@@ -85,47 +85,46 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="manifest" href="/manifest.json">
 
     <!-- ── Favicon ──────────────────────────────────────────────────── -->
-    <link rel="icon" type="image/png" href="/public/img/icons/icon-192.png" sizes="192x192">
-    <link rel="apple-touch-icon" href="/public/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="/img/icons/favicon.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/img/icons/favicon.png">
 
     <!-- ── Typography (Google Fonts: Outfit & Inter) ────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
-    <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
-    <?php $v = '?v=1.5.0'; ?>
-    <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/base.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/layouts/header.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/layouts/footer.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/product-card.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/filter-bar.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/pages/error.css<?= $v ?>">
+    <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
+    <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
+    <link rel="stylesheet" href="/css/base.css<?= assetVersion('/css/base.css') ?>">
+    <link rel="stylesheet" href="/css/layouts/header.css<?= assetVersion('/css/layouts/header.css') ?>">
+    <link rel="stylesheet" href="/css/layouts/footer.css<?= assetVersion('/css/layouts/footer.css') ?>">
+    <link rel="stylesheet" href="/css/components/product-card.css<?= assetVersion('/css/components/product-card.css') ?>">
+    <link rel="stylesheet" href="/css/components/filter-bar.css<?= assetVersion('/css/components/filter-bar.css') ?>">
+    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= assetVersion('/css/components/whatsapp-float.css') ?>">
+    <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
 
     <!-- Home landing CSS (only on home page) -->
     <?php if ($pageName === 'home'): ?>
-    <link rel="stylesheet" href="/css/pages/home.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/pages/home.css<?= assetVersion('/css/pages/home.css') ?>">
     <?php endif; ?>
 
     <!-- FAQ page CSS (only on FAQ page) -->
     <?php if ($pageName === 'faq'): ?>
-    <link rel="stylesheet" href="/css/pages/faq.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/pages/faq.css<?= assetVersion('/css/pages/faq.css') ?>">
     <?php endif; ?>
 
     <!-- Menu slider CSS, Accordion CSS & Delivery Map CSS (only on menu page) -->
     <?php if ($pageName === 'menu'): ?>
-    <link rel="stylesheet" href="/css/components/menu-slider.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/accordion.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/delivery-map.css<?= $v ?>">
-    <script type="module" src="/js/accordion.js<?= $v ?>"></script>
-    <script type="module" src="/js/delivery-map.js<?= $v ?>"></script>
+    <link rel="stylesheet" href="/css/components/menu-slider.css<?= assetVersion('/css/components/menu-slider.css') ?>">
+    <link rel="stylesheet" href="/css/components/accordion.css<?= assetVersion('/css/components/accordion.css') ?>">
+    <link rel="stylesheet" href="/css/components/delivery-map.css<?= assetVersion('/css/components/delivery-map.css') ?>">
+    <script type="module" src="/js/accordion.js<?= assetVersion('/js/accordion.js') ?>"></script>
+    <script type="module" src="/js/delivery-map.js<?= assetVersion('/js/delivery-map.js') ?>"></script>
     <?php endif; ?>
 
     <!-- Admin CSS (only on admin pages) -->
     <?php if (str_starts_with($pageName, 'admin/')): ?>
-    <link rel="stylesheet" href="/css/pages/admin.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/pages/admin.css<?= assetVersion('/css/pages/admin.css') ?>">
     <?php
     // Expose CSRF token as meta tag for admin JS AJAX calls
     $csrfMeta = $pageData['csrf_token'] ?? '';
@@ -200,6 +199,6 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
-    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/main.js<?= assetVersion('/js/main.js') ?>"></script>
 </body>
 </html>

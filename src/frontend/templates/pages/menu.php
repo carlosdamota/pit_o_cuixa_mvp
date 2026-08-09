@@ -79,13 +79,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
         </div>
 
         <div class="filter-bar__tabs" data-filter-tabs<?= $isDeliveryMode ? '' : ' hidden' ?>>
-            <button class="filter-bar__tab filter-bar__tab--active"
-                    data-filter="all"
-                    type="button"
-                    aria-pressed="true">
-                <?= __('menu.filter.all') ?>
-            </button>
-
             <button class="filter-bar__tab"
                     data-filter="popular"
                     type="button"
@@ -93,11 +86,13 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                 <?= __('menu.filter.popular') ?>
             </button>
 
-            <?php foreach ($catList as $cat): ?>
-                <button class="filter-bar__tab"
+            <?php foreach ($catList as $index => $cat):
+                $isActive = ($index === 0);
+            ?>
+                <button class="filter-bar__tab<?= $isActive ? ' filter-bar__tab--active' : '' ?>"
                         data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
                         type="button"
-                        aria-pressed="false">
+                        aria-pressed="<?= $isActive ? 'true' : 'false' ?>">
                     <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
                 </button>
             <?php endforeach; ?>
@@ -309,7 +304,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 
         <div class="delivery-map-card">
             <!-- Leaflet Interactive Canvas Container -->
-            <div id="delivery-map" class="delivery-map-container" role="region" aria-label="<?= __('menu.map.title') ?>"></div>
+            <div id="delivery-map" class="delivery-map-container" role="region" aria-label="<?= __('menu.map.title') ?>" data-popup-link-label="<?= htmlspecialchars(__('menu.map.cta_view'), ENT_QUOTES, 'UTF-8') ?>"></div>
 
             <!-- Town Badges Bar -->
             <div class="delivery-map-towns">
@@ -323,6 +318,15 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     <li class="delivery-map-towns__tag">🛵 La Riera de Gaià</li>
                 </ul>
             </div>
+
+            <!-- Directions CTA (DMC-001) — plain anchor, no JS; destination mirrors layout $localBusinessJsonLd.geo -->
+            <a class="delivery-map-card__cta"
+               href="https://www.google.com/maps/dir/?api=1&destination=41.1413,1.3894"
+               target="_blank"
+               rel="noopener"
+               aria-label="<?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>
+            </a>
         </div>
 
         <div class="delivery-map-note">
@@ -338,6 +342,14 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
   "@type": "FoodEstablishment",
   "name": "Pit o Cuixa",
   "telephone": "+34977642010",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Carrer Hort de l'Oca, 12",
+    "addressLocality": "Torredembarra",
+    "postalCode": "43830",
+    "addressCountry": "ES"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 41.1413, "longitude": 1.3894 },
   "areaServed": [
     {
       "@type": "AdministrativeArea",

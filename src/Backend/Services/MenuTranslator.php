@@ -131,6 +131,17 @@ class MenuTranslator
             }
         }
 
+        // 3. Process menu_data for products
+        $menuProducts = $this->pdo->query("SELECT id, menu_data FROM products WHERE menu_data IS NOT NULL AND menu_data != ''")->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($menuProducts as $mp) {
+            $translatedMenuData = \Pit\Cuixa\Backend\Api\AdminProducts::translateMenuData($mp['menu_data'], $this->deepl);
+            if ($translatedMenuData !== $mp['menu_data']) {
+                $stmt = $this->pdo->prepare("UPDATE products SET menu_data = :md, updated_at = datetime('now') WHERE id = :id");
+                $stmt->execute([':md' => $translatedMenuData, ':id' => $mp['id']]);
+                $stats['products']++;
+            }
+        }
+
         return $stats;
     }
 }

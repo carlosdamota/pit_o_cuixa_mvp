@@ -9,6 +9,7 @@
 
 import { initMenuFilter } from './menu-filter.js';
 import { initMenuSlider } from './menu-slider.js';
+import { initAnimatedFavicon } from './animated-favicon.js';
 
 /**
  * Initialise mobile menu toggle.
@@ -48,39 +49,61 @@ function initMobileMenu() {
 
 /**
  * Initialise custom language selector dropdown.
+ * Supports multiple [data-lang-dropdown] instances (header + footer): each
+ * instance runs in its own closure; the single document-level outside-click
+ * and Escape handlers only act on whichever instance is currently open.
  */
 function initLangDropdown() {
-  const dropdown = document.querySelector('[data-lang-dropdown]');
-  if (!dropdown) return;
+  const instances = [];
 
-  const toggle = dropdown.querySelector('[data-lang-toggle]');
-  const menu = dropdown.querySelector('[data-lang-menu]');
-  if (!toggle || !menu) return;
-
-  toggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', !isOpen);
-    if (isOpen) {
-      menu.setAttribute('hidden', '');
-    } else {
-      menu.removeAttribute('hidden');
+  document.querySelectorAll('[data-lang-dropdown]').forEach((dropdown) => {
+    const toggle = dropdown.querySelector('[data-lang-toggle]');
+    const menu = dropdown.querySelector('[data-lang-menu]');
+    if (!toggle || !menu) {
+      return;
     }
-  });
 
-  document.addEventListener('click', (e) => {
-    if (!dropdown.contains(e.target)) {
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+    const close = () => {
       toggle.setAttribute('aria-expanded', 'false');
       menu.setAttribute('hidden', '');
-    }
+    };
+
+    instances.push({ dropdown, toggle, isOpen, close });
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isOpen()) {
+        close();
+      } else {
+        toggle.setAttribute('aria-expanded', 'true');
+        menu.removeAttribute('hidden');
+      }
+    });
+  });
+
+  if (instances.length === 0) {
+    return;
+  }
+
+  document.addEventListener('click', (e) => {
+    instances.forEach((instance) => {
+      if (instance.isOpen() && !instance.dropdown.contains(e.target)) {
+        instance.close();
+      }
+    });
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-      toggle.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('hidden', '');
-      toggle.focus();
+    if (e.key !== 'Escape') {
+      return;
     }
+    instances.forEach((instance) => {
+      if (instance.isOpen()) {
+        instance.close();
+        instance.toggle.focus();
+      }
+    });
   });
 }
 
@@ -176,6 +199,7 @@ function init() {
   initMenuFilter();
   initMenuSlider();
   initImageFallback();
+  initAnimatedFavicon();
   registerServiceWorker();
 }
 

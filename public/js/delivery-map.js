@@ -30,6 +30,9 @@ function initDeliveryMap(container) {
   const centerLat = 41.1515;
   const centerLng = 1.3930;
 
+  // Popup link label comes from PHP via data-popup-link-label (JS has no i18n layer)
+  const popupLabel = container.dataset.popupLinkLabel || 'View on Google Maps';
+
   const map = L.map(container, {
     center: [centerLat, centerLng],
     zoom: 12.8,
@@ -75,7 +78,11 @@ function initDeliveryMap(container) {
       icon: t.hub ? hubIcon : townIcon
     }).addTo(map);
 
-    marker.bindPopup(`<strong>${t.name}</strong><br>${t.hub ? '📍 Local principal & Rosticería' : '🛵 Zona con servicio a domicilio'}`);
+    const popupContent =
+      `<strong>${t.name}</strong><br>${t.hub ? '📍 Local principal & Rosticería' : '🛵 Zona con servicio a domicilio'}` +
+      (t.hub ? `<br><a href="https://www.google.com/maps/dir/?api=1&destination=41.1413,1.3894" target="_blank" rel="noopener">${popupLabel}</a>` : '');
+
+    marker.bindPopup(popupContent);
   });
 
   // Perimeter polygon points defining the chicken outline around all 6 towns

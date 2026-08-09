@@ -418,6 +418,7 @@ return [
     'home.info.title' => 'Visit us',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
     'home.info.phone' => 'Tel. +34 977 64 20 10',
+    'home.call.cta' => 'Book Now!',
     'home.info.hours' => 'Open every day from 11:00 to 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
@@ -440,7 +441,6 @@ return [
     'menu.channel.takeaway' => 'Takeaway',
     'menu.filter.all' => 'All',
     'menu.filter.popular' => '🔥 Best Sellers',
-    'menu.order.cta' => 'Order now!',
     'menu.price.from' => 'From %s',
     'menu.no_products' => 'No products available in this category.',
     'menu.search.label' => 'Search products',
@@ -450,6 +450,8 @@ return [
     'menu.map.subtitle' => 'Freshly prepared and delivered piping hot to your doorstep.',
     'menu.map.towns_label' => 'Direct delivery coverage:',
     'menu.map.delivery_note' => '🛵 Delivery available in Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès, and La Riera de Gaià.',
+    'menu.map.cta' => 'Get directions to the restaurant',
+    'menu.map.cta_view' => 'View on Google Maps',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price' => '€%s',

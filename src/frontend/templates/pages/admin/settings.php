@@ -81,7 +81,7 @@ $lang                  = $pageData['locale'] ?? LANG;
  * Settings page toggle handler.
  * Sends PUT /api/admin/settings on toggle change.
  */
-import { api } from '/js/admin.js';
+import { api } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
 const toggle = document.getElementById('menu-slider-toggle');
 
