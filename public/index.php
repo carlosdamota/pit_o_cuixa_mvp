@@ -25,6 +25,7 @@ use Pit\Cuixa\Backend\Api\AdminCategories;
 use Pit\Cuixa\Backend\Api\AdminIO;
 use Pit\Cuixa\Backend\Api\WebScraper;
 use Pit\Cuixa\Backend\Api\UpdateMenu;
+use Pit\Cuixa\Backend\Api\Migrate;
 use Pit\Cuixa\Backend\Api\AdminUpload;
 use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Pages\Home;
@@ -164,6 +165,18 @@ $router->add('POST', '/api/update-menu', static function (array $params): void {
 
 //GET /api/update-menu — 405: the sync is POST-only and MUST NOT trigger on GET (METHOD-4)
 $router->add('GET', '/api/update-menu', static function (array $params): void {
+    header('Allow: POST');
+    Response::error('Method Not Allowed', 405);
+});
+
+//POST /api/migrate — apply pending SQL migrations, requires auth
+$router->add('POST', '/api/migrate', static function (array $params): void {
+    $handler = new Migrate();
+    $handler->handle();
+});
+
+//GET /api/migrate — 405: migrations are POST-only
+$router->add('GET', '/api/migrate', static function (array $params): void {
     header('Allow: POST');
     Response::error('Method Not Allowed', 405);
 });
