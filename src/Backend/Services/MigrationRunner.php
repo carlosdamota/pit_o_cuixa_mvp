@@ -26,10 +26,41 @@ final class MigrationRunner
     {
         $result = ['applied' => 0, 'failed' => 0, 'errors' => [], 'locked' => false];
 
+        $dbDir = dirname($this->dbPath);
+        if (!is_dir($dbDir)) {
+            if (!mkdir($dbDir, 0775, true) && !is_dir($dbDir)) {
+                $result['failed'] = 1;
+                $result['errors'][] = "Failed to create database directory at {$dbDir}";
+                return $result;
+            }
+        }
+
         if (!is_file($this->dbPath)) {
-            $result['failed'] = 1;
-            $result['errors'][] = "Database not found at {$this->dbPath}";
-            return $result;
+            $schemaFile = dirname($this->migrationsDir) . '/schema.sql';
+            if (is_file($schemaFile)) {
+                try {
+                    $initPdo = new \PDO('sqlite:' . $this->dbPath);
+                    $initPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                    $schemaSql = file_get_contents($schemaFile);
+                    if ($schemaSql !== false) {
+                        $statements = self::splitSql($schemaSql);
+                        foreach ($statements as $stmt) {
+                            $stmt = trim($stmt);
+                            if ($stmt !== '') {
+                                $initPdo->exec($stmt);
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $result['failed'] = 1;
+                    $result['errors'][] = "Failed to initialize database schema: " . $e->getMessage();
+                    return $result;
+                }
+            } else {
+                $result['failed'] = 1;
+                $result['errors'][] = "Database not found at {$this->dbPath}";
+                return $result;
+            }
         }
 
         if (!is_dir($this->migrationsDir)) {
