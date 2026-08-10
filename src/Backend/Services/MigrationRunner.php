@@ -24,7 +24,7 @@ final class MigrationRunner
 
     public function run(): array
     {
-        $result = ['applied' => 0, 'failed' => 0, 'errors' => []];
+        $result = ['applied' => 0, 'failed' => 0, 'errors' => [], 'locked' => false];
 
         if (!is_file($this->dbPath)) {
             $result['failed'] = 1;
@@ -41,6 +41,7 @@ final class MigrationRunner
         if (!$this->acquireLock()) {
             $result['failed'] = 1;
             $result['errors'][] = 'Migration already in progress';
+            $result['locked'] = true;
             return $result;
         }
 

@@ -68,15 +68,7 @@ final class Migrate
         try {
             $result = $runner->run();
 
-            $isConcurrent = false;
-            foreach ($result['errors'] as $err) {
-                if (str_contains($err, 'Migration already in progress')) {
-                    $isConcurrent = true;
-                    break;
-                }
-            }
-
-            if ($isConcurrent) {
+            if ($result['locked']) {
                 Response::json([
                     'error'   => true,
                     'message' => 'Migration already in progress',
