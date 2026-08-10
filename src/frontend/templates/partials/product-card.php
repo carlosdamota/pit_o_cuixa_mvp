@@ -42,7 +42,17 @@ $slug        = $product['slug']        ?? '';
 $imageUrl    = !empty($product['image_url'])
     ? $product['image_url']
     : '/img/fallback_img.webp';
-$orderUrl    = $product['last_shop_url'] ?? '#';
+// Build the order URL: empty → disabled card; absolute http(s) → use as-is
+// (admin may have saved a full URL); anything else is a shop-relative path,
+// so prefix it with the shop domain from URL_PRODUCT.
+$rawOrderUrl = $product['last_shop_url'] ?? '';
+if ($rawOrderUrl === '') {
+    $orderUrl = '#';
+} elseif (str_starts_with($rawOrderUrl, 'http://') || str_starts_with($rawOrderUrl, 'https://')) {
+    $orderUrl = $rawOrderUrl;
+} else {
+    $orderUrl = \Config::productUrl() . '/' . ltrim($rawOrderUrl, '/');
+}
 $productId   = (int) ($product['id']   ?? 0);
 
 // Build search corpus from both locales (lowercased, space-separated)

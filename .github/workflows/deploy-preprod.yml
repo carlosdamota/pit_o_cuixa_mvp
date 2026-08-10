@@ -1,0 +1,115 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# CD Pipeline — Preproduction (GoogieHost)
+# ──────────────────────────────────────────────────────────────────────────────
+# Required GitHub Secrets:
+#   FTP_HOST            — FTP server hostname (e.g. ftp.example.com)
+#   FTP_USER            — FTP username
+#   FTP_PASS            — FTP password
+#   DB_PATH             — Absolute path to SQLite DB on server (e.g. /home/user/data/app.db)
+#   SERVICE_API_TOKEN   — Bearer token for /api/migrate authentication
+#   SITE_URL            — Public URL of the deployed site (e.g. https://example.com)
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Deploy Preproduction
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-preprod
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to GoogieHost (preprod)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: none
+          coverage: none
+
+      - name: PHP Syntax Check (lint)
+        run: |
+          EXIT_CODE=0
+          while IFS= read -r -d '' FILE; do
+            php -l "$FILE" || EXIT_CODE=$?
+          done < <(find . -name '*.php' -not -path './vendor/*' -not -path './data/*' -print0)
+          exit $EXIT_CODE
+
+      - name: Run tests
+        run: php scripts/test-sync.php
+
+      - name: Validate required secrets
+        run: |
+          MISSING=()
+          for SECRET in FTP_HOST FTP_USER FTP_PASS DB_PATH SERVICE_API_TOKEN SITE_URL; do
+            if [ -z "${!SECRET}" ]; then
+              MISSING+=("$SECRET")
+            fi
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "All required secrets are configured."
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          DB_PATH: ${{ secrets.DB_PATH }}
+          SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+
+      - name: Build .env from secrets
+        run: |
+          cat > .env <<EOF
+          DB_PATH=${DB_PATH}
+          SERVICE_API_TOKEN=${SERVICE_API_TOKEN}
+          SITE_URL=${SITE_URL}
+          EOF
+          echo ".env file generated."
+        env:
+          DB_PATH: ${{ secrets.DB_PATH }}
+          SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          server-dir: /
+          exclude: |
+            **/data/**
+            **/.env
+            **/.git/**
+            **/.github/**
+            **/.gitignore
+          dry-run: false
+
+      - name: Post-deploy migration
+        run: |
+          echo "Triggering post-deploy migration..."
+          curl -fsS -X POST "${SITE_URL}/api/migrate" \
+            -H "Authorization: Bearer ${SERVICE_API_TOKEN}" \
+            -H "Content-Type: application/json"
+          echo ""
+          echo "Migration completed."
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}

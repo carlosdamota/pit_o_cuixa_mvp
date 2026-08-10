@@ -399,7 +399,7 @@ return [
         ],
         [
             'q' => 'Where are you located and what facilities do you have?',
-            'a' => 'We are located at Carrer Hort de l\'Oca, 12, in Torredembarra (Tarragona). We have an indoor dining area and an outdoor terrace, wheelchair-accessible facilities, and public parking nearby.',
+            'a' => 'We are located at Carrer Major, 25, in Torredembarra (Tarragona). We have an indoor dining area and an outdoor terrace, wheelchair-accessible facilities, and public parking nearby.',
         ],
         [
             'q' => 'What payment methods do you accept and how do I report an issue with my order?',

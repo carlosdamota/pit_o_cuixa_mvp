@@ -1,0 +1,14 @@
+{
+  "status": "transparent",
+  "executive_summary": "The ELE-14 deployment automation change has been successfully archived with all artifacts preserved. Verification passed with 102 tests passing. No CRITICAL issues found. All 14 tasks completed and 8 requirements verified.",
+  "artifacts": [
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/specs/spec.md (merged JSON API specification)",
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/specs/spec.md (merged deployment requirements)",
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/design.md",
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/proposal.md",
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/tasks.md",
+    "openspec/changes/archive/2026-08-10-ELE-14-deployment-automation/verify-report.md"
+  ],
+  "next_recommended": "Proceed with next change through the full SDD cycle: propose -> tasks -> design -> implement -> verify",
+  "skill_resolution": "sdd-archive"
+}
