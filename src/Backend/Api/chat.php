@@ -6,11 +6,13 @@ header('Content-Type: application/json; charset=utf-8');
 // 1. GET USER MESSAGE
 // ==========================================
 // Accept the message as a GET query param (provisional GET endpoint) or,
-// falling back, from a JSON POST body.
-$rawMessage = trim($_GET['message'] ?? '');
+// falling back, from a JSON POST body. Validate the type: untrusted input
+// arrives as JSON and could be an array/object, which would make trim() throw.
+$rawMessage = is_string($_GET['message'] ?? null) ? trim($_GET['message']) : '';
 if ($rawMessage === '') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $rawMessage = trim($data['message'] ?? '');
+    $msg  = is_array($data) ? ($data['message'] ?? null) : null;
+    $rawMessage = is_string($msg) ? trim($msg) : '';
 }
 $userMessage = mb_strtolower($rawMessage, 'UTF-8');
 
