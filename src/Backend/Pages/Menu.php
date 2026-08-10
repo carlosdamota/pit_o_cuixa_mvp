@@ -178,7 +178,7 @@ class Menu
      */
     private static function discoverSliderImages(): array
     {
-        $pattern = __DIR__ . '/../../../public/img/menu-slider/*.{jpg,jpeg,png,webp}';
+        $pattern = \Config::publicDir() . '/img/menu-slider/*.{jpg,jpeg,png,webp}';
         $files   = glob($pattern, GLOB_BRACE);
 
         if (!is_array($files) || $files === []) {

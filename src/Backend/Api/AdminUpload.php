@@ -61,11 +61,8 @@ class AdminUpload
             return;
         }
 
-        $publicDir = is_dir(__DIR__ . '/../../../public_html')
-            ? __DIR__ . '/../../../public_html'
-            : __DIR__ . '/../../../public';
-
-        $destDir  = $publicDir . '/img/products';
+        $publicDir = \Config::publicDir();
+        $destDir   = $publicDir . '/img/products';
         $baseName = 'prod_' . time() . '_' . bin2hex(random_bytes(4));
 
         try {

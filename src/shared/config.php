@@ -95,6 +95,15 @@ final class Config
     }
 
     /**
+     * Absolute path to the public/web root directory (supports public or public_html).
+     */
+    public static function publicDir(): string
+    {
+        $root = dirname(__DIR__, 2);
+        return is_dir($root . '/public_html') ? ($root . '/public_html') : ($root . '/public');
+    }
+
+    /**
      * Base site URL (no trailing slash).
      */
     public static function siteUrl(): string
