@@ -265,6 +265,21 @@ function initContactLauncher() {
 }
 
 /**
+ * Escape HTML metacharacters so untrusted text is rendered as text, never
+ * markup. Applied BEFORE the markdown-to-HTML conversion so only the tags we
+ * generate (<strong>, <br>) reach innerHTML.
+ */
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[ch]);
+}
+
+/**
  * Initialise the embedded chat widget (chat-widget.php).
  *
  * The widget is hidden by default and opened from the launcher menu
@@ -353,9 +368,11 @@ function initChatWidget() {
       const data = await response.json();
       let textReply = data.reply || data.message || 'Lo siento, no pude procesar la solicitud.';
 
-      // Parse simple Markdown bolding and line breaks to HTML
-      textReply = textReply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      textReply = textReply.replace(/\n/g, '<br>');
+      // Escape untrusted text first, then apply simple Markdown bolding and
+      // line breaks. Only our generated tags reach innerHTML.
+      textReply = escapeHtml(textReply)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
 
       botDiv.innerHTML = textReply;
     } catch (error) {
