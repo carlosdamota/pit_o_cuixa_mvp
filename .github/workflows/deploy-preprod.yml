@@ -107,6 +107,8 @@ jobs:
           protocol: ftp
           port: 21
           server-dir: /
+          timeout: 60000
+          security: loose
           exclude: |
             **/data/**
             **/.env
