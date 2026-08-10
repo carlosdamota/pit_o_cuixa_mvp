@@ -85,6 +85,17 @@ jobs:
           SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
           SITE_URL: ${{ secrets.SITE_URL }}
 
+      - name: Generate public_html bridge for hosting
+        run: |
+          mkdir -p public_html
+          cat > public_html/.htaccess <<'EOF'
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              RewriteRule ^(.*)$ public/$1 [L]
+          </IfModule>
+          EOF
+          echo "public_html/.htaccess bridge generated."
+
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
