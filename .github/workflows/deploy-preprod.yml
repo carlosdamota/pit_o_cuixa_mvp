@@ -90,8 +90,7 @@ jobs:
           mkdir -p public_html
           cp -r public/* public_html/
           cp -r public/.[!.]* public_html/ 2>/dev/null || true
-          rm -rf public
-          echo "public_html prepared and public folder removed for deployment."
+          echo "public_html prepared for deployment."
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
@@ -100,8 +99,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftp
           port: 21
-          server-dir: /
-          timeout: 60000
+          server-dir: ./
           security: loose
           exclude: |
             **/data/**
@@ -109,6 +107,7 @@ jobs:
             **/.git/**
             **/.github/**
             **/.gitignore
+            **/public/**
           dry-run: false
 
       - name: Post-deploy migration
