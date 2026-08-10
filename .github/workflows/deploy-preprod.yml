@@ -115,11 +115,20 @@ jobs:
       - name: Post-deploy migration
         run: |
           echo "Triggering post-deploy migration..."
-          curl -fsS -X POST "${SITE_URL}/api/migrate" \
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${SITE_URL}/api/migrate" \
             -H "Authorization: Bearer ${SERVICE_API_TOKEN}" \
-            -H "Content-Type: application/json"
-          echo ""
-          echo "Migration completed."
+            -H "Content-Type: application/json")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response Body: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
+            echo "::error::Migration endpoint returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "Migration completed successfully."
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
           SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
