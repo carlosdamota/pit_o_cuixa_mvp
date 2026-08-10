@@ -103,6 +103,14 @@ final class Config
     }
 
     /**
+     * Shop domain where products can be ordered (no trailing slash).
+     */
+    public static function productUrl(): string
+    {
+        return rtrim(self::get('URL_PRODUCT', 'https://pitocuixa.last.shop'), '/');
+    }
+
+    /**
      * Application environment: dev|prod|test.
      */
     public static function env(): string
