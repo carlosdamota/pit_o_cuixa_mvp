@@ -318,7 +318,7 @@ import {
     Drawer, insertTableRow, removeTableRow, updateTableRow, toggleEmptyState,
     renderPagination, paginationClickHandler, fetchPaginated, swapTableRows, setPageParam,
     initKeyboardShortcuts
-} from '/js/admin.js';
+} from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
 const API_BASE = '/api/admin/products';
 const TBODY = document.querySelector('[data-products-tbody]');

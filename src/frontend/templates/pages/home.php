@@ -12,6 +12,15 @@ $baseUri = $_SERVER['REQUEST_URI'] ?? '/';
 $baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
 $langSeparator = (strpos($baseUri, '?') !== false) ? '&' : '?';
 $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
+
+$languages = [
+    'ca' => ['label' => 'Català',     'flag' => 'favicon_CAT.webp'],
+    'es' => ['label' => 'Castellano', 'flag' => 'favicon_ES.webp'],
+    'en' => ['label' => 'English',    'flag' => 'favicon_UK.webp'],
+    'uk' => ['label' => 'Українська', 'flag' => 'favicon_UKR.webp'],
+];
+$currentLang = LANG;
+$currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 ?>
 <!-- ============================================================
      Landing Onboarding (fullscreen fixed 100dvh)
@@ -33,7 +42,7 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
                 <svg class="onboarding__call-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
                     <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>
                 </svg>
-                <span class="onboarding__call-text"><?= \Config::phone() ?></span>
+                <span class="onboarding__call-text"><?= __('home.call.cta') ?></span>
             </a>
         </header>
 
@@ -75,7 +84,7 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.in_local') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/en_local.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
+                    <img src="/img/icons/a_local_icon.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.in_local') ?></span>
             </div>
@@ -90,7 +99,7 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.delivery') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/a_domicilio.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
+                    <img src="/img/icons/a_domicilio_icon.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
             </div>
@@ -132,12 +141,12 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
             <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
                 <div class="onboarding__target-ring"></div>
                 <div class="onboarding__target-inner">
-                    <img src="/img/icons/local.webp" width="64" height="64" alt="<?= __('site.name') ?>">
+                    <img src="/img/icons/el_local_icon.webp" width="64" height="64" alt="<?= __('site.name') ?>">
                 </div>
                 <span class="onboarding__target-label"><?= __('site.name') ?></span>
             </div>
 
-            <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p>
+            <!-- <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p> -->
         </div>
 
         <?php
@@ -191,7 +200,7 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
 
             </button>
 
-            <!-- PWA Install CTA Button (Fixed Floating Bottom-Left) -->
+            <!-- PWA Install CTA Button (centered in footer grid) -->
             <div id="pwa-install-container" class="onboarding__pwa-wrapper" hidden
                  data-ios-title="<?= __('pwa.ios.title') ?>"
                  data-ios-step1="<?= __('pwa.ios.step1') ?>"
@@ -207,28 +216,27 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
                 </button>
             </div>
 
-            <!-- Language Flag Icon Buttons (right) -->
-            <div class="onboarding__lang-group" role="navigation" aria-label="<?= __('lang.switch') ?>">
-                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=ca', ENT_QUOTES, 'UTF-8') ?>"
-                   class="onboarding__lang-btn<?= LANG === 'ca' ? ' onboarding__lang-btn--active' : '' ?>"
-                   title="Català">
-                    <img src="/img/icons/favicon_CAT.webp" width="22" height="22" alt="Català">
-                </a>
-                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=es', ENT_QUOTES, 'UTF-8') ?>"
-                   class="onboarding__lang-btn<?= LANG === 'es' ? ' onboarding__lang-btn--active' : '' ?>"
-                   title="Castellano">
-                    <img src="/img/icons/favicon_ES.webp" width="22" height="22" alt="Castellano">
-                </a>
-                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=en', ENT_QUOTES, 'UTF-8') ?>"
-                   class="onboarding__lang-btn<?= LANG === 'en' ? ' onboarding__lang-btn--active' : '' ?>"
-                   title="English">
-                    <img src="/img/icons/favicon_UK.webp" width="22" height="22" alt="English">
-                </a>
-                <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=uk', ENT_QUOTES, 'UTF-8') ?>"
-                   class="onboarding__lang-btn<?= LANG === 'uk' ? ' onboarding__lang-btn--active' : '' ?>"
-                   title="Українська">
-                    <img src="/img/icons/favicon_UKR.webp" width="22" height="22" alt="Українська">
-                </a>
+            <!-- Language Dropdown (right) -->
+            <div class="onboarding__lang-dropdown" data-lang-dropdown>
+                <button type="button" class="onboarding__lang-toggle"
+                        aria-haspopup="listbox" aria-expanded="false"
+                        aria-controls="footer-lang-menu" data-lang-toggle
+                        aria-label="<?= __('lang.switch') ?>">
+                    <img src="/img/icons/<?= $currentFlag ?>" alt="" class="onboarding__lang-flag">
+                    <span class="onboarding__lang-arrow" aria-hidden="true">▼</span>
+                </button>
+                <ul class="onboarding__lang-menu" id="footer-lang-menu" data-lang-menu hidden>
+                    <?php foreach ($languages as $code => $info): ?>
+                        <li>
+                            <a href="<?= htmlspecialchars($baseUri . $langSeparator . 'lang=' . $code, ENT_QUOTES, 'UTF-8') ?>"
+                               class="onboarding__lang-option"
+                               <?= $code === $currentLang ? 'aria-current="true"' : '' ?>>
+                                <img src="/img/icons/<?= $info['flag'] ?>" alt="" class="onboarding__lang-option-flag">
+                                <span><?= $info['label'] ?></span>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </footer>
 
@@ -236,4 +244,4 @@ $langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
 
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
 </section>
-<script type="module" src="/js/home-onboarding.js?v=1.2.0"></script>
+<script type="module" src="/js/home-onboarding.js<?= assetVersion('/js/home-onboarding.js') ?>"></script>

@@ -1,10 +1,11 @@
 /* ======================================================================
-   Pit o Cuixa — WhatsApp Floating Button
+   Pit o Cuixa — WhatsApp Floating Contact Launcher
    
-   Fixed-position CTA button in bottom-right corner.
-   Links to WhatsApp number for quick ordering.
+   Fixed-position floating launcher in bottom-right corner. The green
+   toggle expands an upward popover with two options: WhatsApp (new tab)
+   and the embedded chat widget.
    
-   WF-001: WhatsApp CTA — floating button visible on all pages
+   WF-001: Contact launcher — floating button visible on all pages
    WF-002: Fixed bottom-right positioning
    WF-003: WhatsApp brand green (#25D366)
    WF-004: z-index stacking between overlay (200) and modal (300)
@@ -12,7 +13,9 @@
    WF-006: Keyboard-accessible tooltip (focus-visible)
    WF-007: Zero CLS contribution (fixed position)
    WF-008: Responsive safe zone
-   ====================================================================== */
+   WF-009: Upward popover menu with two options (WhatsApp / chat widget)
+   WF-010: Popover opened via aria-expanded, closed on outside click/Escape
+   ========================================================================== */
 
 .whatsapp-float {
   position: fixed;
@@ -22,36 +25,112 @@
 
   /* WF-008: Prevent horizontal overflow on narrow viewports */
   max-width: 100vw;
-  overflow: hidden;
+
+  /* Stack menu above the toggle (upward opening) */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm);
 }
 
-.whatsapp-float__link {
+/* ── Popover menu (opens upward) ─────────────────────────────────── */
+.whatsapp-float__menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 200px;
+  padding: var(--space-xs);
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+
+  /* WF-009: hidden by default, revealed via aria-hidden */
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
+}
+
+.whatsapp-float__menu[aria-hidden="false"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.whatsapp-float__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-on-surface);
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.whatsapp-float__item:hover {
+  background-color: var(--color-surface);
+}
+
+.whatsapp-float__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.whatsapp-float__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-secondary);
+}
+
+.whatsapp-float__item--whatsapp .whatsapp-float__item-icon {
+  color: #25D366;
+}
+
+/* ── Main toggle button ──────────────────────────────────────────── */
+.whatsapp-float__toggle {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 56px;
   height: 56px;
-  background-color: #25D366;
+  padding: 0;
+  border: 0;
+  background: transparent;
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-lg);
-  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
   position: relative;
-  opacity: 0.85;
-  backdrop-filter: blur(4px);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+  opacity: 0.95;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
-.whatsapp-float__link:hover {
+.whatsapp-float__toggle:hover {
   opacity: 1;
-  transform: scale(1.1);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.12);
 }
 
-.whatsapp-float__link:focus-visible {
+.whatsapp-float__toggle:active {
+  transform: scale(0.95);
+}
+
+.whatsapp-float__toggle:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.12);
 }
 
 .whatsapp-float__icon {
@@ -64,9 +143,13 @@
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.18));
+  transition: transform var(--transition-fast);
 }
 
-/* WF-005, WF-006: Tooltip visible on hover and keyboard focus */
+/* Tooltip follows launcher state: visible only while the WhatsApp menu is
+   expanded, hidden when the launcher is at rest (cf. aria-expanded). */
 .whatsapp-float__tooltip {
   position: absolute;
   right: calc(100% + 10px);
@@ -83,8 +166,7 @@
   transition: opacity var(--transition-normal);
 }
 
-.whatsapp-float__link:hover .whatsapp-float__tooltip,
-.whatsapp-float__link:focus-visible .whatsapp-float__tooltip {
+.whatsapp-float__toggle[aria-expanded="true"] .whatsapp-float__tooltip {
   opacity: 1;
 }
 
@@ -106,7 +188,7 @@
     right: 16px;
   }
 
-  .whatsapp-float__link,
+  .whatsapp-float__toggle,
   .whatsapp-float__icon {
     width: 48px;
     height: 48px;
@@ -124,4 +206,8 @@ body.cookie-banner-open .whatsapp-float {
   transition:
     opacity .25s ease,
     transform .25s ease;
+
+  .whatsapp-float__menu {
+    min-width: 180px;
+  }
 }

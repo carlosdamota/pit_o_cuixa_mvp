@@ -61,9 +61,14 @@ class AdminSettings
         Auth::requireToken();
         Auth::validateCsrfToken();
 
-        $input = json_decode(file_get_contents('php://input'), true);
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
 
         if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        if (!is_array($input) || empty($input)) {
             Response::error('Invalid JSON body', 400);
             return;
         }
@@ -115,7 +120,7 @@ class AdminSettings
      */
     private static function countSliderImages(): int
     {
-        $pattern = __DIR__ . '/../../../public/img/menu-slider/*.{jpg,jpeg,png,webp}';
+        $pattern = \Config::publicDir() . '/img/menu-slider/*.{jpg,jpeg,png,webp}';
         $files   = glob($pattern, GLOB_BRACE);
 
         return is_array($files) ? count($files) : 0;

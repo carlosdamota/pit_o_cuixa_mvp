@@ -398,7 +398,7 @@ return [
         ],
         [
             'q' => '¿Dónde estáis ubicados y qué instalaciones ofrece el local?',
-            'a' => 'Nos encontramos en Carrer Hort de l\'Oca, 12, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
+            'a' => 'Nos encontramos en Carrer Major, 25, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
         ],
         [
             'q' => '¿Qué métodos de pago aceptáis y cómo contactar ante cualquier incidencia?',
@@ -417,6 +417,7 @@ return [
     'home.info.title' => 'Visítanos',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
     'home.info.phone' => 'Tel. +34 977 64 20 10',
+    'home.call.cta' => '¡Reserva Ahora!',
     'home.info.hours' => 'Abierto cada día de 11:00 a 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
@@ -439,7 +440,6 @@ return [
     'menu.channel.takeaway' => 'Llevar',
     'menu.filter.all' => 'Todo',
     'menu.filter.popular' => '🔥 Más vendidos',
-    'menu.order.cta' => '¡Pide ahora!',
     'menu.price.from' => 'Desde %s',
     'menu.no_products' => 'No hay productos disponibles en esta categoría.',
     'menu.search.label' => 'Buscar productos',
@@ -449,6 +449,8 @@ return [
     'menu.map.subtitle' => 'Llegamos recién hechos y bien calientes a tu puerta.',
     'menu.map.towns_label' => 'Cobertura directa:',
     'menu.map.delivery_note' => '🛵 Reparto disponible en Torredembarra, Altafulla, Creixell, La Móra, Pobla de Montornès y La Riera de Gaià.',
+    'menu.map.cta' => 'Cómo llegar al restaurante',
+    'menu.map.cta_view' => 'Ver en Google Maps',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price' => '%s €',

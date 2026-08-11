@@ -107,7 +107,7 @@
   overflow: hidden;
 }
 
-/* ── Footer (price + CTA) ────────────────────────────────────── */
+/* ── Footer (price) ───────────────────────────────────────────── */
 .product-card__footer {
   display: flex;
   align-items: center;
@@ -126,28 +126,15 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-.product-card__cta {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-xs) var(--space-md);
-  background-color: var(--color-primary);
-  color: var(--color-on-surface);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
+/* ── Stretched link (entire card is clickable) ─────────────────── */
+.product-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  cursor: pointer;
 }
 
-.product-card__cta:hover {
-  background-color: #ffffff;
-  color: var(--color-on-surface);
-  transform: scale(1.03);
-}
-
-.product-card__cta:focus-visible {
+.product-card__link:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 2px;
 }

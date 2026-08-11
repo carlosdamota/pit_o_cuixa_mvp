@@ -1,3 +1,24 @@
+/* ── Menu Hero — Presentation Banner ── */
+.menu-hero {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.menu-hero__image-wrapper {
+  width: 100%;
+  max-height: 50vh;
+  overflow: hidden;
+}
+
+.menu-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* Pit o Cuixa — Accordion & Channel Switcher Styles */
 
 .channel-switcher {
@@ -39,9 +60,29 @@
 
 /* Mobile responsive compacting */
 @media (max-width: 767px) {
-  .menu-hero,
   .menu-slider {
     display: none !important;
+  }
+
+  /* ── Menu Hero — visible on mobile, compact aspect ratio ── */
+  .menu-hero {
+    display: block;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .menu-hero__image-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .menu-hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .channel-switcher {

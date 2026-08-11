@@ -95,11 +95,28 @@ final class Config
     }
 
     /**
+     * Absolute path to the public/web root directory (supports public or public_html).
+     */
+    public static function publicDir(): string
+    {
+        $root = dirname(__DIR__, 2);
+        return is_dir($root . '/public_html') ? ($root . '/public_html') : ($root . '/public');
+    }
+
+    /**
      * Base site URL (no trailing slash).
      */
     public static function siteUrl(): string
     {
         return rtrim(self::get('SITE_URL', 'https://pitocuixa.es'), '/');
+    }
+
+    /**
+     * Shop domain where products can be ordered (no trailing slash).
+     */
+    public static function productUrl(): string
+    {
+        return rtrim(self::get('URL_PRODUCT', 'https://pitocuixa.last.shop'), '/');
     }
 
     /**

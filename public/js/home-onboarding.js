@@ -97,15 +97,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── Touch / Pointer Events (Mobile & Touchscreen) ─────────────────
+    // ── Touch / Pointer Events (Mobile & Touchscreen) & Direct Click ───
     dragItems.forEach((item) => {
+        let startX = 0;
+        let startY = 0;
+        let hasMovedFar = false;
+
         item.addEventListener('pointerdown', (e) => {
             // Only handle primary touch / mouse button
             if (e.button !== 0 && e.pointerType === 'mouse') return;
 
             isDragging = true;
+            hasMovedFar = false;
             activeDragItem = item;
-            item.setPointerCapture(e.pointerId);
+            startX = e.clientX;
+            startY = e.clientY;
+            try {
+                item.setPointerCapture(e.pointerId);
+            } catch (err) {
+                // Ignore pointer capture errors on older browsers
+            }
 
             // Create floating clone for drag visual
             pointerClone = item.cloneNode(true);
@@ -118,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         item.addEventListener('pointermove', (e) => {
             if (!isDragging || !pointerClone) return;
+
+            const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+            if (dist > 8) {
+                hasMovedFar = true;
+            }
 
             moveClone(e.clientX, e.clientY);
 
@@ -143,7 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeDragItem.classList.remove('onboarding__drag-item--dragging');
             }
 
-            if (isOverTarget(e.clientX, e.clientY) && activeDragItem) {
+            const isOver = isOverTarget(e.clientX, e.clientY);
+            const isClickTap = !hasMovedFar;
+
+            if (activeDragItem && (isOver || isClickTap)) {
                 completeSelection(activeDragItem.dataset.mode);
             }
 
@@ -152,6 +171,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         item.addEventListener('pointerup', handlePointerEnd);
         item.addEventListener('pointercancel', handlePointerEnd);
+
+        // Keyboard interaction (Enter / Space)
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                completeSelection(item.dataset.mode);
+            }
+        });
     });
 
     function moveClone(x, y) {

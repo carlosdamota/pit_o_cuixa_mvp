@@ -288,6 +288,7 @@ return [
     'home.info.title' => 'Завітайте до нас',
     'home.info.address' => 'Carrer Major, 25, 43800 Torredembarra, Tarragona',
     'home.info.phone' => 'Тел. +34 977 64 20 10',
+    'home.call.cta' => 'Забронювати зараз!',
     'home.info.hours' => 'Відчинено щодня з 11:00 до 23:00',
 
     // ── Home Landing (fullscreen index) ──────────────────────────
@@ -310,7 +311,6 @@ return [
     'menu.channel.takeaway' => 'Додому',
     'menu.filter.all' => 'Все',
     'menu.filter.popular' => '🔥 Хіти продажу',
-    'menu.order.cta' => 'Замовляй зараз!',
     'menu.price.from' => 'Від %s',
     'menu.no_products' => 'У цій категорії немає доступних товарів.',
     'menu.search.label' => 'Пошук товарів',
@@ -320,6 +320,8 @@ return [
     'menu.map.subtitle' => 'Доставляємо свіжоприготоване та гаряче прямо до ваших дверей.',
     'menu.map.towns_label' => 'Пряма доставка:',
     'menu.map.delivery_note' => '🛵 Доставка доступна в Торредембаррі, Альтафульї, Крейшейлі, Ла Мора, Побла-де-Монторнес та Ла Рієра-де-Ґая.',
+    'menu.map.cta' => 'Як дістатися до ресторану',
+    'menu.map.cta_view' => 'Подивитися в Google Maps',
 
     // ── Product Labels ──────────────────────────────────────────
     'product.price' => '%s €',

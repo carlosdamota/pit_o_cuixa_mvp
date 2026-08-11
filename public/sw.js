@@ -13,7 +13,7 @@
 
 const CACHE_NAMES = {
   pages: 'pages-v1',
-  static: 'static-v2',
+  static: 'static-v3',
   images: 'images-v1',
   api: 'api-v1',
 };

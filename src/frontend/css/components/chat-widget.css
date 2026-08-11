@@ -1,0 +1,188 @@
+/* ======================================================================
+   Pit o Cuixa — Embedded Chat Widget
+   
+   Fixed-position floating chat window opened from the contact launcher.
+   Hidden by default; shown when the user picks the "Chat IA" option.
+   Sits above the launcher (bottom-right), full window on small screens.
+   
+   CW-001: Hidden by default, revealed via aria-hidden
+   CW-002: Fixed bottom-right, above the contact launcher
+   CW-003: 360–400px wide window, max-height ~560px on desktop
+   CW-004: Header with title + close button
+   CW-005: Scrollable messages area
+   CW-006: Input row (text field + send button)
+   CW-007: Responsive safe zone / full-width on small screens
+   ========================================================================== */
+
+.chat-widget {
+  position: fixed;
+  right: 32px;
+  bottom: calc(80px + 56px + 16px); /* Above the contact launcher */
+  z-index: var(--z-whatsapp);
+
+  display: flex;
+  flex-direction: column;
+  width: min(400px, calc(100vw - 32px));
+  max-height: 560px;
+  background-color: var(--color-surface-container-lowest);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+
+  /* CW-001: hidden by default, revealed via aria-hidden */
+  opacity: 0;
+  transform: translateY(12px);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+}
+
+.chat-widget[aria-hidden="false"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.chat-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  padding: var(--space-md);
+  background-color: var(--color-on-surface);
+  color: #fff;
+}
+
+.chat-widget__title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.chat-widget__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs);
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.chat-widget__close:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.chat-widget__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ── Messages ───────────────────────────────────────────────────── */
+.chat-widget__messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--color-surface);
+  /* CW-005: subtle fondo.webp pattern, like the index/landing
+     (white veil ~0.92 ≈ same 0.08 opacity effect as .landing--onboarding::before) */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
+    url("/img/fondo.webp");
+  background-size: cover;
+  background-position: bottom center;
+}
+
+.bot-message,
+.user-message {
+  max-width: 85%;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-sm);
+  word-break: break-word;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: var(--color-secondary);
+  color: #fff;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+/* ── Input row ──────────────────────────────────────────────────── */
+.chat-widget__input {
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  padding: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-container-lowest);
+}
+
+.chat-widget__input input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.chat-widget__input input:focus {
+  border-color: var(--color-secondary);
+}
+
+.chat-widget__input button {
+  padding: var(--space-sm) var(--space-md);
+  border: 0;
+  border-radius: var(--radius);
+  background-color: var(--color-on-surface);
+  color: #fff;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.chat-widget__input button:hover {
+  background-color: #000000;
+}
+
+.chat-widget__input button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Responsive safe zone ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .chat-widget {
+    right: 16px;
+    bottom: calc(72px + 48px + 12px); /* Above the (smaller) mobile launcher */
+    width: min(400px, calc(100vw - 24px));
+    max-height: calc(100vh - 16px);
+  }
+}
