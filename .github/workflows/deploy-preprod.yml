@@ -103,7 +103,6 @@ jobs:
             open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
             mirror --reverse --verbose \
               --exclude-glob 'data/' \
-              --exclude-glob '.env' \
               --exclude-glob '.git/' \
               --exclude-glob '.github/' \
               --exclude-glob '.gitignore' \
