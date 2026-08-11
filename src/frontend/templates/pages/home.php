@@ -84,7 +84,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.in_local') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/en_local.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
+                    <img src="/img/icons/a_local_icon.webp" width="44" height="44" alt="<?= __('home.onboarding.in_local') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.in_local') ?></span>
             </div>
@@ -99,7 +99,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                  aria-grabbed="false"
                  aria-label="<?= __('home.onboarding.delivery') ?>">
                 <div class="onboarding__drag-circle">
-                    <img src="/img/icons/a_domicilio.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
+                    <img src="/img/icons/a_domicilio_icon.webp" width="44" height="44" alt="<?= __('home.onboarding.delivery') ?>">
                 </div>
                 <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
             </div>
@@ -141,7 +141,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
             <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
                 <div class="onboarding__target-ring"></div>
                 <div class="onboarding__target-inner">
-                    <img src="/img/icons/local.webp" width="64" height="64" alt="<?= __('site.name') ?>">
+                    <img src="/img/icons/el_local_icon.webp" width="64" height="64" alt="<?= __('site.name') ?>">
                 </div>
                 <span class="onboarding__target-label"><?= __('site.name') ?></span>
             </div>

@@ -103,31 +103,6 @@
   color: #ffffff;
 }
 
-/* Directions CTA (DMC-001, DMC-004, DMC-005) */
-.delivery-map-card__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 var(--space-md) var(--space-md);
-  background-color: var(--color-secondary);
-  color: #ffffff;
-  border-radius: var(--radius);
-  padding: var(--space-sm) var(--space-lg);
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.delivery-map-card__cta:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.delivery-map-card__cta:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
 .delivery-map-note {
   margin-top: var(--space-md);
   padding: var(--space-sm) var(--space-md);

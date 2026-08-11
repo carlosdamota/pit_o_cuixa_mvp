@@ -21,9 +21,7 @@
         </a>
         <button class="whatsapp-float__item" type="button" data-chat-open>
             <span class="whatsapp-float__item-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
+                <img src="/img/icons/chat_icon.webp" alt="" width="20" height="20">
             </span>
             <span>Chatea con nosotros</span>
         </button>
@@ -33,9 +31,9 @@
             aria-expanded="false" aria-controls="contact-menu"
             aria-label="Contacta con nosotros">
         <span class="whatsapp-float__icon" aria-hidden="true">
-            <img src="/img/icons/whatsapp.png" alt="" width="56" height="56">
+            <img src="/img/icons/chat_icon.webp" alt="" width="56" height="56">
         </span>
-        <span class="whatsapp-float__fallback" aria-hidden="true">WP</span>
+        <span class="whatsapp-float__fallback" aria-hidden="true">Chat</span>
         <span class="whatsapp-float__tooltip" role="tooltip">Contacta con nosotros</span>
     </button>
 </aside>
