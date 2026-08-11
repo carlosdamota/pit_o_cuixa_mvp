@@ -102,7 +102,7 @@ $lang      = $pageData['locale'] ?? LANG;
 /**
  * Admin Import/Export — Upload CSV and download exports.
  */
-import { showAlert, showToast, withLoading, getCsrfToken } from '/js/admin.js';
+import { showAlert, showToast, withLoading, getCsrfToken } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
 // ── Import ──────────────────────────────────────────────────────
 const importForm  = document.getElementById('import-form');

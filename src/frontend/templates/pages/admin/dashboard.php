@@ -78,5 +78,48 @@ $lang            = $pageData['locale'] ?? LANG;
                 </table>
             </div>
         </section>
+
+        <!-- ── Manual Menu Sync ────────────────────────────────────────── -->
+        <section class="admin-section">
+            <h2 class="admin-section__title">Sincronización de Carta</h2>
+            <p class="admin-section__desc">
+                Pulsa el botón para sincronizar manualmente la carta con el proveedor externo.
+            </p>
+            <button
+                type="button"
+                id="btn-update-menu"
+                class="admin-btn admin-btn--primary"
+            >
+                Actualizar carta
+            </button>
+        </section>
     </main>
 </div>
+
+<script type="module">
+    import { api, showToast, withLoading } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
+
+    const btn = document.getElementById('btn-update-menu');
+    if (!btn) throw new Error('Update-menu button not found');
+
+    btn.addEventListener('click', () => {
+        withLoading(btn, async () => {
+            try {
+                const data = await api('POST', '/api/update-menu');
+
+                if (data?.status === 'ok') {
+                    const t = data.translated || {};
+                    const parts = [];
+                    if (t.categories) parts.push(`${t.categories} categorías`);
+                    if (t.products) parts.push(`${t.products} productos`);
+                    const detail = parts.length ? ` — ${parts.join(', ')}` : '';
+                    showToast(`Carta actualizada correctamente${detail}`, 'success');
+                } else {
+                    showToast('No se pudo sincronizar la carta', 'error');
+                }
+            } catch (err) {
+                showToast('Error de red al sincronizar la carta', 'error');
+            }
+        });
+    });
+</script>
