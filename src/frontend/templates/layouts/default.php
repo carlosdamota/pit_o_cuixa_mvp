@@ -85,8 +85,8 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <link rel="manifest" href="/manifest.json">
 
     <!-- ── Favicon ──────────────────────────────────────────────────── -->
-    <link rel="icon" type="image/png" href="/public/img/icons/icon-192.png" sizes="192x192">
-    <link rel="apple-touch-icon" href="/public/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="/img/icons/favicon.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/img/icons/favicon.png">
 
     <!-- ── Typography (Google Fonts: Outfit & Inter) ────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,14 +95,18 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     
     <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
     <?php $v = '?v=1.5.0'; ?>
-    <link rel="stylesheet" href="/css/tokens.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/base.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/layouts/header.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/layouts/footer.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/product-card.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/filter-bar.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= $v ?>">
-    <link rel="stylesheet" href="/css/pages/error.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= $v ?>">
+
+    <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
+    <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
+    <link rel="stylesheet" href="/css/base.css<?= assetVersion('/css/base.css') ?>">
+    <link rel="stylesheet" href="/css/layouts/header.css<?= assetVersion('/css/layouts/header.css') ?>">
+    <link rel="stylesheet" href="/css/layouts/footer.css<?= assetVersion('/css/layouts/footer.css') ?>">
+    <link rel="stylesheet" href="/css/components/product-card.css<?= assetVersion('/css/components/product-card.css') ?>">
+    <link rel="stylesheet" href="/css/components/filter-bar.css<?= assetVersion('/css/components/filter-bar.css') ?>">
+    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= assetVersion('/css/components/whatsapp-float.css') ?>">
+    <link rel="stylesheet" href="/css/components/chat-widget.css<?= assetVersion('/css/components/chat-widget.css') ?>">
+    <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
 
     <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
     <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
@@ -205,8 +209,9 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
     <?php require __DIR__ . '/../partials/footer.php'; ?>
     <?php endif; ?>
 
-    <!-- ── Floating WhatsApp (hidden on admin pages) ────────────────── -->
+    <!-- ── Floating WhatsApp launcher + embedded chat widget (hidden on admin) ── -->
     <?php if (!$isAdmin): ?>
+    <?php require __DIR__ . '/../partials/chat-widget.php'; ?>
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
 

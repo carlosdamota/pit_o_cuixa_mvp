@@ -118,6 +118,11 @@ class AdminProducts
                         $descUk = $t[0] ?? '';
                     }
                 }
+
+                // Translate menu_data structure (carta, menu)
+                if (isset($input['menu_data']) && !empty($input['menu_data'])) {
+                    $input['menu_data'] = self::translateMenuData($input['menu_data'], $deepl);
+                }
             } catch (\Throwable $e) {
                 error_log('[AdminProducts] DeepL translation fallback warning: ' . $e->getMessage());
             }
@@ -133,6 +138,147 @@ class AdminProducts
         $input['description_en'] = !empty($descEn) ? $descEn : $descEs;
         $input['description_ca'] = !empty($descCa) ? $descCa : $descEs;
         $input['description_uk'] = !empty($descUk) ? $descUk : $descEs;
+    }
+
+    /**
+     * Recursively translate menu_data structure (badge, includes, section titles, item names/strings).
+     */
+    public static function translateMenuData(array|string|null $menuData, \Pit\Cuixa\Backend\Services\DeepLService $deepl): array|string|null
+    {
+        if (empty($menuData)) {
+            return $menuData;
+        }
+
+        $isJson = is_string($menuData);
+        $data = $isJson ? json_decode($menuData, true) : $menuData;
+
+        if (!is_array($data)) {
+            return $menuData;
+        }
+
+        $targetLangs = ['en', 'ca', 'uk'];
+
+        foreach ($targetLangs as $lang) {
+            $textsToTranslate = [];
+            $map = [];
+
+            // 1. Badge
+            $badgeEs = trim((string) ($data['badge_es'] ?? $data['badge'] ?? ''));
+            $badgeLang = trim((string) ($data["badge_{$lang}"] ?? ''));
+            if (!empty($badgeEs) && empty($badgeLang)) {
+                $map[] = ['type' => 'badge'];
+                $textsToTranslate[] = $badgeEs;
+            }
+
+            // 2. Includes
+            $includesEs = trim((string) ($data['includes_es'] ?? $data['includes'] ?? ''));
+            $includesLang = trim((string) ($data["includes_{$lang}"] ?? ''));
+            if (!empty($includesEs) && empty($includesLang)) {
+                $map[] = ['type' => 'includes'];
+                $textsToTranslate[] = $includesEs;
+            }
+
+            // 3. Sections
+            if (isset($data['sections']) && is_array($data['sections'])) {
+                foreach ($data['sections'] as $secIdx => $sec) {
+                    if (!is_array($sec)) {
+                        continue;
+                    }
+                    $titleEs = trim((string) ($sec['title_es'] ?? $sec['title'] ?? ''));
+                    $titleLang = trim((string) ($sec["title_{$lang}"] ?? ''));
+                    if (!empty($titleEs) && empty($titleLang)) {
+                        $map[] = ['type' => 'section_title', 'secIdx' => $secIdx];
+                        $textsToTranslate[] = $titleEs;
+                    }
+
+                    $itemsEs = $sec['items_es'] ?? $sec['items'] ?? [];
+                    if (is_array($itemsEs)) {
+                        $itemsLangExists = isset($sec["items_{$lang}"]) && is_array($sec["items_{$lang}"]);
+
+                        foreach ($itemsEs as $itemIdx => $item) {
+                            if (is_array($item)) {
+                                $nameEs = trim((string) ($item['name_es'] ?? $item['name'] ?? ''));
+                                $nameLang = trim((string) ($item["name_{$lang}"] ?? ''));
+                                if (!empty($nameEs) && empty($nameLang)) {
+                                    $map[] = ['type' => 'item_name', 'secIdx' => $secIdx, 'itemIdx' => $itemIdx];
+                                    $textsToTranslate[] = $nameEs;
+                                }
+                            } elseif (is_string($item) && trim($item) !== '' && !$itemsLangExists) {
+                                $map[] = ['type' => 'item_string', 'secIdx' => $secIdx, 'itemIdx' => $itemIdx];
+                                $textsToTranslate[] = trim($item);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($textsToTranslate)) {
+                try {
+                    $translated = $deepl->translate($textsToTranslate, $lang, 'ES');
+                    foreach ($map as $idx => $target) {
+                        $transVal = $translated[$idx] ?? '';
+                        if ($transVal === '') {
+                            continue;
+                        }
+
+                        if ($target['type'] === 'badge') {
+                            $data["badge_{$lang}"] = $transVal;
+                        } elseif ($target['type'] === 'includes') {
+                            $data["includes_{$lang}"] = $transVal;
+                        } elseif ($target['type'] === 'section_title') {
+                            $data['sections'][$target['secIdx']]["title_{$lang}"] = $transVal;
+                        } elseif ($target['type'] === 'item_name') {
+                            $data['sections'][$target['secIdx']]['items_es'][$target['itemIdx']]["name_{$lang}"] = $transVal;
+                            if (isset($data['sections'][$target['secIdx']]['items'][$target['itemIdx']])) {
+                                $data['sections'][$target['secIdx']]['items'][$target['itemIdx']]["name_{$lang}"] = $transVal;
+                            }
+                        } elseif ($target['type'] === 'item_string') {
+                            if (!isset($data['sections'][$target['secIdx']]["items_{$lang}"])) {
+                                $data['sections'][$target['secIdx']]["items_{$lang}"] = [];
+                            }
+                            $data['sections'][$target['secIdx']]["items_{$lang}"][$target['itemIdx']] = $transVal;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    error_log("[AdminProducts] DeepL menu_data translation error ({$lang}): " . $e->getMessage());
+                }
+            }
+        }
+
+        // Fallbacks for any un-translated fields
+        $badgeEs = trim((string) ($data['badge_es'] ?? $data['badge'] ?? ''));
+        if (!empty($badgeEs)) {
+            $data['badge_es'] = $badgeEs;
+            $data['badge_en'] = $data['badge_en'] ?? $badgeEs;
+            $data['badge_ca'] = $data['badge_ca'] ?? $badgeEs;
+            $data['badge_uk'] = $data['badge_uk'] ?? $badgeEs;
+        }
+
+        $includesEs = trim((string) ($data['includes_es'] ?? $data['includes'] ?? ''));
+        if (!empty($includesEs)) {
+            $data['includes_es'] = $includesEs;
+            $data['includes_en'] = $data['includes_en'] ?? $includesEs;
+            $data['includes_ca'] = $data['includes_ca'] ?? $includesEs;
+            $data['includes_uk'] = $data['includes_uk'] ?? $includesEs;
+        }
+
+        if (isset($data['sections']) && is_array($data['sections'])) {
+            foreach ($data['sections'] as $secIdx => &$sec) {
+                if (!is_array($sec)) {
+                    continue;
+                }
+                $titleEs = trim((string) ($sec['title_es'] ?? $sec['title'] ?? ''));
+                if (!empty($titleEs)) {
+                    $sec['title_es'] = $titleEs;
+                    $sec['title_en'] = $sec['title_en'] ?? $titleEs;
+                    $sec['title_ca'] = $sec['title_ca'] ?? $titleEs;
+                    $sec['title_uk'] = $sec['title_uk'] ?? $titleEs;
+                }
+            }
+            unset($sec);
+        }
+
+        return $isJson ? json_encode($data, JSON_UNESCAPED_UNICODE) : $data;
     }
 
     /**

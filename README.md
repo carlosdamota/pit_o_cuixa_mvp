@@ -305,6 +305,136 @@ GitHub Actions ejecuta `php -l` en cada Pull Request y push a `main`.
 
 ---
 
+### 🚀 Despliegue Automatizado (CD — GoogieHost preproducción)
+
+El despliegue a preproducción es **automático** mediante GitHub Actions. Cada push a la rama `main` dispara un pipeline que sube el código por FTP y ejecuta las migraciones pendientes.
+
+#### Flujo de despliegue
+
+```
+push a main → GitHub Actions
+  ├─ 1. PHP lint (php -l) + tests → si falla, se aborta
+  ├─ 2. Genera .env desde GitHub Secrets
+  ├─ 3. FTP Deploy → GoogieHost (excluye data/, .env, .git/)
+  └─ 4. POST /api/migrate → aplica migraciones SQL pendientes
+```
+
+#### GitHub Secrets necesarios
+
+Configura estos 6 secretos en **Settings → Secrets and variables → Actions**:
+
+| Secreto | Descripción | Ejemplo |
+|---------|-------------|---------|
+| `FTP_HOST` | Host del servidor FTP | `ftp.example.com` |
+| `FTP_USER` | Usuario FTP | `u123456789` |
+| `FTP_PASS` | Contraseña FTP | `••••••••` |
+| `DB_PATH` | Ruta absoluta a la BD SQLite en el servidor | `/home/user/data/pitocuixa.db` |
+| `SERVICE_API_TOKEN` | Token Bearer para autenticar `/api/migrate` | Generar con `php -r "echo bin2hex(random_bytes(64));"` |
+| `SITE_URL` | URL pública del sitio (sin trailing slash) | `https://pitocuixa.es` |
+
+#### Despliegue manual (workflow_dispatch)
+
+Si necesitas desplegar sin hacer push a `main`:
+
+1. Ve a **Actions → Deploy Preproduction** en GitHub.
+2. Haz clic en **Run workflow**.
+3. Selecciona la rama (debe ser `main`) y confirma.
+
+#### Solución de problemas
+
+| Problema | Causa / Solución |
+|----------|------------------|
+| `Missing required secrets` | Faltan secretos configurados. Revisa la tabla anterior. |
+| Error FTP (conexión o permisos) | Verifica `FTP_HOST`, credenciales y que el servidor permita FTP (no SFTP). |
+| Migración falla (HTTP 500) | Revisa los logs del servidor. La ruta `DB_PATH` debe ser escribible por el proceso PHP. |
+| Migración falla (HTTP 401) | `SERVICE_API_TOKEN` no coincide con el configurado en el `.env` del servidor. |
+| El deploy sube `.env` o `data/` | No debería ocurrir: el workflow excluye `data/`, `.env`, `.git/`. Si ocurre, revisa la versión del action FTP. |
+
+#### Rollback
+
+1. **Re-ejecutar commit anterior**: busca el commit estable en GitHub, haz `git revert` del commit problemático y push a `main`.
+2. **Desactivar despliegue automático**: en **Settings → Actions**, deshabilita el workflow `Deploy Preproduction`.
+3. **Revertir migración**: las migraciones SQL no tienen rollback automático. Restaura la BD desde backup y elimina la entrada correspondiente en la tabla `_migrations`.
+
+---
+
+### 📦 Guía de migraciones de base de datos
+
+Las migraciones permiten evolucionar el esquema de la base de datos de forma controlada y repetible.
+
+#### Cómo añadir una nueva migración
+
+1. Crea un archivo SQL en `db/migrations/` con el formato:
+   ```
+   YYYYMMDD_HHMMSS_descripcion.sql
+   ```
+   Ejemplo: `20250115_143000_add_product_weight_column.sql`
+
+2. Escribe el SQL dentro del archivo:
+   ```sql
+   ALTER TABLE products ADD COLUMN weight REAL DEFAULT NULL;
+   ```
+
+3. Haz commit y push a `main`. El despliegue automático detectará la migración pendiente y la aplicará.
+
+#### Aplicación manual
+
+```bash
+php scripts/migrate.php
+```
+
+O vía HTTP (requiere token Bearer):
+
+```bash
+curl -X POST "https://pitocuixa.es/api/migrate" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+#### Convenciones
+
+- Una migración = un archivo SQL.
+- Las migraciones se aplican en orden alfabético (por fecha).
+- Una migración ya aplicada **no se vuelve a ejecutar** (se registra en la tabla `_migrations`).
+- Si una migración falla, las posteriores no se aplican hasta resolver el error.
+
+---
+
+### ⏰ Configuración de cron-job.org (scraping programado)
+
+El scraping de la carta externa se ejecuta mediante **cron-job.org** (reemplaza el cron local del servidor). Cada ejecución llama a `POST /api/update-menu` para sincronizar productos.
+
+#### Pasos de configuración
+
+1. **Crear cuenta** en [cron-job.org](https://cron-job.org) (gratuita).
+
+2. **Añadir nueva tarea HTTP**:
+   - Panel → **Cronjobs** → **Add cronjob**.
+
+3. **Configurar la petición**:
+
+   | Campo | Valor |
+   |-------|-------|
+   | **Title** | `Pit o Cuixa — Sync menú` |
+   | **URL** | `{SITE_URL}/api/update-menu` (ej: `https://pitocuixa.es/api/update-menu`) |
+   | **Method** | `POST` |
+   | **Request headers** | `Authorization: Bearer {SERVICE_API_TOKEN}` |
+   | | `Content-Type: application/json` |
+
+4. **Configurar horario**:
+   - **Execution schedule** → **Every 12 hours** (00:00 y 12:00 UTC).
+   - O usa expresión custom: `0 0,12 * * *`.
+
+5. **Guardar y activar** la tarea.
+
+#### Verificación
+
+- Desde el panel de cron-job.org, haz clic en **Execute now** para lanzar manualmente.
+- Revisa el historial de ejecuciones para confirmar respuestas `200 OK`.
+- Si falla, comprueba que `SERVICE_API_TOKEN` sea correcto y que el endpoint `/api/update-menu` responda.
+
+---
+
 ## Equipo y contacto
 
 | Rol | Persona |

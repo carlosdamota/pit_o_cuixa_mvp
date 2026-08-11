@@ -54,7 +54,7 @@ class SettingsPage
      */
     private static function countSliderImages(): int
     {
-        $pattern = __DIR__ . '/../../../public/img/menu-slider/*.{jpg,jpeg,png,webp}';
+        $pattern = \Config::publicDir() . '/img/menu-slider/*.{jpg,jpeg,png,webp}';
         $files   = glob($pattern, GLOB_BRACE);
 
         return is_array($files) ? count($files) : 0;

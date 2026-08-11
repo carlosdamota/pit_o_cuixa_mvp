@@ -105,8 +105,7 @@ date_default_timezone_set('Europe/Madrid');
  */
 function assetVersion(string $urlPath): string
 {
-    static $publicDir;
-    $publicDir ??= dirname(__DIR__, 2) . '/public';
+    $publicDir = \Config::publicDir();
 
     $filePath = $publicDir . '/' . ltrim($urlPath, '/');
     $mtime = @filemtime($filePath);

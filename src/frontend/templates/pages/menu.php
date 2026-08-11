@@ -79,13 +79,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
         </div>
 
         <div class="filter-bar__tabs" data-filter-tabs<?= $isDeliveryMode ? '' : ' hidden' ?>>
-            <button class="filter-bar__tab filter-bar__tab--active"
-                    data-filter="all"
-                    type="button"
-                    aria-pressed="true">
-                <?= __('menu.filter.all') ?>
-            </button>
-
             <button class="filter-bar__tab"
                     data-filter="popular"
                     type="button"
@@ -93,11 +86,13 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                 <?= __('menu.filter.popular') ?>
             </button>
 
-            <?php foreach ($catList as $cat): ?>
-                <button class="filter-bar__tab"
+            <?php foreach ($catList as $index => $cat):
+                $isActive = ($index === 0);
+            ?>
+                <button class="filter-bar__tab<?= $isActive ? ' filter-bar__tab--active' : '' ?>"
                         data-filter="<?= htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') ?>"
                         type="button"
-                        aria-pressed="false">
+                        aria-pressed="<?= $isActive ? 'true' : 'false' ?>">
                     <?= htmlspecialchars($cat['name'], ENT_QUOTES, 'UTF-8') ?>
                 </button>
             <?php endforeach; ?>
@@ -383,3 +378,5 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
   ]
 }
 </script>
+
+<?php require __DIR__ . '/../components/cookie-banner.php'; ?>

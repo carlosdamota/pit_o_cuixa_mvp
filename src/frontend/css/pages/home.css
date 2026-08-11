@@ -13,7 +13,8 @@ body:has(.landing--onboarding) .footer {
   display: none !important;
 }
 
-body:has(.landing--onboarding) .whatsapp-float {
+body:has(.landing--onboarding) .whatsapp-float,
+body:has(.landing--onboarding) .chat-widget {
   z-index: 10000 !important;
 }
 
@@ -38,6 +39,20 @@ body:has(.landing--onboarding) .main {
   align-items: center;
   background-color: #ffffff;
   z-index: 9999;
+}
+
+/* ── Soft Decorative Background (fondo.webp, very subtle) ───────── */
+.landing--onboarding::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("/img/fondo.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 /* ── Dominant Yellow Oval Background Arc (~75% height) ───────────── */
@@ -264,7 +279,7 @@ body:has(.landing--onboarding) .main {
   flex: 1;
   min-height: 320px;
   max-height: 430px;
-  margin: var(--space-xs) 0;
+  margin: clamp(16px, 2.8vh, 24px) 0 var(--space-xs) 0;
 }
 
 /* Funnel arrows SVG in background */
@@ -312,17 +327,20 @@ body:has(.landing--onboarding) .main {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  cursor: grab;
+  cursor: pointer;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .onboarding__drag-item:active {
-  cursor: grabbing;
+  cursor: pointer;
 }
 
 .onboarding__drag-item--left {
   left: clamp(10px, 8%, 35px);
+  top: 10px;
 }
 
 .onboarding__drag-item--right {
@@ -387,6 +405,16 @@ body:has(.landing--onboarding) .main {
 
 .onboarding__drag-item:hover .onboarding__drag-circle {
   transform: scale(1.12);
+}
+
+.onboarding__drag-item:active .onboarding__drag-circle {
+  transform: scale(0.94);
+}
+
+.onboarding__drag-item:focus-visible {
+  outline: 2px solid var(--color-primary, #b73225);
+  outline-offset: 4px;
+  border-radius: var(--radius-md, 8px);
 }
 
 .onboarding__drag-label {

@@ -398,7 +398,7 @@ return [
         ],
         [
             'q' => '¿Dónde estáis ubicados y qué instalaciones ofrece el local?',
-            'a' => 'Nos encontramos en Carrer Hort de l\'Oca, 12, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
+            'a' => 'Nos encontramos en Carrer Major, 25, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
         ],
         [
             'q' => '¿Qué métodos de pago aceptáis y cómo contactar ante cualquier incidencia?',
