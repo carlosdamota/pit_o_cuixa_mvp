@@ -91,29 +91,23 @@ jobs:
           cp -r public/* public_html/
           cp -r public/.[!.]* public_html/ 2>/dev/null || true
           echo "public_html prepared for deployment."
-      - name: FTP Deploy (lftp)
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          lftp <<EOF
-          set net:timeout 60
-          set net:max-retries 5
-          set net:reconnect-interval-base 5
-          set ftp:passive-mode true
-          set ftp:ssl-allow false
-          open -u "${FTP_USER}","${FTP_PASS}" "${FTP_HOST}"
-          mirror --reverse --verbose \
-            --exclude-glob data/ \
-            --exclude-glob .git/ \
-            --exclude-glob .github/ \
-            --exclude-glob .gitignore \
-            --exclude-glob public/ \
-            ./ ./
-          bye
-          EOF
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASS: ${{ secrets.FTP_PASS }}
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          server-dir: ./
+          security: loose
+          exclude: |
+            **/data/**
+            **/.git/**
+            **/.github/**
+            **/.gitignore
+            **/public/**
+          dry-run: false
 
       - name: Post-deploy migration
         run: |
