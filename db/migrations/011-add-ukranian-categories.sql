@@ -3,7 +3,7 @@ BEGIN TRANSACTION;
 --Migracion para insertar la traducción de las categorías al ukraniano
 
 UPDATE categories SET name_uk = 'меню' WHERE slug = 'menus';
-UPDATE categories SET name_uk = 'Основні страви' WHERE slug = 'platos';
+UPDATE categories SET name_uk = 'Скачати додаток' WHERE slug = 'platos';
 UPDATE categories SET name_uk = 'Клювання' WHERE slug = 'entrantes';
 UPDATE categories SET name_uk = 'Напої' WHERE slug = 'bebidas';
 UPDATE categories SET name_uk = 'Десерти' WHERE slug = 'postres';
