@@ -20,13 +20,10 @@ class Privacy
     {
         $siteUrl = \Config::siteUrl();
 
-        // URL canónica según el idioma
-        $canonicalPath = LANG === 'ca' ? '/privacy' : '/' . LANG . '/privacy';
-
         $meta = [
             'title'       => __('privacy.title'),
             'description' => __('privacy.desc'),
-            'canonical'   => $siteUrl . $canonicalPath,
+            'canonical'   => $siteUrl . '/privacy',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/privacy',

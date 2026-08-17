@@ -39,13 +39,10 @@ class Faq
 
         $siteUrl = \Config::siteUrl();
 
-        // Build locale-aware canonical URL
-        $canonicalPath = LANG === 'ca' ? '/faq' : '/' . LANG . '/faq';
-
         $meta = [
             'title'       => __('faq.title'),
             'description' => __('faq.desc'),
-            'canonical'   => $siteUrl . $canonicalPath,
+            'canonical'   => $siteUrl . '/faq',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/faq',

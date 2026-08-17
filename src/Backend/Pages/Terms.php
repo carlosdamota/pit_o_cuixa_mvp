@@ -20,13 +20,10 @@ class Terms
     {
         $siteUrl = \Config::siteUrl();
 
-        // URL canónica según el idioma
-        $canonicalPath = LANG === 'ca' ? '/terms' : '/' . LANG . '/terms';
-
         $meta = [
             'title'       => __('terms.title'),
             'description' => __('terms.desc'),
-            'canonical'   => $siteUrl . $canonicalPath,
+            'canonical'   => $siteUrl . '/terms',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/terms',

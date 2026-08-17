@@ -20,13 +20,10 @@ class Cookies
     {
         $siteUrl = \Config::siteUrl();
 
-        // URL canónica según el idioma
-        $canonicalPath = LANG === 'ca' ? '/cookies' : '/' . LANG . '/cookies';
-
         $meta = [
             'title'       => __('cookies.title'),
             'description' => __('cookies.desc'),
-            'canonical'   => $siteUrl . $canonicalPath,
+            'canonical'   => $siteUrl . '/cookies',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/cookies',
