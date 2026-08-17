@@ -30,8 +30,9 @@ class Privacy
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/privacy',
-                'es' => $siteUrl . '/es/privacy',
-                'en' => $siteUrl . '/en/privacy',
+                'es' => $siteUrl . '/privacy?lang=es',
+                'en' => $siteUrl . '/privacy?lang=en',
+                'uk' => $siteUrl . '/privacy?lang=uk',
             ],
         ];
 

@@ -153,6 +153,7 @@ class Menu
                 'ca' => $siteUrl . '/menu',
                 'es' => $siteUrl . '/menu?lang=es',
                 'en' => $siteUrl . '/menu?lang=en',
+                'uk' => $siteUrl . '/menu?lang=uk',
             ],
             'jsonld'      => $menuJsonLd,
         ];

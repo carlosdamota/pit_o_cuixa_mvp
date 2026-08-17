@@ -30,8 +30,9 @@ class Cookies
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/cookies',
-                'es' => $siteUrl . '/es/cookies',
-                'en' => $siteUrl . '/en/cookies',
+                'es' => $siteUrl . '/cookies?lang=es',
+                'en' => $siteUrl . '/cookies?lang=en',
+                'uk' => $siteUrl . '/cookies?lang=uk',
             ],
         ];
 

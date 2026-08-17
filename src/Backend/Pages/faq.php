@@ -49,8 +49,9 @@ class Faq
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
                 'ca' => $siteUrl . '/faq',
-                'es' => $siteUrl . '/es/faq',
-                'en' => $siteUrl . '/en/faq',
+                'es' => $siteUrl . '/faq?lang=es',
+                'en' => $siteUrl . '/faq?lang=en',
+                'uk' => $siteUrl . '/faq?lang=uk',
             ],
             'jsonld'      => $faqJsonLd,
         ];

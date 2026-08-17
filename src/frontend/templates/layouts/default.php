@@ -27,8 +27,8 @@ $locale      = $pageData['locale']      ?? LANG;
 
 $siteUrl = \Config::siteUrl();
 
-// og:locale mapping for 3 supported locales
-$ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US'];
+// og:locale mapping for 4 supported locales
+$ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_UA'];
 ?>
 <html lang="<?= $locale ?>" dir="ltr" translate="no">
 <head>
