@@ -18,6 +18,11 @@ body:has(.landing--onboarding) .chat-widget {
   z-index: 10000 !important;
 }
 
+/* Language dropdown must sit above the whatsapp float (10000) on onboarding */
+body:has(.landing--onboarding) .onboarding__lang-menu {
+  z-index: 10001 !important;
+}
+
 body:has(.landing--onboarding) .main {
   padding: 0 !important;
   margin: 0 !important;
