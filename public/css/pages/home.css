@@ -14,7 +14,7 @@ body:has(.landing--onboarding) .footer {
 }
 
 /* WhatsApp float uses default z-index (250) — below the onboarding
-   landing (9999) so the lang dropdown works without stacking conflicts. */
+   landing so the lang dropdown works without stacking conflicts. */
 
 body:has(.landing--onboarding) .main {
   padding: 0 !important;
@@ -36,7 +36,7 @@ body:has(.landing--onboarding) .main {
   justify-content: center;
   align-items: center;
   background-color: #ffffff;
-  z-index: 9999;
+  z-index: 200;
 }
 
 /* ── Soft Decorative Background (fondo.webp, very subtle) ───────── */
@@ -890,10 +890,12 @@ body:has(.landing--onboarding) .main {
   transform: rotate(180deg);
 }
 
+/* Lang menu uses position: fixed to escape the landing stacking context
+   and appear above the whatsapp float (z-index: 250 at root level). */
 .onboarding__lang-menu {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
   min-width: 170px;
   background-color: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border, #e2e8f0);
@@ -902,7 +904,7 @@ body:has(.landing--onboarding) .main {
   padding: 6px;
   margin: 0;
   list-style: none;
-  z-index: calc(var(--z-header, 100) + 10);
+  z-index: 260;
   display: flex;
   flex-direction: column;
   gap: 2px;
