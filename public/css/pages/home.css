@@ -904,7 +904,7 @@ body:has(.landing--onboarding) .main {
   padding: 6px;
   margin: 0;
   list-style: none;
-  z-index: calc(var(--z-header, 100) + 10);
+  z-index: calc(var(--z-whatsapp, 250) + 10);
   display: flex;
   flex-direction: column;
   gap: 2px;
