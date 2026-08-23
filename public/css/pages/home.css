@@ -669,8 +669,8 @@ body:has(.landing--onboarding) .main {
   }
 
   .onboarding__lang-toggle {
-    min-width: 38px;
-    min-height: 38px;
+    min-width: 41px;
+    min-height: 41px;
     padding: 3px 8px;
   }
 }
