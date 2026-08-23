@@ -74,6 +74,7 @@ function initLangDropdown() {
       menu.style.position = 'fixed';
       menu.style.bottom = `${window.innerHeight - rect.top + 6}px`;
       menu.style.right = `${window.innerWidth - rect.right}px`;
+      menu.style.zIndex = '10001';
     };
 
     const close = () => {
@@ -82,6 +83,7 @@ function initLangDropdown() {
       menu.style.position = '';
       menu.style.bottom = '';
       menu.style.right = '';
+      menu.style.zIndex = '';
     };
 
     instances.push({ dropdown, toggle, isOpen, close });
