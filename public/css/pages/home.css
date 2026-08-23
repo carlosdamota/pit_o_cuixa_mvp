@@ -13,8 +13,10 @@ body:has(.landing--onboarding) .footer {
   display: none !important;
 }
 
-/* WhatsApp float uses default z-index (250) — below the onboarding
-   landing (9999) so the lang dropdown works without stacking conflicts. */
+body:has(.landing--onboarding) .whatsapp-float,
+body:has(.landing--onboarding) .chat-widget {
+  z-index: 10000 !important;
+}
 
 body:has(.landing--onboarding) .main {
   padding: 0 !important;
