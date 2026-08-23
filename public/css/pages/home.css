@@ -657,6 +657,24 @@ body:has(.landing--onboarding) .main {
   gap: 10px;
 }
 
+@media (max-width: 400px) {
+  .onboarding__footer {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .onboarding__faq-btn {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .onboarding__lang-toggle {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 3px 8px;
+  }
+}
+
 /* FAQ Pill Button */
 .onboarding__faq-btn {
   margin-right: auto;
