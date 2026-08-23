@@ -71,15 +71,19 @@ function initLangDropdown() {
 
     const positionMenu = () => {
       const rect = toggle.getBoundingClientRect();
+      // Move menu to body to escape the landing stacking context
+      document.body.appendChild(menu);
       menu.style.position = 'fixed';
       menu.style.bottom = `${window.innerHeight - rect.top + 6}px`;
       menu.style.right = `${window.innerWidth - rect.right}px`;
-      menu.style.zIndex = '10001';
+      menu.style.zIndex = '99999';
     };
 
     const close = () => {
       toggle.setAttribute('aria-expanded', 'false');
       menu.setAttribute('hidden', '');
+      // Move menu back to its original parent
+      dropdown.appendChild(menu);
       menu.style.position = '';
       menu.style.bottom = '';
       menu.style.right = '';
