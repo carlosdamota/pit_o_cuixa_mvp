@@ -673,11 +673,6 @@ body:has(.landing--onboarding) .main {
     min-height: 41px;
     padding: 3px 8px;
   }
-
-  .onboarding__lang-toggle:has(img[src*="UKR"]) {
-    min-width: 56px;
-    padding: 3px 10px;
-  }
 }
 
 /* FAQ Pill Button */
