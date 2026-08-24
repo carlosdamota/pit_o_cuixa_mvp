@@ -70,6 +70,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 </div>
             </div>
         </div>
+        <p class="onboarding__target-subtitle"><?= __('home.onboarding.subtitle') ?></p>
 
         <!-- ── Drag & Drop Interactive Section ───────────────────────── -->
         <div class="onboarding__drag-section" id="drag-section">

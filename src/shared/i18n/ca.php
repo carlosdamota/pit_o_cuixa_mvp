@@ -428,6 +428,7 @@ return [
     'home.onboarding.in_local' => 'Menjar Ara',
     'home.onboarding.delivery' => 'Per emportar',
     'home.onboarding.target_label' => 'La teva comanda',
+    'home.onboarding.subtitle' => 'La millor rostisseria de Torredembarra',
     'home.onboarding.drag_hint' => 'Arrossega la teva opció al local per començar',
 
     // ── Menu Page ────────────────────────────────────────────────

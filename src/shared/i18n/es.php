@@ -429,6 +429,7 @@ return [
     'home.onboarding.in_local' => 'Comer Aquí',
     'home.onboarding.delivery' => 'Para llevar',
     'home.onboarding.target_label' => 'Tu pedido',
+    'home.onboarding.subtitle' => 'La mejor rostisseria de Torredembarra',
     'home.onboarding.drag_hint' => 'Arrastra tu opción al local para empezar',
 
     // ── Menu Page ────────────────────────────────────────────────

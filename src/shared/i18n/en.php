@@ -430,6 +430,7 @@ return [
     'home.onboarding.in_local' => 'Eat Here',
     'home.onboarding.delivery' => 'Takeaway',
     'home.onboarding.target_label' => 'Your order',
+    'home.onboarding.subtitle' => 'The best rotisserie in Torredembarra',
     'home.onboarding.drag_hint' => 'Drag your option to the store to start',
 
     // ── Menu Page ────────────────────────────────────────────────
