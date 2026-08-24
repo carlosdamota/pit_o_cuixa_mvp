@@ -22,7 +22,7 @@ return [
     'nav.logout' => 'Вийти',
     'lang.switch' => 'Змінити мову',
     'lang.code' => 'uk',
-    'nav.faq' => 'Часті запитання',
+    'nav.faq' => 'FAQ',
     'footer.rights' => 'Усі права захищені.',
     'footer.hours' => 'Графік: Пн-Нд 11:00–23:00',
 

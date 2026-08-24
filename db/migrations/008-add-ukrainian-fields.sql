@@ -1,3 +1,4 @@
 ALTER TABLE categories ADD COLUMN name_ukr TEXT NOT NULL DEFAULT '';
 ALTER TABLE products ADD COLUMN name_ukr TEXT NOT NULL DEFAULT '';
 ALTER TABLE products ADD COLUMN description_ukr TEXT NOT NULL DEFAULT '';
+

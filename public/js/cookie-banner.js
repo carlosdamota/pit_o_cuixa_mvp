@@ -19,7 +19,6 @@ class CookieBanner {
             return;
         }
 
-        console.log("Cookie Banner iniciado");
         this.checkPreferences();
 
         this.moveChicken(this.necessaryButton);
@@ -199,12 +198,8 @@ class CookieBanner {
     }
 
     savePreferences(option) {
-    
-    console.log(option);
-    localStorage.setItem(this.storageKey, option);
-
-    this.hide();
-
+        localStorage.setItem(this.storageKey, option);
+        this.hide();
     }
 
     clearSelectedButtons() {

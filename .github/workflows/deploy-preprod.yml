@@ -103,7 +103,6 @@ jobs:
           security: loose
           exclude: |
             **/data/**
-            **/.env
             **/.git/**
             **/.github/**
             **/.gitignore
