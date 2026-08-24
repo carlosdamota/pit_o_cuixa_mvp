@@ -448,8 +448,7 @@ body:has(.landing--onboarding) .main {
   right: -10px;
   bottom: 24px;
   border-radius: var(--radius-full);
-  border: 2px dashed rgba(44, 24, 16, 0.45);
-  animation: onboarding-pulse 2s infinite ease-in-out;
+  border: none;
   pointer-events: none;
 }
 
