@@ -326,13 +326,40 @@ function initChatWidget() {
 
   const isOpen = () => widget.getAttribute('aria-hidden') !== 'true';
 
+  const positionInput = () => {
+    const inputRow = widget.querySelector('.chat-widget__input');
+    if (!inputRow) return;
+    const wRect = widget.getBoundingClientRect();
+    document.body.appendChild(inputRow);
+    inputRow.style.position = 'fixed';
+    inputRow.style.bottom = `${window.innerHeight - wRect.bottom}px`;
+    inputRow.style.left = `${wRect.left}px`;
+    inputRow.style.width = `${wRect.width}px`;
+    inputRow.style.zIndex = '99998'; // above onboarding (10000), below lang (99999)
+    inputRow.style.borderRadius = '0 0 var(--radius) var(--radius)';
+  };
+
+  const restoreInput = () => {
+    const inputRow = document.querySelector('.chat-widget__input');
+    if (!inputRow) return;
+    widget.appendChild(inputRow);
+    inputRow.style.position = '';
+    inputRow.style.bottom = '';
+    inputRow.style.left = '';
+    inputRow.style.width = '';
+    inputRow.style.zIndex = '';
+    inputRow.style.borderRadius = '';
+  };
+
   const open = () => {
     widget.setAttribute('aria-hidden', 'false');
+    positionInput();
     userInput.focus();
   };
 
   const close = () => {
     widget.setAttribute('aria-hidden', 'true');
+    restoreInput();
   };
 
   if (openTrigger) {

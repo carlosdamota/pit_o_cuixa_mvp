@@ -109,7 +109,7 @@ body:has(.landing--onboarding) .main {
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(44, 24, 16, 0.15);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  animation: call-ring 0.8s ease-in-out infinite;
+  animation: call-ring 0.8s ease-in-out 1;
 }
 
 .onboarding__call-btn:hover {
@@ -164,7 +164,7 @@ body:has(.landing--onboarding) .main {
   width: 52px;
   height: 52px;
   transform: scaleX(-1); /* Horizontal flip so chicken faces right */
-  animation: chicken-walk-path 4.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  animation: chicken-walk-path 4.2s cubic-bezier(0.25, 1, 0.5, 1) 1 forwards;
 }
 
 .onboarding__anim-chicken img {
@@ -172,7 +172,7 @@ body:has(.landing--onboarding) .main {
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.22));
-  animation: chicken-waddle 0.26s ease-in-out infinite alternate;
+  animation: chicken-waddle 0.26s ease-in-out 1 alternate;
 }
 
 @keyframes chicken-walk-path {
@@ -183,13 +183,9 @@ body:has(.landing--onboarding) .main {
   8% {
     opacity: 1;
   }
-  80% {
+  80%, 100% {
     left: 275px;
     opacity: 1;
-  }
-  90%, 100% {
-    left: 275px;
-    opacity: 0;
   }
 }
 
@@ -224,7 +220,7 @@ body:has(.landing--onboarding) .main {
   filter: drop-shadow(0 2px 0px #ffffff) drop-shadow(0 4px 10px rgba(44, 24, 16, 0.35));
   opacity: 0;
   transform: scale(0.5) translateY(8px);
-  animation: letter-reveal 4.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  animation: letter-reveal 4.2s cubic-bezier(0.25, 1, 0.5, 1) 1 forwards;
 }
 
 .anim-letter--small {
@@ -258,13 +254,9 @@ body:has(.landing--onboarding) .main {
     opacity: 1;
     transform: scale(1.15) translateY(-2px);
   }
-  20%, 85% {
+  20%, 100% {
     opacity: 1;
     transform: scale(1) translateY(0);
-  }
-  92%, 100% {
-    opacity: 0;
-    transform: scale(0.8) translateY(4px);
   }
 }
 
@@ -574,6 +566,10 @@ body:has(.landing--onboarding) .main {
   .onboarding__quote-card--fading {
     transform: translateY(6px);
   }
+
+  .onboarding__pwa-wrapper {
+    display: none;
+  }
 }
 
 .onboarding__quote-watermark {
@@ -739,7 +735,7 @@ body:has(.landing--onboarding) .main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  animation: pwaBounce 3s ease-in-out infinite;
+  animation: pwaBounce 3s ease-in-out 1;
 }
 
 .onboarding__pwa-wrapper[hidden] {
@@ -859,6 +855,10 @@ body:has(.landing--onboarding) .main {
 }
 
 @media (max-width: 767px) {
+  .onboarding__top {
+    display: none;
+  }
+
   .onboarding__pwa-toast {
     bottom: 120px;
     max-width: 320px;
