@@ -297,8 +297,9 @@ return [
     'home.landing.pollos' => 'Курка на рожні',
     'home.landing.combinados' => 'Комбіновані страви',
     'home.landing.picapica' => 'Закуски',
-    'home.onboarding.in_local' => 'У закладі',
-    'home.onboarding.delivery' => 'Доставка',
+    'home.onboarding.in_local' => 'Їсти тут',
+    'home.onboarding.delivery' => 'На винос',
+    'home.onboarding.target_label' => 'Ваше замовлення',
     'home.onboarding.drag_hint' => 'Перетягніть ваш вибір до закладу, щоб розпочати',
 
     // ── Menu Page ────────────────────────────────────────────────
