@@ -300,7 +300,7 @@ return [
     'home.onboarding.in_local' => 'Їсти тут',
     'home.onboarding.delivery' => 'На винос',
     'home.onboarding.target_label' => 'Ваше замовлення',
-    'home.onboarding.subtitle' => 'Найкраща ростерня в Торредембаррі',
+    'home.onboarding.subtitle' => 'Sabor a l\'ast, традиційний смак',
     'home.onboarding.drag_hint' => 'Перетягніть ваш вибір до закладу, щоб розпочати',
 
     // ── Menu Page ────────────────────────────────────────────────
