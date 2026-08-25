@@ -282,41 +282,6 @@ body:has(.landing--onboarding) .main {
   margin: clamp(16px, 2.8vh, 24px) 0 var(--space-xs) 0;
 }
 
-/* Funnel arrows SVG in background */
-.onboarding__funnel-svg {
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 82%;
-  height: 190px;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Animated flow & subtle pulse on guide arrows */
-.onboarding__arrow-path {
-  stroke-dasharray: 8 6;
-  animation: arrow-flow 1.5s infinite linear, arrow-fade-pulse 2.2s infinite ease-in-out;
-}
-
-@keyframes arrow-flow {
-  from {
-    stroke-dashoffset: 28;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes arrow-fade-pulse {
-  0%, 100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 0.95;
-  }
-}
 
 /* Drag items (Cutlery & Moto) */
 .onboarding__drag-item {
