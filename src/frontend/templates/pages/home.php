@@ -106,41 +106,9 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
             </div>
 
-            <!-- Animated Flowing Arrows SVG pointing down to lowered target -->
-            <svg class="onboarding__funnel-svg" viewBox="0 0 300 240" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                    <marker id="arrowhead-left" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
-                    </marker>
-                    <marker id="arrowhead-right" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
-                    </marker>
 
-                    <linearGradient id="arrow-gradient-left" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
-                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
-                    </linearGradient>
-                    <linearGradient id="arrow-gradient-right" x1="100%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
-                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
-                    </linearGradient>
-                </defs>
-
-                <!-- Left guide arrow pointing to lower target center (140, 170) -->
-                <path class="onboarding__arrow-path onboarding__arrow-path--left"
-                      d="M 60 30 Q 90 110 140 170"
-                      stroke="url(#arrow-gradient-left)" stroke-width="3.5" fill="none"
-                      marker-end="url(#arrowhead-left)" />
-
-                <!-- Right guide arrow pointing to lower target center (160, 170) -->
-                <path class="onboarding__arrow-path onboarding__arrow-path--right"
-                      d="M 240 30 Q 210 110 160 170"
-                      stroke="url(#arrow-gradient-right)" stroke-width="3.5" fill="none"
-                      marker-end="url(#arrowhead-right)" />
-            </svg>
-
-            <!-- Drop Zone Target: Local Circle Icon -->
-            <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
+            <!-- Drop Zone Target: Local Circle Icon (visually collapsed; kept in DOM for JS hooks) -->
+            <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>" style="height: 0; overflow: hidden; pointer-events: none;">
                 <div class="onboarding__target-ring"></div>
                 <div class="onboarding__target-inner">
                     <img src="/img/icons/el_local_icon.webp" width="64" height="64" alt="<?= __('site.name') ?>">

@@ -332,12 +332,12 @@ body:has(.landing--onboarding) .main {
 
 .onboarding__drag-item--left {
   left: clamp(10px, 8%, 35px);
-  top: 50px;
+  top: 70px;
 }
 
 .onboarding__drag-item--right {
   right: clamp(10px, 8%, 35px);
-  top: 50px;
+  top: 70px;
 }
 
 .onboarding__drag-item--dragging {
