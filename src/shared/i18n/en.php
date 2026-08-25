@@ -431,6 +431,7 @@ return [
     'home.onboarding.delivery' => 'Takeaway',
     'home.onboarding.target_label' => 'Your order',
     'home.onboarding.subtitle' => 'Sabor a l\'ast, traditional flavor',
+    'home.onboarding.cta' => 'Click to enjoy',
     'home.onboarding.drag_hint' => 'Drag your option to the store to start',
 
     // ── Menu Page ────────────────────────────────────────────────

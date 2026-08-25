@@ -301,6 +301,7 @@ return [
     'home.onboarding.delivery' => 'На винос',
     'home.onboarding.target_label' => 'Ваше замовлення',
     'home.onboarding.subtitle' => 'Sabor a l\'ast, традиційний смак',
+    'home.onboarding.cta' => 'Натисни, щоб насолоджуватися',
     'home.onboarding.drag_hint' => 'Перетягніть ваш вибір до закладу, щоб розпочати',
 
     // ── Menu Page ────────────────────────────────────────────────

@@ -332,11 +332,12 @@ body:has(.landing--onboarding) .main {
 
 .onboarding__drag-item--left {
   left: clamp(10px, 8%, 35px);
-  top: 10px;
+  top: 50px;
 }
 
 .onboarding__drag-item--right {
   right: clamp(10px, 8%, 35px);
+  top: 50px;
 }
 
 .onboarding__drag-item--dragging {
@@ -505,6 +506,15 @@ body:has(.landing--onboarding) .main {
   color: var(--color-on-surface);
   opacity: 0.7;
   text-align: center;
+}
+
+.onboarding__target-cta {
+  margin: 8px 0 0;
+  font-size: clamp(18px, 3.5vw, 20px);
+  font-weight: 600;
+  color: var(--color-on-surface);
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 @keyframes logo-gently {

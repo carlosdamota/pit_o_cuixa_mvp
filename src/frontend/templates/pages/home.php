@@ -74,6 +74,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
         <!-- ── Drag & Drop Interactive Section ───────────────────────── -->
         <div class="onboarding__drag-section" id="drag-section">
+            <h1 class="onboarding__target-cta"><?= __('home.onboarding.cta') ?></h1>
 
             <!-- Draggable Item Left: Cutlery ("en local") -->
             <div class="onboarding__drag-item onboarding__drag-item--left"
