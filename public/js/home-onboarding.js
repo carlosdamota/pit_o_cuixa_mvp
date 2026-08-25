@@ -187,6 +187,14 @@ document.addEventListener('DOMContentLoaded', () => {
         pointerClone.style.top = `${y}px`;
     }
 
+    // ── Click on target icon → same as delivery drag ─────────────────
+    const targetInner = dropTarget.querySelector('.onboarding__target-inner');
+    if (targetInner) {
+        targetInner.addEventListener('click', () => {
+            completeSelection('delivery');
+        });
+    }
+
     // ── 5-Second Random Rotating Quotes Ticker ────────────────────────
     const quoteBox = document.getElementById('home-quote-box');
     const quoteText = document.getElementById('home-quote-text');
