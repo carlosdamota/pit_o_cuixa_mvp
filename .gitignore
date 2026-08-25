@@ -24,3 +24,6 @@ Thumbs.db
 
 #-- Limpiador mortifero de DB-----------------------------------------------
 db/migrations/999-debug-clean-products.sql
+
+#--Deployment ftp-----------------------------------------------------------
+.ftpignore
