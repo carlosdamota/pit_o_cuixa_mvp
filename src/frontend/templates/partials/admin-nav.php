@@ -3,13 +3,12 @@
  * Pit o Cuixa — Admin Navigation Partial
  *
  * Sidebar-style navigation for admin pages.
- * Requires $user and $csrfToken from the page controller.
+ * Requires $csrfToken from the page controller.
  *
  * @package Pit\Cuixa\Frontend\Templates\Partials
  */
 
 $currentPath = $_SERVER['REQUEST_URI'] ?? '/admin';
-$userDisplay = $user['display_name'] ?? $user['username'] ?? '';
 ?>
 <nav class="admin-nav" aria-label="Navegación del Panel de Administración">
     <div class="admin-nav__header">
@@ -17,15 +16,18 @@ $userDisplay = $user['display_name'] ?? $user['username'] ?? '';
             <span class="admin-nav__brand-title">Pit o Cuixa</span>
             <span class="admin-nav__brand-badge">Admin</span>
         </a>
-        <?php if (!empty($userDisplay)): ?>
-        <div class="admin-nav__user-card">
-            <span class="admin-nav__user-avatar"><?= mb_strtoupper(mb_substr($userDisplay, 0, 1)) ?></span>
-            <span class="admin-nav__user-name"><?= htmlspecialchars($userDisplay, ENT_QUOTES, 'UTF-8') ?></span>
-        </div>
-        <?php endif; ?>
+        <button type="button"
+                class="admin-nav__toggle"
+                data-nav-toggle
+                aria-controls="admin-nav-list"
+                aria-expanded="false"
+                aria-label="Abrir menú de secciones">
+            <svg class="admin-nav__toggle-icon admin-nav__toggle-icon--open" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <svg class="admin-nav__toggle-icon admin-nav__toggle-icon--close" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
     </div>
 
-    <ul class="admin-nav__list">
+    <ul class="admin-nav__list" id="admin-nav-list">
         <li class="admin-nav__item">
             <a href="/admin"
                class="admin-nav__link <?= $currentPath === '/admin' ? 'admin-nav__link--active' : '' ?>">

@@ -54,8 +54,10 @@ function initMobileMenu() {
  * instance runs in its own closure; the single document-level outside-click
  * and Escape handlers only act on whichever instance is currently open.
  *
- * On the onboarding page, the lang menu needs position:fixed + JS positioning
- * to escape the landing stacking context and sit above the whatsapp float.
+ * All dropdowns are positioned purely by CSS (absolute within their toggle).
+ * The onboarding menu opens upward via its own CSS; no JS repositioning needed.
+ * Keeping the menu inside its [data-lang-dropdown] also lets the outside-click
+ * handler correctly detect clicks on the options as "inside".
  */
 function initLangDropdown() {
   const instances = [];
@@ -69,25 +71,9 @@ function initLangDropdown() {
 
     const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
 
-    const positionMenu = () => {
-      const rect = toggle.getBoundingClientRect();
-      // Move menu to body to escape the landing stacking context
-      document.body.appendChild(menu);
-      menu.style.position = 'fixed';
-      menu.style.bottom = `${window.innerHeight - rect.top + 6}px`;
-      menu.style.right = `${window.innerWidth - rect.right}px`;
-      menu.style.zIndex = '99999';
-    };
-
     const close = () => {
       toggle.setAttribute('aria-expanded', 'false');
       menu.setAttribute('hidden', '');
-      // Move menu back to its original parent
-      dropdown.appendChild(menu);
-      menu.style.position = '';
-      menu.style.bottom = '';
-      menu.style.right = '';
-      menu.style.zIndex = '';
     };
 
     instances.push({ dropdown, toggle, isOpen, close });
@@ -99,7 +85,6 @@ function initLangDropdown() {
       } else {
         toggle.setAttribute('aria-expanded', 'true');
         menu.removeAttribute('hidden');
-        positionMenu();
       }
     });
   });
