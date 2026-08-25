@@ -9,7 +9,7 @@
 
 import { initMenuFilter } from './menu-filter.js';
 import { initMenuSlider } from './menu-slider.js';
-import { initCookieBanner } from './cookie-banner.js';
+import { initCookieBanner, getCookieBanner } from './cookie-banner.js';
 import { initAnimatedFavicon } from './animated-favicon.js';
 
 /**
@@ -53,6 +53,11 @@ function initMobileMenu() {
  * Supports multiple [data-lang-dropdown] instances (header + footer): each
  * instance runs in its own closure; the single document-level outside-click
  * and Escape handlers only act on whichever instance is currently open.
+ *
+ * All dropdowns are positioned purely by CSS (absolute within their toggle).
+ * The onboarding menu opens upward via its own CSS; no JS repositioning needed.
+ * Keeping the menu inside its [data-lang-dropdown] also lets the outside-click
+ * handler correctly detect clicks on the options as "inside".
  */
 function initLangDropdown() {
   const instances = [];
@@ -65,6 +70,7 @@ function initLangDropdown() {
     }
 
     const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
     const close = () => {
       toggle.setAttribute('aria-expanded', 'false');
       menu.setAttribute('hidden', '');
@@ -305,13 +311,40 @@ function initChatWidget() {
 
   const isOpen = () => widget.getAttribute('aria-hidden') !== 'true';
 
+  const positionInput = () => {
+    const inputRow = widget.querySelector('.chat-widget__input');
+    if (!inputRow) return;
+    const wRect = widget.getBoundingClientRect();
+    document.body.appendChild(inputRow);
+    inputRow.style.position = 'fixed';
+    inputRow.style.bottom = `${window.innerHeight - wRect.bottom}px`;
+    inputRow.style.left = `${wRect.left}px`;
+    inputRow.style.width = `${wRect.width}px`;
+    inputRow.style.zIndex = '99998'; // above onboarding (10000), below lang (99999)
+    inputRow.style.borderRadius = '0 0 var(--radius) var(--radius)';
+  };
+
+  const restoreInput = () => {
+    const inputRow = document.querySelector('.chat-widget__input');
+    if (!inputRow) return;
+    widget.appendChild(inputRow);
+    inputRow.style.position = '';
+    inputRow.style.bottom = '';
+    inputRow.style.left = '';
+    inputRow.style.width = '';
+    inputRow.style.zIndex = '';
+    inputRow.style.borderRadius = '';
+  };
+
   const open = () => {
     widget.setAttribute('aria-hidden', 'false');
+    positionInput();
     userInput.focus();
   };
 
   const close = () => {
     widget.setAttribute('aria-hidden', 'true');
+    restoreInput();
   };
 
   if (openTrigger) {

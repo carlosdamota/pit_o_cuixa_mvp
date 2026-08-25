@@ -28,6 +28,7 @@ class Home
                 'ca' => \Config::siteUrl() . '/',
                 'es' => \Config::siteUrl() . '/?lang=es',
                 'en' => \Config::siteUrl() . '/?lang=en',
+                'uk' => \Config::siteUrl() . '/?lang=uk',
             ],
         ];
 

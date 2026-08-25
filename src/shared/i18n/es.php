@@ -426,8 +426,11 @@ return [
     'home.landing.pollos' => 'Pollos al ast',
     'home.landing.combinados' => 'Platos combinados',
     'home.landing.picapica' => 'Picapica',
-    'home.onboarding.in_local' => 'En local',
-    'home.onboarding.delivery' => 'A domicilio',
+    'home.onboarding.in_local' => 'Comer Aquí',
+    'home.onboarding.delivery' => 'Para llevar',
+    'home.onboarding.target_label' => 'Tu pedido',
+    'home.onboarding.subtitle' => 'Sabor a l\'ast, sabor tradicional',
+    'home.onboarding.cta' => 'Haz clic para disfrutar',
     'home.onboarding.drag_hint' => 'Arrastra tu opción al local para empezar',
 
     // ── Menu Page ────────────────────────────────────────────────

@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Pit\Cuixa\Backend\Pages;
 
 use Pit\Cuixa\Backend\Http\Response;
-use Pit\Cuixa\Backend\Db\Repositories\Product;
 
 class Sitemap
 {
@@ -66,6 +65,7 @@ class Sitemap
                 ['hreflang' => 'ca', 'href' => $siteUrl . '/'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/?lang=uk'],
                 ['hreflang' => 'x-default', 'href' => $siteUrl . '/'],
             ],
         ];
@@ -77,6 +77,7 @@ class Sitemap
                 ['hreflang' => 'ca', 'href' => $siteUrl . '/menu'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/menu?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/menu?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/menu?lang=uk'],
                 ['hreflang' => 'x-default', 'href' => $siteUrl . '/menu'],
             ],
         ];
@@ -86,39 +87,48 @@ class Sitemap
             'loc' => $siteUrl . '/faq',
             'alternates' => [
                 ['hreflang' => 'ca', 'href' => $siteUrl . '/faq'],
-                ['hreflang' => 'es', 'href' => $siteUrl . '/es/faq'],
-                ['hreflang' => 'en', 'href' => $siteUrl . '/en/faq'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/faq?lang=es'],
+                ['hreflang' => 'en', 'href' => $siteUrl . '/faq?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/faq?lang=uk'],
                 ['hreflang' => 'x-default', 'href' => $siteUrl . '/faq'],
             ],
         ];
 
-        // ── Active products (if they have individual URLs) ────────────
-        try {
-            $repo = new Product();
-            $products = $repo->all();
+        // ── Privacy page ─────────────────────────────────────────────
+        $pages[] = [
+            'loc' => $siteUrl . '/privacy',
+            'alternates' => [
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/privacy'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/privacy?lang=es'],
+                ['hreflang' => 'en', 'href' => $siteUrl . '/privacy?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/privacy?lang=uk'],
+                ['hreflang' => 'x-default', 'href' => $siteUrl . '/privacy'],
+            ],
+        ];
 
-            foreach ($products as $product) {
-                if (empty($product['slug'])) {
-                    continue;
-                }
+        // ── Cookies page ─────────────────────────────────────────────
+        $pages[] = [
+            'loc' => $siteUrl . '/cookies',
+            'alternates' => [
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/cookies'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/cookies?lang=es'],
+                ['hreflang' => 'en', 'href' => $siteUrl . '/cookies?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/cookies?lang=uk'],
+                ['hreflang' => 'x-default', 'href' => $siteUrl . '/cookies'],
+            ],
+        ];
 
-                $caUrl = $siteUrl . '/producte/' . $product['slug'];
-                $esUrl = $siteUrl . '/producto/' . $product['slug'];
-                $enUrl = $siteUrl . '/product/' . $product['slug'];
-
-                $pages[] = [
-                    'loc' => $caUrl,
-                    'alternates' => [
-                        ['hreflang' => 'ca', 'href' => $caUrl],
-                        ['hreflang' => 'es', 'href' => $esUrl],
-                        ['hreflang' => 'en', 'href' => $enUrl],
-                        ['hreflang' => 'x-default', 'href' => $caUrl],
-                    ],
-                ];
-            }
-        } catch (\Throwable $e) {
-            // DB not available yet — omit product URLs gracefully
-        }
+        // ── Terms page ───────────────────────────────────────────────
+        $pages[] = [
+            'loc' => $siteUrl . '/terms',
+            'alternates' => [
+                ['hreflang' => 'ca', 'href' => $siteUrl . '/terms'],
+                ['hreflang' => 'es', 'href' => $siteUrl . '/terms?lang=es'],
+                ['hreflang' => 'en', 'href' => $siteUrl . '/terms?lang=en'],
+                ['hreflang' => 'uk', 'href' => $siteUrl . '/terms?lang=uk'],
+                ['hreflang' => 'x-default', 'href' => $siteUrl . '/terms'],
+            ],
+        ];
 
         return $pages;
     }

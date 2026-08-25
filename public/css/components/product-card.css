@@ -60,19 +60,29 @@
   opacity: 0.6;
 }
 
-/* Scrim overlay for high contrast WCAG AA text reading */
+/* Soft, subtle gradient overlay for text legibility without darkening images */
 .product-card::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 2;
   background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.15) 0%,
-    rgba(0, 0, 0, 0.65) 50%,
-    rgba(0, 0, 0, 0.92) 100%
+    to top,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.2) 35%,
+    transparent 65%
   );
   pointer-events: none;
+  transition: background var(--transition-normal);
+}
+
+.product-card:hover::before {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.25) 35%,
+    transparent 65%
+  );
 }
 
 /* ── Body (Positioned on top of image) ────────────────────────── */

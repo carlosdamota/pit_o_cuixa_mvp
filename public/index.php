@@ -229,7 +229,7 @@ $router->add('GET', '/faq', static function (array $params): void {
 $router->add('GET', '/{lang}/faq', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
-    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+    if (in_array($lang, \Config::supportedLocales(), true)) {
         // Redirect so the request re-enters bootstrap locale resolution,
         // ensuring LANG constant matches translations.
         Response::redirect('/faq?lang=' . $lang, 302);
@@ -249,7 +249,7 @@ $router->add('GET', '/privacy', static function (array $params): void {
 $router->add('GET', '/{lang}/privacy', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
-    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+    if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/privacy?lang=' . $lang, 302);
         return;
     }
@@ -266,7 +266,7 @@ $router->add('GET', '/cookies', static function (array $params): void {
 $router->add('GET', '/{lang}/cookies', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
-    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+    if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/cookies?lang=' . $lang, 302);
         return;
     }
@@ -283,7 +283,7 @@ $router->add('GET', '/terms', static function (array $params): void {
 $router->add('GET', '/{lang}/terms', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
-    if (in_array($lang, ['ca', 'es', 'en'], true)) {
+    if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/terms?lang=' . $lang, 302);
         return;
     }

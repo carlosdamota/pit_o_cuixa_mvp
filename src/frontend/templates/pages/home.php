@@ -35,16 +35,6 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
     <div class="onboarding__container">
 
-        <!-- ── Top Phone Call Button ──────────────────────────────────── -->
-        <header class="onboarding__top">
-            <a class="onboarding__call-btn" href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"
-               aria-label="<?= __('home.info.phone') ?>">
-                <svg class="onboarding__call-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>
-                </svg>
-                <span class="onboarding__call-text"><?= __('home.call.cta') ?></span>
-            </a>
-        </header>
 
         <!-- ── Animated Brand Logo: Walking Chicken typing "PIT o CUIXA" ── -->
         <div class="onboarding__brand" aria-label="Pit o Cuixa">
@@ -70,9 +60,11 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 </div>
             </div>
         </div>
+        <p class="onboarding__target-subtitle"><?= __('home.onboarding.subtitle') ?></p>
 
         <!-- ── Drag & Drop Interactive Section ───────────────────────── -->
         <div class="onboarding__drag-section" id="drag-section">
+            <h1 class="onboarding__target-cta"><?= __('home.onboarding.cta') ?></h1>
 
             <!-- Draggable Item Left: Cutlery ("en local") -->
             <div class="onboarding__drag-item onboarding__drag-item--left"
@@ -104,46 +96,14 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 <span class="onboarding__drag-label"><?= __('home.onboarding.delivery') ?></span>
             </div>
 
-            <!-- Animated Flowing Arrows SVG pointing down to lowered target -->
-            <svg class="onboarding__funnel-svg" viewBox="0 0 300 240" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                    <marker id="arrowhead-left" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
-                    </marker>
-                    <marker id="arrowhead-right" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(44, 24, 16, 0.75)" />
-                    </marker>
 
-                    <linearGradient id="arrow-gradient-left" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
-                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
-                    </linearGradient>
-                    <linearGradient id="arrow-gradient-right" x1="100%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(44, 24, 16, 0.3)" />
-                        <stop offset="100%" stop-color="rgba(44, 24, 16, 0.85)" />
-                    </linearGradient>
-                </defs>
-
-                <!-- Left guide arrow pointing to lower target center (140, 170) -->
-                <path class="onboarding__arrow-path onboarding__arrow-path--left"
-                      d="M 60 30 Q 90 110 140 170"
-                      stroke="url(#arrow-gradient-left)" stroke-width="3.5" fill="none"
-                      marker-end="url(#arrowhead-left)" />
-
-                <!-- Right guide arrow pointing to lower target center (160, 170) -->
-                <path class="onboarding__arrow-path onboarding__arrow-path--right"
-                      d="M 240 30 Q 210 110 160 170"
-                      stroke="url(#arrow-gradient-right)" stroke-width="3.5" fill="none"
-                      marker-end="url(#arrowhead-right)" />
-            </svg>
-
-            <!-- Drop Zone Target: Local Circle Icon -->
-            <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>">
+            <!-- Drop Zone Target: Local Circle Icon (visually collapsed; kept in DOM for JS hooks) -->
+            <div class="onboarding__target" id="drop-target" aria-label="<?= __('site.name') ?>" style="height: 0; overflow: hidden; pointer-events: none;">
                 <div class="onboarding__target-ring"></div>
                 <div class="onboarding__target-inner">
                     <img src="/img/icons/el_local_icon.webp" width="64" height="64" alt="<?= __('site.name') ?>">
                 </div>
-                <span class="onboarding__target-label"><?= __('site.name') ?></span>
+                <span class="onboarding__target-label"><?= __('home.onboarding.target_label') ?></span>
             </div>
 
             <!-- <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p> -->
@@ -186,7 +146,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
             <!-- Floating Cookie Settings Button -->
             <button
                 id="cookie-settings-home"
-                class="onboarding__cookie-btn"
+                class="cookie-settings-button"
                 data-cookie-settings
                 hidden
                 aria-label="Configuración de cookies"
@@ -242,6 +202,8 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
     </div>
 
-    <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
 </section>
+
+<?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+
 <script type="module" src="/js/home-onboarding.js<?= assetVersion('/js/home-onboarding.js') ?>"></script>

@@ -425,8 +425,11 @@ return [
     'home.landing.pollos' => 'Pollos a l\'ast',
     'home.landing.combinados' => 'Plats combinats',
     'home.landing.picapica' => 'Pica-pica',
-    'home.onboarding.in_local' => 'Al local',
-    'home.onboarding.delivery' => 'A domicili',
+    'home.onboarding.in_local' => 'Menjar Ara',
+    'home.onboarding.delivery' => 'Per emportar',
+    'home.onboarding.target_label' => 'La teva comanda',
+    'home.onboarding.subtitle' => 'Sabor a l\'ast, sabor tradicional',
+    'home.onboarding.cta' => 'Clicka per disfrutar',
     'home.onboarding.drag_hint' => 'Arrossega la teva opció al local per començar',
 
     // ── Menu Page ────────────────────────────────────────────────

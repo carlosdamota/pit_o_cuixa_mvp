@@ -3,7 +3,6 @@
  * Pit o Cuixa — Admin Dashboard Template
  *
  * Variables from $pageData:
- *   - user: authenticated user row
  *   - total_products: int
  *   - total_categories: int
  *   - featured_products: int
@@ -13,7 +12,6 @@
  * @package Pit\Cuixa\Frontend\Templates\Pages\Admin
  */
 
-$user            = $pageData['user'] ?? [];
 $totalProducts   = $pageData['total_products'] ?? 0;
 $totalCategories = $pageData['total_categories'] ?? 0;
 $featuredProducts = $pageData['featured_products'] ?? 0;
@@ -30,9 +28,6 @@ $lang            = $pageData['locale'] ?? LANG;
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">Panel de Administración</h1>
-            <p class="admin-header__user">
-                <?= htmlspecialchars($user['display_name'] ?? $user['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>
-            </p>
         </header>
 
         <!-- ── Stats Cards ─────────────────────────────────────────────── -->

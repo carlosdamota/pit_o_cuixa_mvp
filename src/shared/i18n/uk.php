@@ -22,7 +22,7 @@ return [
     'nav.logout' => 'Вийти',
     'lang.switch' => 'Змінити мову',
     'lang.code' => 'uk',
-    'nav.faq' => 'Часті запитання',
+    'nav.faq' => 'FAQ',
     'footer.rights' => 'Усі права захищені.',
     'footer.hours' => 'Графік: Пн-Нд 11:00–23:00',
 
@@ -297,8 +297,11 @@ return [
     'home.landing.pollos' => 'Курка на рожні',
     'home.landing.combinados' => 'Комбіновані страви',
     'home.landing.picapica' => 'Закуски',
-    'home.onboarding.in_local' => 'У закладі',
-    'home.onboarding.delivery' => 'Доставка',
+    'home.onboarding.in_local' => 'Їсти тут',
+    'home.onboarding.delivery' => 'На винос',
+    'home.onboarding.target_label' => 'Ваше замовлення',
+    'home.onboarding.subtitle' => 'Sabor a l\'ast, традиційний смак',
+    'home.onboarding.cta' => 'Натисни, щоб насолоджуватися',
     'home.onboarding.drag_hint' => 'Перетягніть ваш вибір до закладу, щоб розпочати',
 
     // ── Menu Page ────────────────────────────────────────────────
