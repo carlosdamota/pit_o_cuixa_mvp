@@ -54,8 +54,9 @@ function initMobileMenu() {
  * instance runs in its own closure; the single document-level outside-click
  * and Escape handlers only act on whichever instance is currently open.
  *
- * On the onboarding page, the lang menu needs position:fixed + JS positioning
+ * On the onboarding page ONLY, the lang menu needs position:fixed + JS positioning
  * to escape the landing stacking context and sit above the whatsapp float.
+ * The header dropdown keeps its own CSS fixed positioning.
  */
 function initLangDropdown() {
   const instances = [];
@@ -66,6 +67,10 @@ function initLangDropdown() {
     if (!toggle || !menu) {
       return;
     }
+
+    const needsRepositioning =
+      dropdown.classList.contains('onboarding__lang-dropdown') ||
+      dropdown.closest('.landing--onboarding') !== null;
 
     const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
 
@@ -79,15 +84,21 @@ function initLangDropdown() {
       menu.style.zIndex = '99999';
     };
 
-    const close = () => {
-      toggle.setAttribute('aria-expanded', 'false');
-      menu.setAttribute('hidden', '');
+    const resetPositioning = () => {
       // Move menu back to its original parent
       dropdown.appendChild(menu);
       menu.style.position = '';
       menu.style.bottom = '';
       menu.style.right = '';
       menu.style.zIndex = '';
+    };
+
+    const close = () => {
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('hidden', '');
+      if (needsRepositioning) {
+        resetPositioning();
+      }
     };
 
     instances.push({ dropdown, toggle, isOpen, close });
@@ -99,7 +110,9 @@ function initLangDropdown() {
       } else {
         toggle.setAttribute('aria-expanded', 'true');
         menu.removeAttribute('hidden');
-        positionMenu();
+        if (needsRepositioning) {
+          positionMenu();
+        }
       }
     });
   });
