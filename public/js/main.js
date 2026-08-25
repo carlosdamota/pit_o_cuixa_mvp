@@ -9,7 +9,7 @@
 
 import { initMenuFilter } from './menu-filter.js';
 import { initMenuSlider } from './menu-slider.js';
-import { initCookieBanner } from './cookie-banner.js';
+import { initCookieBanner, getCookieBanner } from './cookie-banner.js';
 import { initAnimatedFavicon } from './animated-favicon.js';
 
 /**

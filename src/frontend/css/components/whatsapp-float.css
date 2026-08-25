@@ -21,7 +21,7 @@
   position: fixed;
   bottom: 80px;
   right: 32px;
-  z-index: var(--z-whatsapp);
+  z-index: 9999 !important;
 
   /* WF-008: Prevent horizontal overflow on narrow viewports */
   max-width: 100vw;
@@ -193,21 +193,9 @@
     width: 48px;
     height: 48px;
   }
-}
-
-/* ==========================================================
-   Hidden while Cookie Banner is open
-   ========================================================== */
-
-body.cookie-banner-open .whatsapp-float {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(20px);
-  transition:
-    opacity .25s ease,
-    transform .25s ease;
 
   .whatsapp-float__menu {
     min-width: 180px;
   }
+  
 }
