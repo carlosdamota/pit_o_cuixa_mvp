@@ -379,4 +379,21 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 }
 </script>
 
+<!-- Botón flotante de configuración de cookies -->
+<button
+    id="cookie-settings-menu"
+    class="onboarding__cookie-btn"
+    data-cookie-settings
+    hidden
+    aria-label="Configuración de cookies"
+    title="Configuración de cookies">
+
+    <img
+        src="/img/icons/galleta.png"
+        alt=""
+        width="24"
+        height="24">
+
+</button>
+
 <?php require __DIR__ . '/../components/cookie-banner.php'; ?>

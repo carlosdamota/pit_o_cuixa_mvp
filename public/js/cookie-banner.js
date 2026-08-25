@@ -7,6 +7,10 @@ class CookieBanner {
     this.rejectButton = document.querySelector(".cookie-banner__button--reject");
     this.necessaryButton = document.querySelector(".cookie-banner__button--necessary");
     this.storageKey = "pitocuixa_cookie_preferences";
+    this.cookieCategories = {
+        necessary: true,
+        analytics: false
+    };
     this.chicken = document.querySelector(".cookie-banner__chicken");
     this.closeButton =
     document.querySelector(".cookie-banner__close");
@@ -106,16 +110,38 @@ class CookieBanner {
     }
 
     checkPreferences() {
+        const storedPreferences = localStorage.getItem(this.storageKey);
 
-        const preferences = localStorage.getItem(this.storageKey);
-
-        if (preferences) {
-            this.hide();
+        if (!storedPreferences) {
+            this.openedFromSettings = false;
+            this.show();
             return;
         }
 
-        this.openedFromSettings = false;
-        this.show();
+        try {
+            const storedPreferences = localStorage.getItem(this.storageKey);
+
+            if (!storedPreferences) {
+                this.openedFromSettings = false;
+                this.show();
+                return;
+            }
+
+            this.loadPreferences();
+
+            console.log("Preferencias detectadas:", this.cookieCategories);
+            this.hide();
+
+        } catch (error) {
+            console.error("Error leyendo las preferencias de cookies:", error);
+
+            // Si el dato guardado está corrupto,
+            // volvemos a mostrar el banner.
+            localStorage.removeItem(this.storageKey);
+
+            this.openedFromSettings = false;
+            this.show();
+        }
     }
 
     show() {
@@ -140,27 +166,38 @@ class CookieBanner {
             button.hidden = true;
         });
 
-        const preference = localStorage.getItem(this.storageKey);
+        const storedPreferences = localStorage.getItem(this.storageKey);
 
-        switch (preference) {
-
-            case "accept":
-                this.moveChicken(this.acceptButton);
-                this.selectButton(this.acceptButton);
-                break;
-
-            case "necessary":
-                this.moveChicken(this.necessaryButton);
-                this.selectButton(this.necessaryButton);
-                break;
-
-            case "reject":
-                this.moveChicken(this.rejectButton);
-                this.selectButton(this.rejectButton);
-                break;
-
+        if (!storedPreferences) {
+            return;
         }
 
+        try {
+            const preferences = JSON.parse(storedPreferences);
+
+            switch (preferences.choice) {
+
+                case "accept":
+                    this.moveChicken(this.acceptButton);
+                    this.selectButton(this.acceptButton);
+                    break;
+
+                case "necessary":
+                    this.moveChicken(this.necessaryButton);
+                    this.selectButton(this.necessaryButton);
+                    break;
+
+                case "reject":
+                    this.moveChicken(this.rejectButton);
+                    this.selectButton(this.rejectButton);
+                    break;
+
+            }
+
+        } catch (error) {
+
+            console.error("Error leyendo las preferencias:", error);
+        }
     }
 
     hide() {
@@ -198,8 +235,91 @@ class CookieBanner {
     }
 
     savePreferences(option) {
-        localStorage.setItem(this.storageKey, option);
+        let preferences;
+        
+        switch (option) {
+
+            case "accept":
+                preferences = {
+                    necessary: true,
+                    analytics: true,
+                    choice: "accept"
+                };
+                break;
+
+            case "necessary":
+                preferences = {
+                    necessary: true,
+                    analytics: false,
+                    choice: "necessary"
+                };
+                break;
+
+            case "reject":
+                preferences = {
+                    necessary: true,
+                    analytics: false,
+                    choice: "reject"
+                };
+                break;
+
+            default:
+                return;
+        }
+
+        console.log("Preferencias guardadas:", preferences);
+
+        this.cookieCategories = {
+            necessary: preferences.necessary,
+            analytics: preferences.analytics
+        };
+
+        localStorage.setItem(
+            this.storageKey,
+            JSON.stringify(preferences)
+        );
+
         this.hide();
+
+        console.log(
+            "Analytics permitido:",
+            this.hasConsent("analytics")
+        );
+    }
+
+    hasConsent(category) {
+
+        return this.cookieCategories[category] === true;
+
+    }
+
+    getPreferences() {
+        const storedPreferences = localStorage.getItem(this.storageKey);
+
+        if (!storedPreferences) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(storedPreferences);
+
+        } catch (error) {
+            console.error("Error leyendo las preferencias:", error);
+            return null;
+        }
+    }
+
+    loadPreferences() {
+        const preferences = this.getPreferences();
+
+        if (!preferences) {
+            return;
+        }
+
+        this.cookieCategories = {
+            necessary: true,
+            analytics: preferences.analytics === true
+        };
     }
 
     clearSelectedButtons() {
@@ -226,10 +346,15 @@ class CookieBanner {
 
 }
 
+let cookieBannerInstance = null;
+
 export function initCookieBanner() {
+    cookieBannerInstance = new CookieBanner();
+    cookieBannerInstance.init();
+}
 
-    const cookieBanner = new CookieBanner();
+export function getCookieBanner() {
 
-    cookieBanner.init();
+    return cookieBannerInstance;
 
 }

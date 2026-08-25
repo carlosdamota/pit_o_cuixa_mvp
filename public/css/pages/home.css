@@ -15,7 +15,7 @@ body:has(.landing--onboarding) .footer {
 
 body:has(.landing--onboarding) .whatsapp-float,
 body:has(.landing--onboarding) .chat-widget {
-  z-index: 10000 !important;
+  z-index: 9998;
 }
 
 body:has(.landing--onboarding) .main {
@@ -87,54 +87,6 @@ body:has(.landing--onboarding) .main {
   box-sizing: border-box;
   user-select: none;
   -webkit-user-select: none;
-}
-
-/* ── Top Section: Call Button ────────────────────────────────────── */
-.onboarding__top {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.onboarding__call-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: 8px 20px;
-  background-color: var(--color-on-surface);
-  color: var(--color-surface-container-lowest);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(44, 24, 16, 0.15);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  animation: call-ring 0.8s ease-in-out 1;
-}
-
-.onboarding__call-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(44, 24, 16, 0.25);
-  animation-play-state: paused;
-}
-
-@keyframes call-ring {
-  0%, 100% {
-    transform: rotate(0deg) scale(1);
-  }
-  10%, 30%, 50% {
-    transform: rotate(-3deg) scale(1.01);
-  }
-  20%, 40% {
-    transform: rotate(3deg) scale(1.01);
-  }
-  60%, 80% {
-    transform: rotate(0deg) scale(1);
-  }
-}
-
-.onboarding__call-icon {
-  flex-shrink: 0;
 }
 
 /* ── Center Animated Brand Logo (Walking Chicken Typing "PIT o CUIXA") ─ */
@@ -274,41 +226,6 @@ body:has(.landing--onboarding) .main {
   margin: clamp(16px, 2.8vh, 24px) 0 var(--space-xs) 0;
 }
 
-/* Funnel arrows SVG in background */
-.onboarding__funnel-svg {
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 82%;
-  height: 190px;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Animated flow & subtle pulse on guide arrows */
-.onboarding__arrow-path {
-  stroke-dasharray: 8 6;
-  animation: arrow-flow 1.5s infinite linear, arrow-fade-pulse 2.2s infinite ease-in-out;
-}
-
-@keyframes arrow-flow {
-  from {
-    stroke-dashoffset: 28;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes arrow-fade-pulse {
-  0%, 100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 0.95;
-  }
-}
 
 /* Drag items (Cutlery & Moto) */
 .onboarding__drag-item {
@@ -331,13 +248,13 @@ body:has(.landing--onboarding) .main {
 }
 
 .onboarding__drag-item--left {
-  left: clamp(10px, 8%, 35px);
-  top: 50px;
+  left: clamp(8px, 8%, 55px);
+  top: 90px;
 }
 
 .onboarding__drag-item--right {
-  right: clamp(10px, 8%, 35px);
-  top: 50px;
+  right: clamp(16px, 10%, 55px);
+  top: 90px;
 }
 
 .onboarding__drag-item--dragging {
@@ -502,9 +419,11 @@ body:has(.landing--onboarding) .main {
 
 .onboarding__target-subtitle {
   margin: 0;
-  font-size: var(--font-size-xs);
+  font-size: 14px;
   color: var(--color-on-surface);
   opacity: 0.7;
+  position: relative;
+  top: -12px;
   text-align: center;
 }
 
@@ -750,6 +669,35 @@ body:has(.landing--onboarding) .main {
   box-shadow:0 8px 18px rgba(0,0,0,.16);
 }
 
+/* Floating PWA Installation CTA Button (Bottom-Left above FAQ) */
+/* ── Cookie Banner Button (Bottom-Right) ───────────────────────── */
+.onboarding__cookie-btn{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:50%;
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.onboarding__cookie-btn img{
+  width:22px;
+  height:22px;
+}
+
+.onboarding__cookie-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(0,0,0,.16);
+}
+
+/* PWA Installation CTA Button (in-flow centered middle grid column) */
 /* PWA Installation CTA Button (in-flow centered) */
 .onboarding__pwa-wrapper {
   min-width: 0;
@@ -876,10 +824,6 @@ body:has(.landing--onboarding) .main {
 }
 
 @media (max-width: 767px) {
-  .onboarding__top {
-    display: none;
-  }
-
   .onboarding__pwa-toast {
     bottom: 120px;
     max-width: 320px;
