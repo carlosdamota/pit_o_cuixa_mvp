@@ -858,6 +858,76 @@ export function initKeyboardShortcuts(handlers) {
   });
 }
 
+// ======================================================================
+//  Mobile Navigation Toggle
+// ======================================================================
+
+/**
+ * Initialize the mobile admin navigation toggle.
+ * Toggles .admin-nav--open on the surrounding nav, keeping
+ * aria-expanded and the Spanish aria-label in sync. Closes on
+ * link click, Escape, outside click, and when the viewport
+ * crosses above the mobile breakpoint (639px).
+ *
+ * Idempotent — safe to call multiple times on the same page.
+ */
+export function initNavToggle() {
+  const nav = document.querySelector('.admin-nav');
+  const toggleBtn = nav?.querySelector('[data-nav-toggle]');
+  if (!nav || !toggleBtn || nav.dataset.navToggleBound === 'true') return;
+
+  nav.dataset.navToggleBound = 'true';
+
+  const isOpen = () => nav.classList.contains('admin-nav--open');
+
+  const setOpen = (open) => {
+    nav.classList.toggle('admin-nav--open', open);
+    toggleBtn.setAttribute('aria-expanded', String(open));
+    toggleBtn.setAttribute(
+      'aria-label',
+      open ? 'Cerrar menú de secciones' : 'Abrir menú de secciones'
+    );
+  };
+
+  // Toggle button click
+  toggleBtn.addEventListener('click', () => setOpen(!isOpen()));
+
+  // Close after navigating via a link inside the menu
+  nav.addEventListener('click', (e) => {
+    if (isOpen() && e.target.closest('a[href]')) setOpen(false);
+  });
+
+  // Close on Escape and return focus to the toggle button
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) {
+      setOpen(false);
+      toggleBtn.focus();
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !nav.contains(e.target)) setOpen(false);
+  });
+
+  // Close when viewport leaves the mobile breakpoint
+  const mq = window.matchMedia('(min-width: 640px)');
+  const onBreakpointChange = (evt) => {
+    if (evt.matches && isOpen()) setOpen(false);
+  };
+  if (typeof mq.addEventListener === 'function') {
+    mq.addEventListener('change', onBreakpointChange);
+  } else if (typeof mq.addListener === 'function') {
+    mq.addListener(onBreakpointChange); // Legacy Safari fallback
+  }
+}
+
+// Automatically bind the mobile nav toggle on every page that renders
+// the admin nav partial (all such pages import this module).
+if (typeof document !== 'undefined') {
+  initNavToggle();
+}
+
 // Automatically intercept [data-logout-form] submissions
 if (typeof document !== 'undefined') {
   document.addEventListener('submit', async (e) => {
