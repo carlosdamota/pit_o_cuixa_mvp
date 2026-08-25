@@ -70,9 +70,11 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 </div>
             </div>
         </div>
+        <p class="onboarding__target-subtitle"><?= __('home.onboarding.subtitle') ?></p>
 
         <!-- ── Drag & Drop Interactive Section ───────────────────────── -->
         <div class="onboarding__drag-section" id="drag-section">
+            <h1 class="onboarding__target-cta"><?= __('home.onboarding.cta') ?></h1>
 
             <!-- Draggable Item Left: Cutlery ("en local") -->
             <div class="onboarding__drag-item onboarding__drag-item--left"
@@ -143,7 +145,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
                 <div class="onboarding__target-inner">
                     <img src="/img/icons/el_local_icon.webp" width="64" height="64" alt="<?= __('site.name') ?>">
                 </div>
-                <span class="onboarding__target-label"><?= __('site.name') ?></span>
+                <span class="onboarding__target-label"><?= __('home.onboarding.target_label') ?></span>
             </div>
 
             <!-- <p class="onboarding__drag-hint"><?= __('home.onboarding.drag_hint') ?></p> -->
