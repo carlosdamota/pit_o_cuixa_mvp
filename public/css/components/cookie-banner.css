@@ -5,7 +5,7 @@
 .cookie-banner {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 10000 !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -225,8 +225,8 @@
   position: fixed;
   left: 32px;
   bottom: 80px;
-  width: auto;
-  height: auto;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -235,18 +235,22 @@
     transform .25s ease,
     box-shadow .25s ease;
   z-index: 9998;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0,0,0,.2);
 }
 
 .cookie-settings-button:hover,
 .onboarding__cookie-btn:hover {
   transform: scale(1.08);
-  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+  box-shadow: 0 0 15px rgba(0,0,0,.4);
+  background: rgba(255,255,255,1);
 }
 
 .cookie-settings-button img,
 .onboarding__cookie-btn img {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   display: block;
 }
 
@@ -255,13 +259,13 @@
   .onboarding__cookie-btn {
     left: 16px;
     bottom: 75px;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
   }
   .cookie-settings-button img,
   .onboarding__cookie-btn img {
-    width: 27px;
-    height: 27px;
+    width: 30px;
+    height: 30px;
   }
 }
 

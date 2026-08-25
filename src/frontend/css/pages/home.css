@@ -15,7 +15,7 @@ body:has(.landing--onboarding) .footer {
 
 body:has(.landing--onboarding) .whatsapp-float,
 body:has(.landing--onboarding) .chat-widget {
-  z-index: 10000 !important;
+  z-index: 9998;
 }
 
 body:has(.landing--onboarding) .main {

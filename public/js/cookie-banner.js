@@ -119,12 +119,15 @@ class CookieBanner {
         }
 
         try {
-            const preferences = JSON.parse(storedPreferences);
+            const storedPreferences = localStorage.getItem(this.storageKey);
 
-            this.cookieCategories = {
-                necessary: true,
-                analytics: preferences.analytics === true
-            };
+            if (!storedPreferences) {
+                this.openedFromSettings = false;
+                this.show();
+                return;
+            }
+
+            this.loadPreferences();
 
             console.log("Preferencias detectadas:", this.cookieCategories);
             this.hide();
@@ -290,6 +293,35 @@ class CookieBanner {
 
     }
 
+    getPreferences() {
+        const storedPreferences = localStorage.getItem(this.storageKey);
+
+        if (!storedPreferences) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(storedPreferences);
+
+        } catch (error) {
+            console.error("Error leyendo las preferencias:", error);
+            return null;
+        }
+    }
+
+    loadPreferences() {
+        const preferences = this.getPreferences();
+
+        if (!preferences) {
+            return;
+        }
+
+        this.cookieCategories = {
+            necessary: true,
+            analytics: preferences.analytics === true
+        };
+    }
+
     clearSelectedButtons() {
 
     [
@@ -314,10 +346,15 @@ class CookieBanner {
 
 }
 
+let cookieBannerInstance = null;
+
 export function initCookieBanner() {
+    cookieBannerInstance = new CookieBanner();
+    cookieBannerInstance.init();
+}
 
-    const cookieBanner = new CookieBanner();
+export function getCookieBanner() {
 
-    cookieBanner.init();
+    return cookieBannerInstance;
 
 }
