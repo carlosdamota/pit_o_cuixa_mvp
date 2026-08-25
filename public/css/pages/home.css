@@ -89,54 +89,6 @@ body:has(.landing--onboarding) .main {
   -webkit-user-select: none;
 }
 
-/* ── Top Section: Call Button ────────────────────────────────────── */
-.onboarding__top {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.onboarding__call-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: 8px 20px;
-  background-color: var(--color-on-surface);
-  color: var(--color-surface-container-lowest);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(44, 24, 16, 0.15);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  animation: call-ring 0.8s ease-in-out 1;
-}
-
-.onboarding__call-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(44, 24, 16, 0.25);
-  animation-play-state: paused;
-}
-
-@keyframes call-ring {
-  0%, 100% {
-    transform: rotate(0deg) scale(1);
-  }
-  10%, 30%, 50% {
-    transform: rotate(-3deg) scale(1.01);
-  }
-  20%, 40% {
-    transform: rotate(3deg) scale(1.01);
-  }
-  60%, 80% {
-    transform: rotate(0deg) scale(1);
-  }
-}
-
-.onboarding__call-icon {
-  flex-shrink: 0;
-}
-
 /* ── Center Animated Brand Logo (Walking Chicken Typing "PIT o CUIXA") ─ */
 .onboarding__brand {
   display: flex;
@@ -467,7 +419,7 @@ body:has(.landing--onboarding) .main {
 
 .onboarding__target-subtitle {
   margin: 0;
-  font-size: var(--font-size-xs);
+  font-size: 14px;
   color: var(--color-on-surface);
   opacity: 0.7;
   text-align: center;
@@ -841,10 +793,6 @@ body:has(.landing--onboarding) .main {
 }
 
 @media (max-width: 767px) {
-  .onboarding__top {
-    display: none;
-  }
-
   .onboarding__pwa-toast {
     bottom: 120px;
     max-width: 320px;
