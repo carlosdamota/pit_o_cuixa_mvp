@@ -91,6 +91,24 @@ jobs:
           cp -r public/* public_html/
           cp -r public/.[!.]* public_html/ 2>/dev/null || true
           echo "public_html prepared for deployment."
+
+      - name: Clean stale remote files (case-sensitive residuals)
+        run: |
+          command -v lftp >/dev/null 2>&1 || { echo "::group::Installing lftp"; sudo apt-get update -y && sudo apt-get install -y lftp; echo "::endgroup::"; }
+          echo "Removing stale remote files under src/Backend/Pages/ ..."
+          lftp -e "set net:timeout 30; set net:max-retries 2; \
+            set ftp:ssl-allow no; \
+            rm -f src/Backend/Pages/faq.php; \
+            rm -f src/Backend/Pages/Faq.php; \
+            rm -f src/Backend/Pages/FaqPage.php; \
+            bye" \
+            -u "$FTP_USER","$FTP_PASS" "ftp://$FTP_HOST"
+          echo "Cleanup step finished."
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
