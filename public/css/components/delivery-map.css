@@ -117,12 +117,13 @@
   font-weight: var(--font-weight-semibold);
   font-size: calc(1rem - 25%) !important;
   text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
 }
 
 .delivery-map-card__cta:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.08);
 }
 
 .delivery-map-card__cta:focus-visible {
