@@ -108,12 +108,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 52%;
   margin: 0 var(--space-md) var(--space-md);
   background-color: var(--color-secondary);
   color: #ffffff;
-  border-radius: var(--radius);
+  border-radius: 25px;
   padding: var(--space-sm) var(--space-lg);
   font-weight: var(--font-weight-semibold);
+  font-size: calc(1rem - 25%) !important;
   text-decoration: none;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
