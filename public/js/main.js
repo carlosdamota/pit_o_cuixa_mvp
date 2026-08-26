@@ -54,10 +54,11 @@ function initMobileMenu() {
  * instance runs in its own closure; the single document-level outside-click
  * and Escape handlers only act on whichever instance is currently open.
  *
- * All dropdowns are positioned purely by CSS (absolute within their toggle).
- * The onboarding menu opens upward via its own CSS; no JS repositioning needed.
- * Keeping the menu inside its [data-lang-dropdown] also lets the outside-click
- * handler correctly detect clicks on the options as "inside".
+ * Header/footer instances are positioned purely by CSS (absolute within their
+ * toggle). The ONBOARDING instance, however, lives inside the landing stacking
+ * context and would be trapped below the fixed chat/WhatsApp launchers, so it
+ * is lifted to <body> with position:fixed + z-index:99999 when opened (and
+ * restored to its parent on close).
  */
 function initLangDropdown() {
   const instances = [];
@@ -69,11 +70,35 @@ function initLangDropdown() {
       return;
     }
 
+    // The onboarding instance sits inside the landing stacking context, which
+    // traps an absolutely-positioned menu below the fixed chat/WhatsApp
+    // launchers. Lift it out to <body> with a fixed position + high z-index so
+    // it renders above those floating buttons. Header/footer instances rely on
+    // CSS alone.
+    const isOnboarding = dropdown.classList.contains('onboarding__lang-dropdown');
+
+    const positionMenu = () => {
+      if (!isOnboarding) return;
+      const rect = toggle.getBoundingClientRect();
+      document.body.appendChild(menu);
+      menu.style.position = 'fixed';
+      menu.style.bottom = `${window.innerHeight - rect.top + 6}px`;
+      menu.style.right = `${window.innerWidth - rect.right}px`;
+      menu.style.zIndex = '99999'; // above chat input (99998) and whatsapp (9999)
+    };
+
     const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
 
     const close = () => {
       toggle.setAttribute('aria-expanded', 'false');
       menu.setAttribute('hidden', '');
+      if (isOnboarding && menu.parentNode !== dropdown) {
+        dropdown.appendChild(menu);
+        menu.style.position = '';
+        menu.style.bottom = '';
+        menu.style.right = '';
+        menu.style.zIndex = '';
+      }
     };
 
     instances.push({ dropdown, toggle, isOpen, close });
@@ -85,6 +110,7 @@ function initLangDropdown() {
       } else {
         toggle.setAttribute('aria-expanded', 'true');
         menu.removeAttribute('hidden');
+        positionMenu();
       }
     });
   });
