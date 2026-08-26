@@ -146,7 +146,7 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
             <!-- Floating Cookie Settings Button -->
             <button
                 id="cookie-settings-home"
-                class="onboarding__cookie-btn"
+                class="cookie-settings-button"
                 data-cookie-settings
                 hidden
                 aria-label="Configuración de cookies"
@@ -202,6 +202,8 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
     </div>
 
-    <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
 </section>
+
+<?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+
 <script type="module" src="/js/home-onboarding.js<?= assetVersion('/js/home-onboarding.js') ?>"></script>

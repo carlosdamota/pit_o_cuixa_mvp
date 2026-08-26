@@ -15,7 +15,7 @@ body:has(.landing--onboarding) .footer {
 
 body:has(.landing--onboarding) .whatsapp-float,
 body:has(.landing--onboarding) .chat-widget {
-  z-index: 10000 !important;
+  z-index: 9998;
 }
 
 body:has(.landing--onboarding) .main {
@@ -669,6 +669,35 @@ body:has(.landing--onboarding) .main {
   box-shadow:0 8px 18px rgba(0,0,0,.16);
 }
 
+/* Floating PWA Installation CTA Button (Bottom-Left above FAQ) */
+/* ── Cookie Banner Button (Bottom-Right) ───────────────────────── */
+.onboarding__cookie-btn{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:50%;
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.onboarding__cookie-btn img{
+  width:22px;
+  height:22px;
+}
+
+.onboarding__cookie-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(0,0,0,.16);
+}
+
+/* PWA Installation CTA Button (in-flow centered middle grid column) */
 /* PWA Installation CTA Button (in-flow centered) */
 .onboarding__pwa-wrapper {
   min-width: 0;
