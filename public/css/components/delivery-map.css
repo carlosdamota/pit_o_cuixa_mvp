@@ -130,6 +130,11 @@
   outline-offset: 2px;
 }
 
+.delivery-map-card__icon {
+  width: 14%;
+  height: auto;
+}
+
 .delivery-map-note {
   margin-top: var(--space-md);
   padding: var(--space-sm) var(--space-md);

@@ -325,7 +325,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                target="_blank"
                rel="noopener"
                aria-label="<?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>">
-                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?><img src='/img/icons/direccion.svg'>
+                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?><img src='/img/icons/direccion.svg' class="delivery-map-card__icon">
             </a>
         </div>
      
