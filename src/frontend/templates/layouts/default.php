@@ -214,6 +214,26 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php require __DIR__ . '/../partials/chat-widget.php'; ?>
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
+    
+    <!-- Cookie settings -->
+    <button
+        id="cookie-settings-home"
+        class="cookie-settings-button"
+        data-cookie-settings
+        hidden
+        aria-label="Configuración de cookies"
+        title="Configuración de cookies">
+
+        <img
+            src="/img/icons/galleta.png"
+            alt=""
+            width="24"
+            height="24">
+
+    </button>
+
+    <!-- ── Cookie Banner ───────────────────────────────────────── -->
+    <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>
