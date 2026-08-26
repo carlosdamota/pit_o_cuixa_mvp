@@ -132,6 +132,13 @@ jobs:
             echo "::error::Migration endpoint returned HTTP $HTTP_CODE"
             exit 1
           fi
+
+          # Fail the job if the migration body reports failures (success:false),
+          # even when the HTTP status is 200/201.
+          if echo "$BODY" | grep -q '"success"[[:space:]]*:[[:space:]]*false'; then
+            echo "::error::Migration endpoint reported failures: $BODY"
+            exit 1
+          fi
           echo "Migration completed successfully."
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
