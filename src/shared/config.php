@@ -186,4 +186,28 @@ final class Config
     {
         return self::get('SERVICE_API_TOKEN', '');
     }
+
+    /**
+     * 32-byte key (hex, 64 chars) used for AES-256-GCM encryption of TOTP
+     * secrets at rest in the `users.totp_secret` column.
+     *
+     * SECURITY: this is a generated placeholder. OVERRIDE it in production by
+     * setting `TOTP_ENC_KEY` in your .env file. If you change the key, any
+     * previously-encrypted secrets become undecryptable — re-enroll 2FA after
+     * rotation.
+     */
+    private const TOTP_ENC_KEY = 'fcaafb67034384033b28aa307ca1c15bc0bb714313e668aa27a6dbe9eb2d53d5';
+
+    /**
+     * 32-byte key for AES-256-GCM (raw binary after hex2bin).
+     */
+    public static function totpEncryptionKey(): string
+    {
+        $env = self::get('TOTP_ENC_KEY', '');
+        if ($env !== '') {
+            return $env;
+        }
+
+        return self::TOTP_ENC_KEY;
+    }
 }

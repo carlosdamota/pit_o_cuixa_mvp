@@ -63,24 +63,74 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             </button>
         </form>
 
+        <!-- ── Step 2: TOTP second factor (hidden until required) ─────── -->
+        <form class="admin-login__form" data-admin-2fa hidden>
+            <p class="admin-login__subtitle">Verificación en dos pasos</p>
+
+            <div class="admin-field">
+                <label for="login-code" class="admin-field__label">
+                    Código de 6 dígitos
+                </label>
+                <input id="login-code"
+                       name="code"
+                       type="text"
+                       inputmode="text"
+                       autocomplete="one-time-code"
+                       class="admin-field__input"
+                       maxlength="32"
+                       required
+                       autofocus>
+            </div>
+
+            <div class="admin-login__error" data-2fa-error role="alert" hidden></div>
+
+            <button type="submit" class="admin-btn admin-btn--primary admin-login__submit">
+                Verificar
+            </button>
+
+            <label class="admin-login__backup-toggle">
+                <input type="checkbox" data-2fa-backup-toggle>
+                Usar código de respaldo
+            </label>
+        </form>
+
         <a href="/" class="admin-login__back">← Volver al sitio</a>
     </div>
 </section>
 
 <script type="module">
 /**
- * Admin Login — AJAX form submission.
+ * Admin Login — AJAX form submission with TOTP second factor.
  * Prevents redirect, handles errors inline.
  */
-document.querySelector('[data-admin-login]')?.addEventListener('submit', async (e) => {
+const loginForm   = document.querySelector('[data-admin-login]');
+const twoFaForm   = document.querySelector('[data-admin-2fa]');
+const loginError  = document.querySelector('[data-login-error]');
+const twoFaError  = document.querySelector('[data-2fa-error]');
+const backupToggle = document.querySelector('[data-2fa-backup-toggle]');
+
+let challengeToken = null;
+
+function showError(el, msg) {
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+}
+
+function showTwoFactor(token) {
+    challengeToken = token;
+    loginForm.hidden = true;
+    twoFaForm.hidden = false;
+    twoFaForm.querySelector('input[name="code"]')?.focus();
+}
+
+loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const form    = e.currentTarget;
-    const errorEl = document.querySelector('[data-login-error]');
+    const form      = e.currentTarget;
     const submitBtn = form.querySelector('button[type="submit"]');
     const formData = new FormData(form);
 
-    // Build JSON body
     const body = JSON.stringify({
         username: formData.get('username'),
         password: formData.get('password'),
@@ -90,7 +140,7 @@ document.querySelector('[data-admin-login]')?.addEventListener('submit', async (
     submitBtn.textContent = '...';
 
     try {
-        const res = await fetch('/api/auth/login', {
+        const res  = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body,
@@ -99,18 +149,73 @@ document.querySelector('[data-admin-login]')?.addEventListener('submit', async (
         const json = await res.json();
 
         if (json.error) {
-            errorEl.textContent = json.message || 'Error de autenticación';
-            errorEl.hidden = false;
+            showError(loginError, json.message || 'Error de autenticación');
+        } else if (json.two_factor_required) {
+            // Switch to the second-step panel
+            showTwoFactor(json.challenge_token);
         } else {
-            // Success — redirect to admin dashboard
             window.location.href = '/admin';
         }
     } catch (err) {
-        errorEl.textContent = 'Error de conexión';
-        errorEl.hidden = false;
+        showError(loginError, 'Error de conexión');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Iniciar Sesión';
+    }
+});
+
+twoFaForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form      = e.currentTarget;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const codeInput = form.querySelector('input[name="code"]');
+
+    if (!challengeToken) {
+        showError(twoFaError, 'Sesión de verificación caducada. Vuelve a iniciar sesión.');
+        return;
+    }
+
+    const body = JSON.stringify({
+        challenge_token: challengeToken,
+        code: codeInput.value.trim(),
+    });
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '...';
+
+    try {
+        const res  = await fetch('/api/auth/2fa-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        });
+
+        const json = await res.json();
+
+        if (json.error) {
+            showError(twoFaError, json.message || 'Código incorrecto');
+        } else {
+            window.location.href = '/admin';
+        }
+    } catch (err) {
+        showError(twoFaError, 'Error de conexión');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Verificar';
+    }
+});
+
+// Toggle placeholder/label depending on backup-code mode
+backupToggle?.addEventListener('change', () => {
+    const codeInput = twoFaForm?.querySelector('input[name="code"]');
+    if (!codeInput) return;
+    if (backupToggle.checked) {
+        codeInput.placeholder = 'Código de respaldo';
+        codeInput.maxLength = 32;
+    } else {
+        codeInput.placeholder = '';
+        codeInput.maxLength = 6;
     }
 });
 </script>

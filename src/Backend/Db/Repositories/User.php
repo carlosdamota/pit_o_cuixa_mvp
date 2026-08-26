@@ -149,6 +149,59 @@ class User
     }
 
     /**
+     * Persist the ENCRYPTED TOTP secret (does not enable 2FA yet).
+     *
+     * @param  int    $id
+     * @param  string $encryptedSecret  AES-256-GCM ciphertext from Crypto::encrypt()
+     * @return bool
+     */
+    public function saveTotpSecret(int $id, string $encryptedSecret): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET totp_secret = :secret, updated_at = datetime('now') WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            ':secret' => $encryptedSecret,
+            ':id'     => $id,
+        ]);
+    }
+
+    /**
+     * Enable TOTP for a user (flag already seeded + verified).
+     *
+     * @param  int $id
+     * @return bool
+     */
+    public function enableTotp(int $id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET totp_enabled = 1, totp_verified_at = datetime('now'), updated_at = datetime('now') WHERE id = :id"
+        );
+
+        return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Fetch the ENCRYPTED TOTP secret for a user (raw, for decryption).
+     *
+     * @param  int $id
+     * @return string|null
+     */
+    public function getEncryptedTotpSecret(int $id): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT totp_secret FROM users WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch();
+
+        if ($row === false || $row['totp_secret'] === null) {
+            return null;
+        }
+
+        return (string) $row['totp_secret'];
+    }
+
+    /**
      * Normalise types for consistent output.
      *
      * @param  array<string, mixed> $row
@@ -159,8 +212,9 @@ class User
         $row['id']    = (int) $row['id'];
         $row['is_active'] = (bool) $row['is_active'];
 
-        // Never expose password hash
+        // Never expose password hash nor the (encrypted) TOTP secret
         unset($row['password']);
+        unset($row['totp_secret']);
 
         return $row;
     }

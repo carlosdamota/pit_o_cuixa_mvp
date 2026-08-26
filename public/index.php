@@ -136,6 +136,15 @@ $router->add('POST', '/api/auth/logout', static function (array $params): void {
     AuthController::logout();
 });
 
+// 2FA (TOTP) second factor — part of the admin login flow + self-enrollment
+$router->add('POST', '/api/auth/2fa-verify', static function (array $params): void {
+    AuthController::twoFactorVerify();
+});
+
+$router->add('POST', '/api/auth/2fa-enroll', static function (array $params): void {
+    AuthController::twoFactorEnroll();
+});
+
 //Añadida ruta al Scraper — read-only utility, requires auth (AUTH-1)
 $router->add('GET', '/api/scraper', static function(array $params): void{
     Auth::authorizeSync();

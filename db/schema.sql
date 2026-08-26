@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS users (
     display_name TEXT   NOT NULL DEFAULT '',
     role        TEXT    NOT NULL DEFAULT 'admin',
     is_active   INTEGER NOT NULL DEFAULT 1,
+    -- 2FA (TOTP): secret is stored ENCRYPTED at rest (AES-256-GCM, see Config::totpEncryptionKey)
+    totp_secret     TEXT    NULL,
+    totp_enabled    INTEGER NOT NULL DEFAULT 0,
+    totp_verified_at TEXT   NULL,
     created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
@@ -105,6 +109,31 @@ CREATE INDEX IF NOT EXISTS idx_categories_active   ON categories(is_active);
 CREATE INDEX IF NOT EXISTS idx_categories_slug     ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_sessions_token      ON sessions(token);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires    ON sessions(expires_at);
+
+-- ============================================================
+-- 2FA (TOTP) — challenges + backup codes
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS two_factor_challenges (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token       TEXT    NOT NULL UNIQUE,
+    expires_at  TEXT    NOT NULL,
+    attempts    INTEGER NOT NULL DEFAULT 0,
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS backup_codes (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    code_hash   TEXT    NOT NULL,        -- password_hash() of the plaintext backup code
+    used_at     TEXT    NULL,           -- NULL = unused, otherwise timestamp
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_token  ON two_factor_challenges(token);
+CREATE INDEX IF NOT EXISTS idx_2fa_challenges_user   ON two_factor_challenges(user_id);
+CREATE INDEX IF NOT EXISTS idx_backup_codes_user     ON backup_codes(user_id);
 CREATE INDEX IF NOT EXISTS idx_products_dine_in    ON products(is_dine_in, is_active);
 CREATE INDEX IF NOT EXISTS idx_products_delivery   ON products(is_delivery, is_active);
 CREATE INDEX IF NOT EXISTS idx_products_source     ON products(source);

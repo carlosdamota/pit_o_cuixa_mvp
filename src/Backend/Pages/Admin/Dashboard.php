@@ -63,6 +63,7 @@ class Dashboard
         $data = [
             'locale'          => LANG,
             'user'            => $user,
+            'twofa_enabled'   => !empty($user['totp_enabled']),
             'total_products'  => $totalProducts,
             'total_categories'=> $totalCategories,
             'featured_products' => $featuredProducts,

@@ -14,8 +14,12 @@ namespace Pit\Cuixa\Backend\Api;
 
 use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Db\Repositories\User as UserRepo;
+use Pit\Cuixa\Backend\Db\Repositories\TwoFactorChallenge;
+use Pit\Cuixa\Backend\Db\Repositories\BackupCode;
 use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Auth\RateLimiter;
+use Pit\Cuixa\Backend\Auth\Crypto;
+use Pit\Cuixa\Backend\Auth\Totp;
 
 class AuthController
 {
@@ -100,6 +104,22 @@ class AuthController
         $limiter->reset("login:ip:{$ip}");
         $limiter->reset("login:user:{$username}");
 
+        // ── 2FA (TOTP) — second factor required ──────────────────────
+        // If the admin has 2FA enabled, do NOT create a session yet. Issue a
+        // short-lived challenge token and let the client complete /api/auth/2fa-verify.
+        // Pre-existing admins without enrollment (totp_enabled = 0) log in normally.
+        if (!empty($user['totp_enabled'])) {
+            $challengeRepo   = new TwoFactorChallenge();
+            $challengeToken   = $challengeRepo->create($user['id']);
+
+            Response::json([
+                'error'              => false,
+                'two_factor_required' => true,
+                'challenge_token'    => $challengeToken,
+            ]);
+            return;
+        }
+
         // Create session
         $token = Auth::createSession($user['id']);
 
@@ -114,6 +134,240 @@ class AuthController
                 ],
             ],
         ]);
+    }
+
+    /**
+     * POST /api/auth/2fa-verify
+     *
+     * Completes the TOTP second factor. Expects JSON:
+     *   { "challenge_token": "...", "code": "123456" | "<backup-code>" }
+     *
+     * The code is verified against the TOTP secret (decrypted) OR as a single-use
+     * backup code. On success a session is created (same as normal login).
+     */
+    public static function twoFactorVerify(): void
+    {
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
+
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        if (!is_array($input) || empty($input)) {
+            Response::error('Invalid JSON body', 400);
+            return;
+        }
+
+        $challengeToken = trim((string) ($input['challenge_token'] ?? ''));
+        $code           = trim((string) ($input['code'] ?? ''));
+
+        if ($challengeToken === '' || $code === '') {
+            Response::error('Challenge token and code are required', 400);
+            return;
+        }
+
+        $limiter = new RateLimiter();
+
+        // Reuse RateLimiter for brute-force protection on the challenge itself.
+        $limitCheck = $limiter->check("2fa:challenge:{$challengeToken}", 5, 300);
+        if (!$limitCheck['allowed']) {
+            Response::json([
+                'error'   => true,
+                'message' => 'Too many attempts. Try again in ' . $limitCheck['retryAfter'] . ' seconds.',
+                'code'    => 429,
+            ], 429);
+            return;
+        }
+
+        $challengeRepo = new TwoFactorChallenge();
+        $challenge     = $challengeRepo->find($challengeToken);
+
+        if ($challenge === null) {
+            Response::error('Invalid or expired challenge', 401);
+            return;
+        }
+
+        // Increment persisted attempt counter; hard lockout after 5 attempts.
+        $attempts = $challengeRepo->incrementAttempts($challengeToken);
+        if ($attempts > 5) {
+            $challengeRepo->delete($challengeToken);
+            $limiter->reset("2fa:challenge:{$challengeToken}");
+            Response::json([
+                'error'   => true,
+                'message' => 'Too many invalid codes. Challenge locked — please log in again.',
+                'code'    => 429,
+            ], 429);
+            return;
+        }
+
+        $userId    = (int) $challenge['user_id'];
+        $userRepo  = new UserRepo();
+        $encrypted = $userRepo->getEncryptedTotpSecret($userId);
+
+        $success = false;
+
+        // 1) TOTP code (decrypt secret first)
+        if ($encrypted !== null) {
+            try {
+                $secret = Crypto::decrypt($encrypted);
+                if (Totp::verify($secret, $code)) {
+                    $success = true;
+                }
+            } catch (\RuntimeException $e) {
+                // Decryption failure — treat as invalid, fall through to backup code check
+                $success = false;
+            }
+        }
+
+        // 2) Backup code (single-use)
+        if (!$success) {
+            $backupRepo = new BackupCode();
+            $matchedId  = $backupRepo->verify($code, $userId);
+            if ($matchedId !== null) {
+                $backupRepo->markUsed($matchedId);
+                $success = true;
+            }
+        }
+
+        if (!$success) {
+            $limiter->recordFailure("2fa:challenge:{$challengeToken}");
+            Response::error('Invalid code', 401);
+            return;
+        }
+
+        // Success — consume the challenge and start a real session.
+        $challengeRepo->delete($challengeToken);
+        $limiter->reset("2fa:challenge:{$challengeToken}");
+
+        $token = Auth::createSession($userId);
+
+        $user = $userRepo->byId($userId);
+
+        Response::json([
+            'error' => false,
+            'data'  => [
+                'token' => $token,
+                'user'  => [
+                    'id'           => $user['id'],
+                    'username'     => $user['username'],
+                    'display_name' => $user['display_name'],
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * POST /api/auth/2fa-enroll
+     *
+     * Requires an authenticated admin session (Bearer token or session cookie).
+     *
+     * Step 1 — body without `code`:
+     *   Generates a TOTP secret, returns { provisioning_uri, secret_base32,
+     *   backup_codes[] }. The encrypted secret + backup code hashes are persisted
+     *   in a PENDING state (totp_enabled stays 0 until confirmed).
+     *
+     * Step 2 — body with `code` (a valid TOTP code):
+     *   Verifies the code against the pending secret, then enables 2FA
+     *   (totp_enabled = 1, totp_verified_at = now).
+     */
+    public static function twoFactorEnroll(): void
+    {
+        // Authenticated admin only
+        $user = Auth::requireToken();
+        Auth::validateCsrfToken();
+
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
+
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        $input    = is_array($input) ? $input : [];
+        $code     = trim((string) ($input['code'] ?? ''));
+
+        $userRepo    = new UserRepo();
+        $backupRepo  = new BackupCode();
+
+        // ── Step 2: confirm with a valid TOTP code ──────────────────
+        if ($code !== '') {
+            $encrypted = $userRepo->getEncryptedTotpSecret($user['id']);
+
+            if ($encrypted === null) {
+                Response::error('No pending enrollment found', 400);
+                return;
+            }
+
+            try {
+                $secret = Crypto::decrypt($encrypted);
+            } catch (\RuntimeException $e) {
+                Response::error('Cannot decrypt pending secret', 500);
+                return;
+            }
+
+            if (!Totp::verify($secret, $code)) {
+                Response::error('Invalid code', 401);
+                return;
+            }
+
+            $userRepo->enableTotp($user['id']);
+
+            Response::json([
+                'error' => false,
+                'data'  => ['enabled' => true],
+            ]);
+            return;
+        }
+
+        // ── Step 1: start enrollment ─────────────────────────────────
+        $secret = Totp::generateSecret();                       // base32 secret
+        $email  = (string) $user['username'];                   // username IS the email
+        $uri    = Totp::getProvisioningUri($secret, $email);
+
+        // Generate ~10 backup codes (plaintext returned to admin, hash stored)
+        $backupCodes = self::generateBackupCodes(10);
+        $backupHashes = array_map(
+            static fn(string $c): string => password_hash($c, PASSWORD_BCRYPT),
+            $backupCodes
+        );
+
+        // Persist in PENDING state, replacing any previous pending codes.
+        $backupRepo->clearForUser($user['id']);
+        $userRepo->saveTotpSecret($user['id'], Crypto::encrypt($secret));
+        $backupRepo->storeMany($user['id'], $backupHashes);
+
+        Response::json([
+            'error' => false,
+            'data'  => [
+                'provisioning_uri' => $uri,
+                'secret_base32'    => $secret,
+                'backup_codes'     => $backupCodes,
+            ],
+        ]);
+    }
+
+    /**
+     * Generate a batch of human-friendly backup codes.
+     * Uses the unambiguous base32 alphabet (no 0/O/1/I/L) to avoid misreads.
+     *
+     * @return string[]
+     */
+    private static function generateBackupCodes(int $count): array
+    {
+        $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        $max      = strlen($alphabet) - 1;
+        $codes    = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $code = '';
+            for ($j = 0; $j < 10; $j++) {
+                $code .= $alphabet[random_int(0, $max)];
+            }
+            $codes[] = $code;
+        }
+
+        return $codes;
     }
 
     /**
