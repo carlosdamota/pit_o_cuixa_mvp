@@ -216,6 +216,9 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php endif; ?>
     
     <!-- Cookie settings -->
+    <?php if (!$isAdmin): ?>
+
+    <!-- Cookie settings -->
     <button
         id="cookie-settings-home"
         class="cookie-settings-button"
@@ -232,8 +235,10 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
 
     </button>
 
-    <!-- ── Cookie Banner ───────────────────────────────────────── -->
+    <!-- Cookie Banner -->
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+
+    <?php endif; ?> 
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>

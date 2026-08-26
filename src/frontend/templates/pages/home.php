@@ -204,6 +204,4 @@ $currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
 
 </section>
 
-<?php require __DIR__ . '/../components/cookie-banner.php'; ?>
-
 <script type="module" src="/js/home-onboarding.js<?= assetVersion('/js/home-onboarding.js') ?>"></script>

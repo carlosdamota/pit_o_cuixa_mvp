@@ -249,9 +249,9 @@
 
 .cookie-settings-button:hover,
 .onboarding__cookie-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 15px rgba(0,0,0,.4);
-  background: rgba(255,255,255,1);
+  transform: scale(1.12) !important;
+  box-shadow: 0 0 5px rgba(0,0,0,.2) !important;
+  background: rgba(255,255,255,1) !important;
 }
 
 .cookie-settings-button img,
