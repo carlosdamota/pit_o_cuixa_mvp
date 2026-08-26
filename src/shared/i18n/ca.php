@@ -365,42 +365,52 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title' => 'Preguntes freqüents',
-    'faq.desc' => 'Respostes a les preguntes més comunes sobre la nostra cuina, servei a domicili i encàrrec de pollastres a l\'ast a Torredembarra.',
+    'faq.suggest' => 'No he trobat una resposta exacta, però aquestes preguntes et poden ajudar:',
+    'faq.desc' => 'Respostes a les preguntes més comuns sobre la nostra cuina, servei a domicili i encàrrec de pollastres a l\'ast a Torredembarra.',
     'faq.items' => [
         [
             'q' => 'Què inclou el pollastre a l\'ast i quines opcions de menú teniu?',
+            'keywords' => ['pollastre','ast','menú','menu','combos','allioli','croquetes','amanida','preus','carta'],
             'a' => 'El pollastre a l\'ast es serveix sencer o mig pollastre, sempre acompanyat del nostre allioli casolà. Disposem de menús combinats amb patates fregides casolanes, amanides (Cèsar, mixta, russa), canalons de rostit o croquetes. Pots consultar les opcions i preus actualitzats a la nostra carta online.',
         ],
         [
             'q' => 'D\'on procedeix el vostre pollastre i quines garanties de qualitat té?',
+            'keywords' => ['pollastre','procedència','origen','qualitat','garantia','certificació','iso','criança','cereals','alimentbarna'],
             'a' => 'Treballem amb el segell "Pollastre Groc Català" d\'Alimentbarna (cria a base de cereals a Catalunya). El nostre proveïdor compta amb les certificacions internacionals de qualitat i higiene ISO 9001 i ISO 22000 auditades per Bureau Veritas.',
         ],
         [
             'q' => 'Feu repartiment a domicili i a quines zones lliureu?',
+            'keywords' => ['repartiment','domicili','entrega','enviament','zones','torredembarra','altafulla','creixell','cobertura','pobles'],
             'a' => 'Sí, fem repartiment a domicili a Torredembarra i localitats properes com Altafulla, Creixell, La Móra, La Pobla de Montornès i La Nou de Gaià. El temps estimat sol ser de 35 a 45 minuts i la taxa d\'enviament es calcula directament a la botiga online.',
         ],
         [
             'q' => 'Teniu menú diari per emportar entre setmana?',
+            'keywords' => ['menú','diari','emportar','setmana','menjar','plats','econòmic','barat','dilluns','divendres'],
             'a' => 'Sí, de dilluns a divendres disposem d\'un menú econòmic per emportar que inclou 2 plats a triar (amanideta, pasta bolonyesa, croquetes, pollastre a l\'ast, etc.) més beguda.',
         ],
         [
             'q' => 'Quins altres plats preparats teniu i com encarregar paelles o fideuàs?',
+            'keywords' => ['plats','paella','fideuà','fideua','canalons','croquetes','aletes','amanides','encàrrec','grups'],
             'a' => 'A més del pollastre a l\'ast, preparem aletes BBQ, canalons de rostit, albergínies farcides, croquetes casolanes i amanides. També elaborem paella marinera, arròs negre i fideuà per a grups sota comanda amb 24 hores d\'antelació.',
         ],
         [
             'q' => 'Teniu opcions per a al·lèrgies, celíacs o dietes vegetarianes?',
+            'keywords' => ['al·lèrgies','al·lergic','celíac','gluten','vegetarià','vegetariana','dieta','vegà','intolerància'],
             'a' => 'El marinat del nostre pollastre a l\'ast tradicional no conté gluten. També disposem d\'acompanyaments vegetarians (amanides, patates). Us preguem que ens aviseu de qualsevol al·lèrgia o celiaquia per extremar precaucions davant la contaminació creuada a cuina.',
         ],
         [
             'q' => 'Cal encarregar amb antelació o es pot reservar?',
+            'keywords' => ['encarregar','antelació','reserva','reservar','comanda','anticipada','caps','setmana','web','online'],
             'a' => 'És molt recomanable encarregar amb antelació, especialment els caps de setmana quan la demanda és molt alta. Pots fer la teva comanda còmodament a través de la nostra botiga online (pitocuixa.last.shop) o trucant per telèfon.',
         ],
         [
             'q' => 'On esteu ubicats i quines instal·lacions ofereix el local?',
+            'keywords' => ['ubicació','adreça','on','local','terrassa','menjador','aparcament','accés','instal·lacions','torredembarra'],
             'a' => 'Ens trobem al Carrer Major, 25, a Torredembarra (Tarragona). Disposem de menjador interior i terrassa a l\'aire lliure, accés adaptat per a persones amb mobilitat reduïda i zones d\'aparcament públic als voltants.',
         ],
         [
             'q' => 'Quins mètodes de pagament accepteu i com contactar per qualsevol incidència?',
+            'keywords' => ['pagament','pagar','targeta','efectiu','cash','contacte','incidència','problema','telèfon','queixa'],
             'a' => 'Acceptem pagament amb targeta de crèdit/dèbit, pagament online al web i efectiu. Si surgeix qualsevol problema amb la teva comanda, contacta\'ns per telèfon o enviant-nos una foto de la comanda per atendre\'t i resoldre-ho d\'immediat.',
         ],
     ],

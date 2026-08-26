@@ -108,24 +108,32 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 52%;
   margin: 0 var(--space-md) var(--space-md);
   background-color: var(--color-secondary);
   color: #ffffff;
-  border-radius: var(--radius);
+  border-radius: 25px;
   padding: var(--space-sm) var(--space-lg);
   font-weight: var(--font-weight-semibold);
+  font-size: calc(1rem - 25%) !important;
   text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
 }
 
 .delivery-map-card__cta:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.08);
 }
 
 .delivery-map-card__cta:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+.delivery-map-card__icon {
+  width: 14%;
+  height: auto;
 }
 
 .delivery-map-note {
