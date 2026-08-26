@@ -325,9 +325,10 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                target="_blank"
                rel="noopener"
                aria-label="<?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>">
-                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?>
+                <?= htmlspecialchars(__('menu.map.cta'), ENT_QUOTES, 'UTF-8') ?><img src='/img/icons/direccion.svg'>
             </a>
         </div>
+     
 
         <div class="delivery-map-note">
             <?= __('menu.map.delivery_note') ?>
