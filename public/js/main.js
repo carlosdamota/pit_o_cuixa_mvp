@@ -402,9 +402,9 @@ function initChatWidget() {
       el.style.borderRadius = '';
       el.__chatParent = null;
     };
-    restore(widget.querySelector('.chat-widget__header'));
+    restore(document.querySelector('.chat-widget__header'));
     restore(document.getElementById('messages'));
-    restore(widget.querySelector('.chat-widget__input'));
+    restore(document.querySelector('.chat-widget__input'));
   };
 
   const open = () => {
