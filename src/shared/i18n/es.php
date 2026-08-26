@@ -366,42 +366,52 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title' => 'Preguntas frecuentes',
+    'faq.suggest' => 'No he encontrado una respuesta exacta, pero estas preguntas pueden ayudarte:',
     'faq.desc' => 'Respuestas a las preguntas más comunes sobre nuestra cocina, servicio a domicilio y encargo de pollos al ast en Torredembarra.',
     'faq.items' => [
         [
             'q' => '¿Qué incluye el pollo a l\'ast y qué opciones de menús tenéis?',
+            'keywords' => ['pollo','ast','menú','menu','combos','alioli','croquetas','ensalada','precios','carta'],
             'a' => 'El pollo a l\'ast se sirve entero o medio pollo, siempre acompañado de nuestro alioli casero. Disponemos de menús combinados con patatas fritas caseras, ensaladas (César, mixta, rusa), canelones de rostit o croquetas. Puedes consultar las opciones y precios actualizados en nuestra carta online.',
         ],
         [
             'q' => '¿De dónde procede vuestro pollo y qué garantías de calidad tiene?',
+            'keywords' => ['pollo','procedencia','origen','calidad','garantía','certificación','iso','crianza','cereales','alimentbarna'],
             'a' => 'Trabajamos con el sello "Pollastre Groc Català" de Alimentbarna (cría a base de cereales en Cataluña). Nuestro proveedor cuenta con las certificaciones internacionales de calidad e higiene ISO 9001 e ISO 22000 auditadas por Bureau Veritas.',
         ],
         [
             'q' => '¿Hacéis reparto a domicilio y a qué zonas entregáis?',
+            'keywords' => ['reparto','domicilio','entrega','envío','zonas','torredembarra','altafulla','creixell','cobertura','poblaciones'],
             'a' => 'Sí, realizamos reparto a domicilio en Torredembarra y poblaciones cercanas como Altafulla, Creixell, La Móra, La Pobla de Montornès y La Nou de Gaià. El tiempo estimado suele ser de 35 a 45 minutos y los gastos de envío se calculan directamente en la tienda online.',
         ],
         [
             'q' => '¿Tenéis menú diario para llevar entre semana?',
+            'keywords' => ['menú','diario','llevar','emportar','semana','comida','platos','económico','barato','precio'],
             'a' => 'Sí, de lunes a viernes disponemos de un menú económico para llevar que incluye 2 platos a elegir (ensaladilla, pasta boloñesa, croquetas, pollo a l\'ast, etc.) más bebida.',
         ],
         [
             'q' => '¿Qué otros platos preparados tenéis y cómo encargar paellas o fideuàs?',
+            'keywords' => ['platos','paella','fideuà','fideua','canelones','croquetas','alitas','ensaladas','encargo','grupos'],
             'a' => 'Además del pollo a l\'ast, preparamos alitas BBQ, canelones de rostit, berenjenas rellenas, croquetas caseras y ensaladas. También elaboramos paella marinera, arroz negro y fideuà para grupos por encargo previa reserva con 24 horas de antelación.',
         ],
         [
             'q' => '¿Tenéis opciones para alergias, celíacos o dietas vegetarianas?',
+            'keywords' => ['alergias','alérgico','celíaco','celiac','gluten','vegetariano','vegetariana','dieta','vegano','intolerancia'],
             'a' => 'El adobo de nuestro pollo a l\'ast tradicional no contiene gluten. Disponemos también de guarniciones vegetarianas (ensaladas, patatas). Rogamos avisarnos de cualquier alergia o celiaquía para extremar precauciones frente a la contaminación cruzada en cocina.',
         ],
         [
             'q' => '¿Es necesario encargar con antelación o se puede reservar?',
+            'keywords' => ['encargar','antelación','reserva','reservar','pedido','anticipada','finde','semana','web','online'],
             'a' => 'Es muy recomendable encargar con antelación, especialmente los fines de semana cuando la demanda es muy alta. Puedes hacer tu pedido cómodamente a través de nuestra tienda online (pitocuixa.last.shop) o llamando por teléfono.',
         ],
         [
             'q' => '¿Dónde estáis ubicados y qué instalaciones ofrece el local?',
+            'keywords' => ['ubicación','dirección','donde','dónde','local','terraza','comedor','aparcamiento','acceso','instalaciones'],
             'a' => 'Nos encontramos en Carrer Major, 25, en Torredembarra (Tarragona). Disponemos de comedor interior y terraza al aire libre, acceso adaptado a personas con movilidad reducida y zonas de aparcamiento público en las inmediaciones.',
         ],
         [
             'q' => '¿Qué métodos de pago aceptáis y cómo contactar ante cualquier incidencia?',
+            'keywords' => ['pago','pagar','tarjeta','efectivo','cash','contacto','incidencia','problema','teléfono','queja'],
             'a' => 'Aceptamos pago con tarjeta de crédito/débito, pago online en la web y efectivo. Si surge cualquier problema con tu pedido, contáctanos por teléfono o enviándonos una foto del pedido para atenderte y resolverlo de inmediato.',
         ],
     ],
