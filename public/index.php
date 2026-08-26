@@ -37,7 +37,7 @@ use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
 use Pit\Cuixa\Backend\Pages\Admin\SettingsPage as AdminSettingsPage;
 use Pit\Cuixa\Backend\Api\AdminSettings;
 use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
-use Pit\Cuixa\Backend\Pages\Faq;
+use Pit\Cuixa\Backend\Pages\FaqPage;
 use Pit\Cuixa\Backend\Pages\Privacy;
 use Pit\Cuixa\Backend\Pages\Cookies;
 use Pit\Cuixa\Backend\Pages\Terms;
@@ -222,7 +222,7 @@ $router->add('GET', '/menu', static function (array $params): void {
 
 // FAQ page
 $router->add('GET', '/faq', static function (array $params): void {
-    Faq::render();
+    FaqPage::render();
 });
 
 // FAQ page with locale prefix (e.g. /ca/faq, /es/faq, /en/faq)
