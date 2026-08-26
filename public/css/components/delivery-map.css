@@ -108,7 +108,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52%;
+  width: auto;
+  min-width: 300px;
   margin: 0 var(--space-md) var(--space-md);
   background-color: var(--color-secondary);
   color: #ffffff;
@@ -117,7 +118,7 @@
   font-weight: var(--font-weight-semibold);
   font-size: calc(1rem - 25%) !important;
   text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  white-space: nowrap;
 }
 
 .delivery-map-card__cta:hover {
@@ -131,9 +132,25 @@
   outline-offset: 2px;
 }
 
+/* ── Mobile CTA ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .delivery-map-card__cta {
+    min-width: 0;
+    width: auto;
+    max-width: calc(100% - 32px);
+    font-size: 13px !important;
+    padding: 12px 18px;
+  }
+  .delivery-map-card__icon {
+    width: 28px;
+    margin-left: 10px;
+  }
+}
+
 .delivery-map-card__icon {
-  width: 14%;
+  width: 28px;
   height: auto;
+  margin-left: 10px;
 }
 
 .delivery-map-note {

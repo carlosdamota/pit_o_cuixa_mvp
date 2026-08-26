@@ -142,6 +142,13 @@
   display:block;
 }
 
+/* Móvil: sin gallina porque los botones están en columna */
+@media (max-width:768px){
+  .cookie-banner__chicken {
+    display:none;
+  }
+}
+
 .cookie-banner__button {
   border: none;
   border-radius: 999px;
