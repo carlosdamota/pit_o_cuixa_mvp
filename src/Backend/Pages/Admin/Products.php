@@ -39,7 +39,7 @@ class Products
         $meta = [
             'title'       => 'Productos — Admin — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin/products',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/products',
             'index'       => false,
         ];
 

@@ -939,7 +939,7 @@ if (typeof document !== 'undefined') {
     } catch (_) {
       // ignore
     }
-    window.location.href = '/admin/login';
+    window.location.href = '/pitocuixa/login';
   });
 }
 

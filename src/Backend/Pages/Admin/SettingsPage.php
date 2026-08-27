@@ -32,7 +32,7 @@ class SettingsPage
         $meta = [
             'title'       => 'Settings — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin/settings',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/settings',
             'index'       => false,
         ];
 

@@ -136,6 +136,19 @@ $router->add('POST', '/api/auth/logout', static function (array $params): void {
     AuthController::logout();
 });
 
+// 2FA (TOTP) second factor — part of the admin login flow + self-enrollment
+$router->add('POST', '/api/auth/2fa-verify', static function (array $params): void {
+    AuthController::twoFactorVerify();
+});
+
+$router->add('POST', '/api/auth/2fa-enroll-start', static function (array $params): void {
+    AuthController::twoFactorEnrollStart();
+});
+
+$router->add('POST', '/api/auth/2fa-enroll-confirm', static function (array $params): void {
+    AuthController::twoFactorEnrollConfirm();
+});
+
 //Añadida ruta al Scraper — read-only utility, requires auth (AUTH-1)
 $router->add('GET', '/api/scraper', static function(array $params): void{
     Auth::authorizeSync();
@@ -182,18 +195,18 @@ $router->add('GET', '/api/migrate', static function (array $params): void {
 });
 
 // Admin API CRUD
-$router->add('GET',    '/api/admin/products',       static function (array $params): void { AdminProducts::list(); });
-$router->add('POST',   '/api/admin/products',       static function (array $params): void { AdminProducts::create(); });
-$router->add('PUT',    '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::update((int) ($params['id'] ?? 0)); });
-$router->add('DELETE', '/api/admin/products/{id}',  static function (array $params): void { AdminProducts::delete((int) ($params['id'] ?? 0)); });
-$router->add('POST',   '/api/admin/categories',     static function (array $params): void { AdminCategories::create(); });
-$router->add('PUT',    '/api/admin/categories/{id}', static function (array $params): void { AdminCategories::update((int) ($params['id'] ?? 0)); });
-$router->add('DELETE', '/api/admin/categories/{id}', static function (array $params): void { AdminCategories::delete((int) ($params['id'] ?? 0)); });
-$router->add('POST',   '/api/admin/import',         static function (array $params): void { AdminIO::import(); });
-$router->add('GET',    '/api/admin/export',         static function (array $params): void { AdminIO::export(); });
-$router->add('GET',    '/api/admin/settings',       static function (array $params): void { AdminSettings::get(); });
-$router->add('PUT',    '/api/admin/settings',       static function (array $params): void { AdminSettings::update(); });
-$router->add('POST',   '/api/admin/upload',         static function (array $params): void { AdminUpload::uploadImage(); });
+$router->add('GET',    '/api/pitocuixa/products',       static function (array $params): void { AdminProducts::list(); });
+$router->add('POST',   '/api/pitocuixa/products',       static function (array $params): void { AdminProducts::create(); });
+$router->add('PUT',    '/api/pitocuixa/products/{id}',  static function (array $params): void { AdminProducts::update((int) ($params['id'] ?? 0)); });
+$router->add('DELETE', '/api/pitocuixa/products/{id}',  static function (array $params): void { AdminProducts::delete((int) ($params['id'] ?? 0)); });
+$router->add('POST',   '/api/pitocuixa/categories',     static function (array $params): void { AdminCategories::create(); });
+$router->add('PUT',    '/api/pitocuixa/categories/{id}', static function (array $params): void { AdminCategories::update((int) ($params['id'] ?? 0)); });
+$router->add('DELETE', '/api/pitocuixa/categories/{id}', static function (array $params): void { AdminCategories::delete((int) ($params['id'] ?? 0)); });
+$router->add('POST',   '/api/pitocuixa/import',         static function (array $params): void { AdminIO::import(); });
+$router->add('GET',    '/api/pitocuixa/export',         static function (array $params): void { AdminIO::export(); });
+$router->add('GET',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::get(); });
+$router->add('PUT',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::update(); });
+$router->add('POST',   '/api/pitocuixa/upload',         static function (array $params): void { AdminUpload::uploadImage(); });
 
 // ── 4b. Sitemap and Robots (Phase 4) ──────────────────────────────────
 $router->add('GET', '/sitemap.xml', static function (array $params): void {
@@ -292,27 +305,27 @@ $router->add('GET', '/{lang}/terms', static function (array $params): void {
 });
 
 // Admin pages
-$router->add('GET', '/admin', static function (array $params): void {
+$router->add('GET', '/pitocuixa', static function (array $params): void {
     AdminDashboard::render();
 });
 
-$router->add('GET', '/admin/login', static function (array $params): void {
+$router->add('GET', '/pitocuixa/login', static function (array $params): void {
     AdminLogin::render();
 });
 
-$router->add('GET', '/admin/products', static function (array $params): void {
+$router->add('GET', '/pitocuixa/products', static function (array $params): void {
     AdminProductsPage::render();
 });
 
-$router->add('GET', '/admin/categories', static function (array $params): void {
+$router->add('GET', '/pitocuixa/categories', static function (array $params): void {
     AdminCategoriesPage::render();
 });
 
-$router->add('GET', '/admin/import-export', static function (array $params): void {
+$router->add('GET', '/pitocuixa/import-export', static function (array $params): void {
     AdminImportExportPage::render();
 });
 
-$router->add('GET', '/admin/settings', static function (array $params): void {
+$router->add('GET', '/pitocuixa/settings', static function (array $params): void {
     AdminSettingsPage::render();
 });
 
