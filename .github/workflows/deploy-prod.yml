@@ -1,7 +1,10 @@
 # ──────────────────────────────────────────────────────────────────────────────
-# CD Pipeline — Production (dinahosting)
+# CD Pipeline — Production (dinahosting, pitocuixa.es)
 # ──────────────────────────────────────────────────────────────────────────────
 # Deploys the client-facing production site on every push to `main`.
+# dinahosting account layout: the docroot is `www/`; app code lives beside it.
+# `db/` and `log/` at the account root are hosting-managed — our migrations
+# merge into db/migrations/ and PHP error logs land in log/.
 # Required GitHub Secrets (production-specific, NEVER reuse preprod values):
 #   FTP_HOST_PROD            — FTP server hostname (e.g. ftp.dinahosting.com)
 #   FTP_USER_PROD            — FTP username
@@ -171,12 +174,16 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-      - name: Prepare public_html for hosting
+      # dinahosting docroot is `www/` (not public_html like GoogieHost).
+      # public/ content is staged into www/ so the single root mirror publishes it.
+      # The mirror runs WITHOUT --delete: files on the server that don't exist
+      # locally (e.g. legacy WordPress leftovers) are never removed by deploys.
+      - name: Prepare www docroot for hosting
         run: |
-          mkdir -p public_html
-          cp -r public/* public_html/
-          cp -r public/.[!.]* public_html/ 2>/dev/null || true
-          echo "public_html prepared for deployment."
+          mkdir -p www
+          cp -r public/* www/
+          cp -r public/.[!.]* www/ 2>/dev/null || true
+          echo "www docroot prepared for deployment."
 
       # `data/` and *.db exclusions are THE layer that keeps the live server
       # database intact across deploys — never remove or weaken them.
