@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Pit\Cuixa\Backend\Pages;
 
-class Faq
+class FaqPage
 {
     /**
      * Render the FAQ page.

@@ -111,7 +111,11 @@ final class MigrationRunner
                 }
 
                 try {
-                    $pdo->beginTransaction();
+                    $selfManaged = preg_match('/\bBEGIN\s+(?:TRANSACTION\s*|;)|^\s*BEGIN\b|\bSTART\s+TRANSACTION\b/i', $sql) === 1;
+
+                    if (!$selfManaged) {
+                        $pdo->beginTransaction();
+                    }
 
                     $statements = self::splitSql($sql);
                     foreach ($statements as $statement) {
@@ -125,7 +129,12 @@ final class MigrationRunner
                     $ins = $pdo->prepare('INSERT INTO _migrations (filename) VALUES (:f)');
                     $ins->execute([':f' => $filename]);
 
-                    $pdo->commit();
+                    // Close any open transaction (either the one we opened above,
+                    // or one left open by a self-managed BEGIN without COMMIT).
+                    if ($pdo->inTransaction()) {
+                        $pdo->commit();
+                    }
+
                     $result['applied']++;
                 } catch (\PDOException $e) {
                     if ($pdo->inTransaction()) {

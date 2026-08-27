@@ -392,6 +392,36 @@ try {
         $_SERVER['HTTP_AUTHORIZATION'] = $prevAuth;
     }
 
+    // ── Test 12: Migration file with own BEGIN/COMMIT transaction ───────
+    // Regression: 007/011 start with "BEGIN TRANSACTION;" and COMMIT;.
+    // The runner must NOT wrap them in an outer beginTransaction() (which
+    // causes "cannot start a transaction within a transaction" on SQLite).
+    resetEnv($dbPath, $migrationsDir, $lockDir);
+    $pdo = initDb($dbPath);
+    $pdo->exec('CREATE TABLE categories (id INTEGER PRIMARY KEY, slug TEXT)');
+    $pdo = null;
+
+    createMigration(
+        $migrationsDir,
+        '001-self-managed.sql',
+        "BEGIN TRANSACTION;\nINSERT INTO categories (slug) VALUES ('menu');\nINSERT INTO categories (slug) VALUES ('platos');\nCOMMIT;"
+    );
+
+    $runner12 = new \Pit\Cuixa\Backend\Services\MigrationRunner($dbPath, $migrationsDir, $lockDir);
+    $result12 = $runner12->run();
+
+    record($result12['applied'] === 1, 'Test 12: Self-managed BEGIN/COMMIT migration applied', "applied={$result12['applied']}");
+    record($result12['failed'] === 0, 'Test 12: No failure on self-managed transaction', "failed={$result12['failed']}");
+
+    $pdo = new \PDO('sqlite:' . $dbPath);
+    $rows = $pdo->query('SELECT COUNT(*) FROM categories WHERE slug IN (\'menu\', \'platos\')')->fetchColumn();
+    record((int) $rows === 2, 'Test 12: Self-managed migration data committed', "rows={$rows}");
+
+    // Idempotent re-run: already applied, no nested-transaction error.
+    $runner12b = new \Pit\Cuixa\Backend\Services\MigrationRunner($dbPath, $migrationsDir, $lockDir);
+    $result12b = $runner12b->run();
+    record($result12b['applied'] === 0 && $result12b['failed'] === 0, 'Test 12: Idempotent re-run is clean', "applied={$result12b['applied']} failed={$result12b['failed']}");
+
 } catch (\Throwable $e) {
     record(false, 'Unexpected exception: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 } finally {
