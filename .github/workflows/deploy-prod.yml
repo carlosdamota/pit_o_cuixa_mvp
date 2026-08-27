@@ -220,7 +220,8 @@ jobs:
           echo "Triggering post-deploy migration..."
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${SITE_URL_PROD}/api/migrate" \
             -H "Authorization: Bearer ${SERVICE_API_TOKEN_PROD}" \
-            -H "Content-Type: application/json")
+            -H "Content-Type: application/json" \
+            -H "Content-Length: 0")
           HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
           BODY=$(echo "$RESPONSE" | sed '$d')
 
