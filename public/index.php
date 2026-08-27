@@ -141,8 +141,12 @@ $router->add('POST', '/api/auth/2fa-verify', static function (array $params): vo
     AuthController::twoFactorVerify();
 });
 
-$router->add('POST', '/api/auth/2fa-enroll', static function (array $params): void {
-    AuthController::twoFactorEnroll();
+$router->add('POST', '/api/auth/2fa-enroll-start', static function (array $params): void {
+    AuthController::twoFactorEnrollStart();
+});
+
+$router->add('POST', '/api/auth/2fa-enroll-confirm', static function (array $params): void {
+    AuthController::twoFactorEnrollConfirm();
 });
 
 //Añadida ruta al Scraper — read-only utility, requires auth (AUTH-1)

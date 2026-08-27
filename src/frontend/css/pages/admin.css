@@ -1317,72 +1317,7 @@
   }
 }
 
-/* ── 2FA enrollment modal ───────────────────────────────────────────────── */
-.admin-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal, 1000);
-}
-
-.admin-modal[hidden] {
-  display: none;
-}
-
-.admin-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.admin-modal__dialog {
-  position: relative;
-  background: var(--color-surface-container-lowest, #fff);
-  border-radius: var(--radius, 8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 480px;
-  width: 90%;
-  padding: var(--space-lg, 1.5rem);
-  animation: admin-slide-up 300ms ease;
-}
-
-.admin-modal__close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--color-text-muted, #666);
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm, 4px);
-}
-
-.admin-modal__close:hover {
-  background: var(--color-surface-container-low, #eee);
-  color: var(--color-on-surface, #111);
-}
-
-.admin-modal__title {
-  font-family: var(--font-family, sans-serif);
-  font-weight: var(--font-weight-bold, 700);
-  font-size: var(--font-size-lg, 1.25rem);
-  margin: 0 0 var(--space-md, 1rem);
-  color: var(--color-on-surface, #111);
-}
-
-.admin-modal__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-sm, 0.5rem);
-  margin-top: var(--space-lg, 1.5rem);
-}
-
+/* ── 2FA enrollment (login screen) ──────────────────────────────────────── */
 .admin-2fa-status {
   color: var(--color-text-muted, #666);
   margin-bottom: var(--space-md, 1rem);
@@ -1401,6 +1336,11 @@
 .admin-2fa-qr canvas {
   max-width: 100%;
   height: auto;
+}
+
+.admin-2fa-secret-label {
+  margin: var(--space-md, 1rem) 0 0;
+  font-weight: var(--font-weight-bold, 700);
 }
 
 .admin-2fa-secret {
@@ -1433,3 +1373,5 @@
   background: var(--color-surface-container-low, #f2f2f2);
   border-radius: var(--radius-sm, 4px);
 }
+
+

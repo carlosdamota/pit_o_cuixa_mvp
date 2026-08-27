@@ -104,10 +104,9 @@ class AuthController
         $limiter->reset("login:ip:{$ip}");
         $limiter->reset("login:user:{$username}");
 
-        // ── 2FA (TOTP) — second factor required ──────────────────────
-        // If the admin has 2FA enabled, do NOT create a session yet. Issue a
-        // short-lived challenge token and let the client complete /api/auth/2fa-verify.
-        // Pre-existing admins without enrollment (totp_enabled = 0) log in normally.
+        // ── 2FA enrollment / verification branch ──────────────────────
+        // If the admin already has 2FA enabled, do NOT create a session yet:
+        // issue a short-lived challenge and let the client complete /api/auth/2fa-verify.
         if (!empty($user['totp_enabled'])) {
             $challengeRepo   = new TwoFactorChallenge();
             $challengeToken   = $challengeRepo->create($user['id']);
@@ -120,20 +119,24 @@ class AuthController
             return;
         }
 
-        // Create session
-        $token = Auth::createSession($user['id']);
+        // Not yet enrolled (totp_enabled = 0): offer enrollment at the login
+        // screen. Issue a short-lived enrollment challenge, return it, and let
+        // the client drive /api/auth/2fa-enroll-start → /api/auth/2fa-enroll-confirm.
+        // No session is created until enrollment is confirmed.
+        $enrollRepo  = new TwoFactorChallenge();
+        $enrollToken = $enrollRepo->create($user['id']);
 
         Response::json([
-            'error' => false,
-            'data'  => [
-                'token' => $token,
-                'user'  => [
-                    'id'           => $user['id'],
-                    'username'     => $user['username'],
-                    'display_name' => $user['display_name'],
-                ],
+            'error'                     => false,
+            'two_factor_enroll_required' => true,
+            'enroll_token'              => $enrollToken,
+            'user'                      => [
+                'id'           => $user['id'],
+                'username'     => $user['username'],
+                'display_name' => $user['display_name'],
             ],
         ]);
+        return;
     }
 
     /**
@@ -258,25 +261,19 @@ class AuthController
     }
 
     /**
-     * POST /api/auth/2fa-enroll
+     * POST /api/auth/2fa-enroll-start
      *
-     * Requires an authenticated admin session (Bearer token or session cookie).
+     * Step 1 of enrollment-at-login. Body: { "enroll_token": "..." }
+     * The enroll_token is the short-lived challenge issued by login() for an
+     * admin with totp_enabled = 0 (no authenticated session yet).
      *
-     * Step 1 — body without `code`:
-     *   Generates a TOTP secret, returns { provisioning_uri, secret_base32,
-     *   backup_codes[] }. The encrypted secret + backup code hashes are persisted
-     *   in a PENDING state (totp_enabled stays 0 until confirmed).
-     *
-     * Step 2 — body with `code` (a valid TOTP code):
-     *   Verifies the code against the pending secret, then enables 2FA
-     *   (totp_enabled = 1, totp_verified_at = now).
+     * Looks up the challenge, generates a TOTP secret + backup codes, and
+     * persists them in a PENDING state (totp_enabled stays 0 until confirm).
+     * Returns the provisioning URI, base32 secret, and plaintext backup codes
+     * for the client to display (QR + manual secret + recovery codes).
      */
-    public static function twoFactorEnroll(): void
+    public static function twoFactorEnrollStart(): void
     {
-        // Authenticated admin only
-        $user = Auth::requireToken();
-        Auth::validateCsrfToken();
-
         $rawInput = file_get_contents('php://input');
         $input    = json_decode($rawInput ?: '', true);
 
@@ -284,58 +281,51 @@ class AuthController
             $input = $_POST;
         }
 
-        $input    = is_array($input) ? $input : [];
-        $code     = trim((string) ($input['code'] ?? ''));
-
-        $userRepo    = new UserRepo();
-        $backupRepo  = new BackupCode();
-
-        // ── Step 2: confirm with a valid TOTP code ──────────────────
-        if ($code !== '') {
-            $encrypted = $userRepo->getEncryptedTotpSecret($user['id']);
-
-            if ($encrypted === null) {
-                Response::error('No pending enrollment found', 400);
-                return;
-            }
-
-            try {
-                $secret = Crypto::decrypt($encrypted);
-            } catch (\RuntimeException $e) {
-                Response::error('Cannot decrypt pending secret', 500);
-                return;
-            }
-
-            if (!Totp::verify($secret, $code)) {
-                Response::error('Invalid code', 401);
-                return;
-            }
-
-            $userRepo->enableTotp($user['id']);
-
-            Response::json([
-                'error' => false,
-                'data'  => ['enabled' => true],
-            ]);
+        if (!is_array($input) || empty($input)) {
+            Response::error('Invalid JSON body', 400);
             return;
         }
 
-        // ── Step 1: start enrollment ─────────────────────────────────
+        $enrollToken = trim((string) ($input['enroll_token'] ?? ''));
+
+        if ($enrollToken === '') {
+            Response::error('Enrollment token is required', 400);
+            return;
+        }
+
+        $challengeRepo = new TwoFactorChallenge();
+        $challenge     = $challengeRepo->find($enrollToken);
+
+        if ($challenge === null) {
+            Response::error('Invalid or expired enrollment', 401);
+            return;
+        }
+
+        $userId   = (int) $challenge['user_id'];
+        $userRepo = new UserRepo();
+        $user     = $userRepo->byId($userId);
+
+        if ($user === null) {
+            Response::error('Invalid or expired enrollment', 401);
+            return;
+        }
+
         $secret = Totp::generateSecret();                       // base32 secret
         $email  = (string) $user['username'];                   // username IS the email
         $uri    = Totp::getProvisioningUri($secret, $email);
 
         // Generate ~10 backup codes (plaintext returned to admin, hash stored)
-        $backupCodes = self::generateBackupCodes(10);
+        $backupCodes  = self::generateBackupCodes(10);
         $backupHashes = array_map(
             static fn(string $c): string => password_hash($c, PASSWORD_BCRYPT),
             $backupCodes
         );
 
         // Persist in PENDING state, replacing any previous pending codes.
-        $backupRepo->clearForUser($user['id']);
-        $userRepo->saveTotpSecret($user['id'], Crypto::encrypt($secret));
-        $backupRepo->storeMany($user['id'], $backupHashes);
+        $backupRepo = new BackupCode();
+        $backupRepo->clearForUser($userId);
+        $userRepo->saveTotpSecret($userId, Crypto::encrypt($secret));
+        $backupRepo->storeMany($userId, $backupHashes);
 
         Response::json([
             'error' => false,
@@ -343,6 +333,119 @@ class AuthController
                 'provisioning_uri' => $uri,
                 'secret_base32'    => $secret,
                 'backup_codes'     => $backupCodes,
+            ],
+        ]);
+    }
+
+    /**
+     * POST /api/auth/2fa-enroll-confirm
+     *
+     * Step 2 of enrollment-at-login. Body: { "enroll_token": "...", "code": "123456" }
+     * Verifies the TOTP code against the PENDING secret using the same rate
+     * limiting as twoFactorVerify. On success enables 2FA, consumes the
+     * challenge, and starts a real session (same success shape as twoFactorVerify).
+     */
+    public static function twoFactorEnrollConfirm(): void
+    {
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
+
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        if (!is_array($input) || empty($input)) {
+            Response::error('Invalid JSON body', 400);
+            return;
+        }
+
+        $enrollToken = trim((string) ($input['enroll_token'] ?? ''));
+        $code        = trim((string) ($input['code'] ?? ''));
+
+        if ($enrollToken === '' || $code === '') {
+            Response::error('Enrollment token and code are required', 400);
+            return;
+        }
+
+        $limiter = new RateLimiter();
+
+        // Same brute-force protection as twoFactorVerify, keyed on the token.
+        $limitCheck = $limiter->check("2fa:challenge:{$enrollToken}", 5, 300);
+        if (!$limitCheck['allowed']) {
+            Response::json([
+                'error'   => true,
+                'message' => 'Too many attempts. Try again in ' . $limitCheck['retryAfter'] . ' seconds.',
+                'code'    => 429,
+            ], 429);
+            return;
+        }
+
+        $challengeRepo = new TwoFactorChallenge();
+        $challenge     = $challengeRepo->find($enrollToken);
+
+        if ($challenge === null) {
+            Response::error('Invalid or expired enrollment', 401);
+            return;
+        }
+
+        // Increment persisted attempt counter; hard lockout after 5 attempts.
+        $attempts = $challengeRepo->incrementAttempts($enrollToken);
+        if ($attempts > 5) {
+            $challengeRepo->delete($enrollToken);
+            $limiter->reset("2fa:challenge:{$enrollToken}");
+            Response::json([
+                'error'   => true,
+                'message' => 'Too many invalid codes. Enrollment locked — please log in again.',
+                'code'    => 429,
+            ], 429);
+            return;
+        }
+
+        $userId   = (int) $challenge['user_id'];
+        $userRepo = new UserRepo();
+        $encrypted = $userRepo->getEncryptedTotpSecret($userId);
+
+        if ($encrypted === null) {
+            $limiter->recordFailure("2fa:challenge:{$enrollToken}");
+            Response::error('No pending enrollment found', 400);
+            return;
+        }
+
+        $success = false;
+
+        try {
+            $secret = Crypto::decrypt($encrypted);
+            if (Totp::verify($secret, $code)) {
+                $success = true;
+            }
+        } catch (\RuntimeException $e) {
+            // Decryption failure — treat as invalid.
+            $success = false;
+        }
+
+        if (!$success) {
+            $limiter->recordFailure("2fa:challenge:{$enrollToken}");
+            Response::error('Invalid code', 401);
+            return;
+        }
+
+        // Success — enable 2FA, consume the challenge, start a real session.
+        $userRepo->enableTotp($userId);
+        $challengeRepo->delete($enrollToken);
+        $limiter->reset("2fa:challenge:{$enrollToken}");
+
+        $token = Auth::createSession($userId);
+        $user  = $userRepo->byId($userId);
+
+        Response::json([
+            'error' => false,
+            'data'  => [
+                'token' => $token,
+                'user'  => [
+                    'id'           => $user['id'],
+                    'username'     => $user['username'],
+                    'display_name' => $user['display_name'],
+                ],
             ],
         ]);
     }

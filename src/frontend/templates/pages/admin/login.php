@@ -94,10 +94,51 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             </label>
         </form>
 
+        <!-- ── Step 3: 2FA enrollment (hidden until required) ───────── -->
+        <form class="admin-login__form" data-admin-enroll hidden>
+            <p class="admin-login__subtitle">Configurar autenticación en dos pasos</p>
+            <p class="admin-login__desc">
+                Escanea el código QR con tu app autenticadora y confirma con el
+                código de 6 dígitos para activar la protección de este acceso.
+            </p>
+
+            <div data-enroll-status class="admin-2fa-status" role="status"></div>
+
+            <div id="enroll-qrcode" class="admin-2fa-qr" hidden></div>
+            <p class="admin-2fa-secret-label">Secreto (base32):</p>
+            <code id="enroll-secret" class="admin-2fa-secret" hidden></code>
+
+            <p class="admin-2fa-backup-title">Códigos de respaldo (guárdalos ahora):</p>
+            <ul id="enroll-backup" class="admin-2fa-backup" hidden></ul>
+
+            <div class="admin-field">
+                <label for="enroll-code" class="admin-field__label">
+                    Código de 6 dígitos
+                </label>
+                <input id="enroll-code"
+                       name="code"
+                       type="text"
+                       inputmode="numeric"
+                       autocomplete="one-time-code"
+                       class="admin-field__input"
+                       maxlength="6"
+                       required
+                       autofocus>
+            </div>
+
+            <div class="admin-login__error" data-enroll-error role="alert" hidden></div>
+
+            <button type="submit" class="admin-btn admin-btn--primary admin-login__submit">
+                Activar y acceder
+            </button>
+        </form>
+
         <a href="/" class="admin-login__back">← Volver al sitio</a>
     </div>
 </section>
 
+<!-- qrcode lib from unpkg (allowed by CSP) for enrollment QR rendering -->
+<script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script type="module">
 /**
  * Admin Login — AJAX form submission with TOTP second factor.
@@ -109,7 +150,12 @@ const loginError  = document.querySelector('[data-login-error]');
 const twoFaError  = document.querySelector('[data-2fa-error]');
 const backupToggle = document.querySelector('[data-2fa-backup-toggle]');
 
+const enrollForm  = document.querySelector('[data-admin-enroll]');
+const enrollError = document.querySelector('[data-enroll-error]');
+const enrollStatus = document.querySelector('[data-enroll-status]');
+
 let challengeToken = null;
+let enrollToken    = null;
 
 function showError(el, msg) {
     if (!el) return;
@@ -153,6 +199,9 @@ loginForm?.addEventListener('submit', async (e) => {
         } else if (json.two_factor_required) {
             // Switch to the second-step panel
             showTwoFactor(json.challenge_token);
+        } else if (json.two_factor_enroll_required) {
+            // Admin has no 2FA yet — enroll at the login screen.
+            showEnrollment(json.enroll_token);
         } else {
             window.location.href = '/admin';
         }
@@ -216,6 +265,120 @@ backupToggle?.addEventListener('change', () => {
     } else {
         codeInput.placeholder = '';
         codeInput.maxLength = 6;
+    }
+});
+
+// ── 2FA enrollment-at-login flow ──────────────────────────────────────────
+function showEnrollment(token) {
+    enrollToken = token;
+    loginForm.hidden = true;
+    twoFaForm.hidden = true;
+    enrollForm.hidden = false;
+    enrollError.hidden = true;
+    enrollStatus.textContent = 'Generando configuración…';
+    enrollStart();
+}
+
+async function enrollStart() {
+    const qr        = document.getElementById('enroll-qrcode');
+    const secretEl  = document.getElementById('enroll-secret');
+    const backupEl  = document.getElementById('enroll-backup');
+    const codeInput = document.getElementById('enroll-code');
+
+    if (codeInput) codeInput.focus();
+
+    try {
+        const res  = await fetch('/api/auth/2fa-enroll-start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enroll_token: enrollToken }),
+        });
+
+        const json = await res.json();
+
+        if (json.error) {
+            showError(enrollError, json.message || 'No se pudo iniciar el enrolamiento.');
+            enrollStatus.textContent = '';
+            return;
+        }
+
+        const data = json.data ?? {};
+        enrollStatus.textContent = '';
+
+        // QR code (qrcodejs global from unpkg)
+        if (qr && typeof QRCode !== 'undefined') {
+            qr.hidden = false;
+            qr.innerHTML = '';
+            new QRCode(qr, {
+                text: data.provisioning_uri,
+                width: 200,
+                height: 200,
+                colorDark: '#1a1a1a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M,
+            });
+        }
+
+        if (secretEl) {
+            secretEl.hidden = false;
+            secretEl.textContent = data.secret_base32 ?? '';
+        }
+
+        if (backupEl) {
+            backupEl.hidden = false;
+            backupEl.innerHTML = '';
+            (data.backup_codes ?? []).forEach((c) => {
+                const li = document.createElement('li');
+                li.textContent = c;
+                backupEl.appendChild(li);
+            });
+        }
+    } catch (err) {
+        enrollStatus.textContent = '';
+        showError(enrollError, 'Error de red al iniciar el enrolamiento.');
+    }
+}
+
+enrollForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form      = e.currentTarget;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const codeInput = form.querySelector('input[name="code"]');
+
+    if (!enrollToken) {
+        showError(enrollError, 'Sesión de enrolamiento caducada. Vuelve a iniciar sesión.');
+        return;
+    }
+
+    const body = JSON.stringify({
+        enroll_token: enrollToken,
+        code: codeInput.value.trim(),
+    });
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '...';
+
+    try {
+        const res  = await fetch('/api/auth/2fa-enroll-confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        });
+
+        const json = await res.json();
+
+        if (json.error) {
+            showError(enrollError, json.message || 'Código incorrecto');
+        } else {
+            // Session cookie is set server-side; just enter the admin.
+            window.location.href = '/admin';
+        }
+    } catch (err) {
+        showError(enrollError, 'Error de conexión');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Activar y acceder';
     }
 });
 </script>
