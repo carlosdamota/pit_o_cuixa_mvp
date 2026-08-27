@@ -269,8 +269,10 @@ class AuthController
      *
      * Looks up the challenge, generates a TOTP secret + backup codes, and
      * persists them in a PENDING state (totp_enabled stays 0 until confirm).
-     * Returns the provisioning URI, base32 secret, and plaintext backup codes
-     * for the client to display (QR + manual secret + recovery codes).
+     * Returns ONLY the provisioning URI (client renders the QR to scan).
+     * The base32 secret is persisted encrypted for the confirm step and the
+     * backup codes are stored server-side (hashed) for recovery — but neither
+     * is returned to the client, so nothing sensitive is shown on screen.
      */
     public static function twoFactorEnrollStart(): void
     {
@@ -327,12 +329,14 @@ class AuthController
         $userRepo->saveTotpSecret($userId, Crypto::encrypt($secret));
         $backupRepo->storeMany($userId, $backupHashes);
 
+        // NOTE: secret_base32 and backup_codes are intentionally NOT returned
+        // to the client. The pending secret is still persisted encrypted above
+        // for the confirm step, and backup codes are stored server-side (hashed)
+        // so recovery keeps working — but neither is displayed in the UI.
         Response::json([
             'error' => false,
             'data'  => [
                 'provisioning_uri' => $uri,
-                'secret_base32'    => $secret,
-                'backup_codes'     => $backupCodes,
             ],
         ]);
     }

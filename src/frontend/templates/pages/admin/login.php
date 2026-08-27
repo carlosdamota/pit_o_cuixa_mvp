@@ -105,11 +105,6 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             <div data-enroll-status class="admin-2fa-status" role="status"></div>
 
             <div id="enroll-qrcode" class="admin-2fa-qr" hidden></div>
-            <p class="admin-2fa-secret-label">Secreto (base32):</p>
-            <code id="enroll-secret" class="admin-2fa-secret" hidden></code>
-
-            <p class="admin-2fa-backup-title">Códigos de respaldo (guárdalos ahora):</p>
-            <ul id="enroll-backup" class="admin-2fa-backup" hidden></ul>
 
             <div class="admin-field">
                 <label for="enroll-code" class="admin-field__label">
@@ -281,8 +276,6 @@ function showEnrollment(token) {
 
 async function enrollStart() {
     const qr        = document.getElementById('enroll-qrcode');
-    const secretEl  = document.getElementById('enroll-secret');
-    const backupEl  = document.getElementById('enroll-backup');
     const codeInput = document.getElementById('enroll-code');
 
     if (codeInput) codeInput.focus();
@@ -305,7 +298,9 @@ async function enrollStart() {
         const data = json.data ?? {};
         enrollStatus.textContent = '';
 
-        // QR code (qrcodejs global from unpkg)
+        // QR code only (qrcodejs global from unpkg). The secret and backup
+        // codes are NOT exposed to the client — scan the QR and enter the 6-digit
+        // code. This is intentionally "scan → code → confirm", one and done.
         if (qr && typeof QRCode !== 'undefined') {
             qr.hidden = false;
             qr.innerHTML = '';
@@ -316,21 +311,6 @@ async function enrollStart() {
                 colorDark: '#1a1a1a',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M,
-            });
-        }
-
-        if (secretEl) {
-            secretEl.hidden = false;
-            secretEl.textContent = data.secret_base32 ?? '';
-        }
-
-        if (backupEl) {
-            backupEl.hidden = false;
-            backupEl.innerHTML = '';
-            (data.backup_codes ?? []).forEach((c) => {
-                const li = document.createElement('li');
-                li.textContent = c;
-                backupEl.appendChild(li);
             });
         }
     } catch (err) {
