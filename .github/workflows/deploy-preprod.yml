@@ -108,6 +108,20 @@ jobs:
               --exclude-glob '.gitignore' \
               --exclude-glob 'public/' \
               --exclude-glob 'vendor/' \
+              --exclude-glob 'tests/' \
+              --exclude-glob 'scripts/' \
+              --exclude-glob 'openspec/' \
+              --exclude-glob 'sdd/' \
+              --exclude-glob 'scratch/' \
+              --exclude-glob '.agents/' \
+              --exclude-glob '.atl/' \
+              --exclude-glob '.codegraph/' \
+              --exclude-glob '.opencode/' \
+              --exclude-glob '.windsurf/' \
+              --exclude-glob '*.md' \
+              --exclude-glob '.env.example' \
+              --exclude-glob 'envelope.json' \
+              --exclude-glob 'skills-lock.json' \
               ./ ./
           "
         env:
