@@ -226,13 +226,13 @@ if ($adminCount > 0) {
     // ── 9. Get admin credentials ─────────────────────────────────────────────
     echo "\n── Admin User Creation ──\n\n";
 
-    $username = prompt('Admin email [admin@pitocuixa.es]: ');
+    $username = prompt('Admin username (email) [admin@pitocuixa.es]: ');
     $username = $username === '' ? 'admin@pitocuixa.es' : $username;
 
     // Username IS the email (single unified field). Validate it as one.
     while (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
         status('✗', 'That is not a valid email address.');
-        $username = prompt('Admin email: ');
+        $username = prompt('Admin username (email): ');
         if ($username === '') {
             $username = 'admin@pitocuixa.es';
         }
