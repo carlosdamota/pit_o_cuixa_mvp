@@ -363,7 +363,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 22px;
-  background-color: var(--color-primary, #d97706);
+  background-color: var(--color-on-surface, #141414);
   color: var(--color-surface-container-lowest, #ffffff);
   border-radius: var(--radius-full, 999px);
   font-family: inherit;
@@ -371,13 +371,13 @@
   font-weight: var(--font-weight-semibold, 600);
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
-  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease), background-color var(--transition-fast, 0.15s ease);
 }
 
 .reserve-cta:hover {
-  transform: scale(1.04);
-  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45);
+  color: var(--color-primary, #d97706);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .reserve-cta:focus-visible {
@@ -385,26 +385,27 @@
   outline-offset: 2px;
 }
 
-/* Phone icon vibrates briefly once per cycle (shake ~1s, rest every 3s) */
+/* Phone vibrate: rapid small jitters (~0.7s buzz) then rest (~5.3s) */
 @keyframes cta-phone-shake {
-  0%        { transform: rotate(0deg); }
-  4%        { transform: rotate(-14deg); }
-  8%        { transform: rotate(14deg); }
-  12%       { transform: rotate(-10deg); }
-  16%       { transform: rotate(10deg); }
-  20%, 100% { transform: rotate(0deg); }
+  0%   { transform: translateX(0) rotate(0deg); }
+  1%   { transform: translateX(-1.5px) rotate(-4deg); }
+  2%   { transform: translateX(1.5px) rotate(4deg); }
+  3%   { transform: translateX(-1.5px) rotate(-4deg); }
+  4%   { transform: translateX(1.5px) rotate(4deg); }
+  5%   { transform: translateX(-1.2px) rotate(-3deg); }
+  6%   { transform: translateX(1.2px) rotate(3deg); }
+  7%   { transform: translateX(-1.2px) rotate(-3deg); }
+  8%   { transform: translateX(1.2px) rotate(3deg); }
+  9%   { transform: translateX(-1px) rotate(-2deg); }
+  10%  { transform: translateX(1px) rotate(2deg); }
+  11%  { transform: translateX(0) rotate(0deg); }
+  17%, 100% { transform: translateX(0) rotate(0deg); }
 }
 
 .reserve-cta__icon {
   flex-shrink: 0;
   transform-origin: 50% 60%;
-  animation: cta-phone-shake 3s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reserve-cta__icon {
-    animation: none;
-  }
+  animation: cta-phone-shake 6s linear infinite;
 }
 
 /* Thumbnail poster on closed menu & carta accordion headers */
