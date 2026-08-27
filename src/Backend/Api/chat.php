@@ -2,6 +2,14 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
+// Ensure bootstrap (autoloader, Config, DB connection, LANG) is loaded.
+// Reached through the router (public/index.php) this is already done, so the
+// guard keeps the require idempotent. It also makes this file safe to run
+// standalone (e.g. direct CLI) where bootstrap has not been loaded yet.
+if (!defined('LANG')) {
+    require_once __DIR__ . '/../../shared/bootstrap.php';
+}
+
 // ==========================================
 // 1. GET USER MESSAGE
 // ==========================================
@@ -63,10 +71,10 @@ function detectIntent(string $msg, string $lang): ?string {
             'uk'  => ['доставка', 'доставляєте', 'зони', 'доставки'],
         ],
         'menu' => [
-            'ca'  => ['carta', 'menú', 'preu', 'preus', 'pollastre', 'combos', 'croquetes', 'canelons', 'beguda', 'begudes', 'amanida', 'fideuà', 'paella', 'menjar'],
-            'es'  => ['menu', 'menú', 'carta', 'precio', 'precios', 'pollo', 'combos', 'croquetas', 'paella', 'bebida', 'bebidas', 'ensalada', 'comida'],
-            'en'  => ['menu', 'food', 'price', 'prices', 'chicken', 'combos', 'paella', 'drink', 'drinks', 'salad', 'what do you have'],
-            'uk'  => ['меню', 'страви', 'ціни', 'курка', 'комбо', 'крокети', 'напій', 'салат', 'їжа'],
+            'ca'  => ['carta', 'menú', 'menús', 'plats', 'principals', 'entrants', 'pica-pica', 'beguda', 'begudes', 'postres', 'altres', 'preu', 'preus', 'pollastre', 'combos', 'croquetes', 'canelons', 'amanida', 'fideuà', 'paella', 'menjar'],
+            'es'  => ['menu', 'menú', 'menús', 'carta', 'platos', 'principal', 'entrantes', 'picoteo', 'bebida', 'bebidas', 'postres', 'otros', 'precio', 'precios', 'pollo', 'combos', 'croquetas', 'paella', 'ensalada', 'comida'],
+            'en'  => ['menu', 'menus', 'carta', 'main dishes', 'mains', 'starters', 'drinks', 'desserts', 'others', 'food', 'price', 'prices', 'chicken', 'combos', 'paella', 'drink', 'salad', 'what do you have'],
+            'uk'  => ['меню', 'основні', 'закуски', 'клювання', 'напої', 'десерти', 'інші', 'страви', 'ціни', 'курка', 'комбо', 'крокети', 'напій', 'салат', 'їжа'],
         ],
         'greeting' => [
             'ca'  => ['hola', 'bon dia', 'bona tarda', 'bona nit', 'hey'],
@@ -115,10 +123,82 @@ function detectIntent(string $msg, string $lang): ?string {
 }
 
 // ==========================================
+// 3b. FAQ-vs-CATALOG ROUTING
+// ==========================================
+// A QUESTION (starts with an interrogative word, or contains '?') that also
+// mentions a FAQ-domain topic must be routed to the FAQ source rather than the
+// broad `menu` intent. Example: "qué incluye el pollo a l'ast" contains
+// "incluy" → answered by the specific FAQ item, not the full carta dump.
+function routeFaqVsCatalog(string $msg, string $lang): ?string
+{
+    $interrogatives = [
+        'qué', 'que', 'cómo', 'como', 'cuándo', 'cuando', 'dónde', 'donde',
+        'por qué', 'por que', 'cuál', 'cual',
+        'what', 'how', 'when', 'where', 'why', 'which',
+        'як', 'що', 'де', 'коли', 'чи',
+    ];
+
+    $isQuestion = str_contains($msg, '?');
+    if (!$isQuestion) {
+        foreach ($interrogatives as $word) {
+            if (str_starts_with($msg, $word)) {
+                $isQuestion = true;
+                break;
+            }
+        }
+    }
+
+    if (!$isQuestion) {
+        return null;
+    }
+
+    // Language-tolerant FAQ-domain terms. If the question mentions any of these,
+    // the FAQ source (which holds the real, curated answers) is preferred.
+    $faqTerms = [
+        'incluy', 'inclou', 'includes',
+        'contiene', 'contingut', 'contains',
+        'proced', 'procede',
+        'garant', 'guarantee',
+        'alerg', 'алерг',
+        'gluten',
+        'celíac', 'celiac', 'целіак',
+        'repart', 'repartiment', 'delivery', 'доставк',
+        'horari', 'horario', 'hours',
+        'ubic', 'адреса', 'location',
+        'reserv', 'брон',
+        'pag', 'pago', 'pagar', 'payment', 'оплат',
+        'tarjet', 'targeta', 'tarjeta', 'card', 'картк',
+        'vegan', 'веган',
+        'vegetari', 'вегетар',
+        'opcions', 'opciones', 'options',
+        'instal·lacions', 'instalaciones', 'instal',
+    ];
+
+    foreach ($faqTerms as $term) {
+        if (mb_strpos($msg, $term) !== false) {
+            return 'faq';
+        }
+    }
+
+    return null;
+}
+
+// ==========================================
 // 4. MAIN LOGIC
 // ==========================================
 $lang   = detectLanguage($userMessage);
 $intent = detectIntent($userMessage, $lang);
+
+// Part A — a question about a FAQ-domain topic is upgraded to the `faq` intent
+// so it reaches buildFaqReply() instead of the broad `menu` carta. We only keep
+// the upgrade when a concrete FAQ item actually matches this question: if the
+// forced FAQ routing has no real answer, we fall back to the original intent
+// (catalog / hours / location / delivery) so well-handled replies are never
+// downgraded to generic FAQ suggestions (e.g. a "qué horario" question).
+$faqOverride = routeFaqVsCatalog($userMessage, $lang);
+if ($faqOverride !== null && buildFaqReply($lang, $userMessage, true) !== null) {
+    $intent = $faqOverride;
+}
 
 // Answer using the REAL site i18n for the detected language when possible.
 // Files are pure `return [...]` arrays — safe to require repeatedly.
@@ -182,132 +262,6 @@ $responses = [
 
         'uk' => "🚚 **" . $siteI18n['menu.map.title'] . ":**\n" .
                 $siteI18n['menu.map.delivery_note'],
-    ],
-
-    'menu' => [
-        'ca' => "🍗 **Carta completa – Pit o Cuixa**\n\n" .
-                "**Combos de Pollastre a l'ast:**\n" .
-                "- Pollastre sencer: **16,90€**\n" .
-                "- Pollastre + Patates + Allioli: **22,90€**\n" .
-                "- Pollastre + Amanida + Allioli: **22,90€**\n" .
-                "- Pollastre + Patates + 1 Plat Preparat (o 6 Croquetes) + Allioli: **27,90€**\n" .
-                "- Pollastre + 6 Canelons + Patates + Allioli: **28,50€**\n" .
-                "- Pollastre + Patates + 12 Croquetes + Allioli: **31,90€**\n" .
-                "- Pollastre + Patates + 6 Croquetes + Amanida Russa + Allioli: **31,90€**\n" .
-                "- Pollastre + Patates + 2 Plats Preparats + Allioli: **31,90€**\n\n" .
-                "🍽️ **Menú Diari (Dilluns a Divendres):**\n" .
-                "- 2 Plats Preparats + Beguda: **12,50€**\n\n" .
-                "🥟 **Croquetes (6 unitats):**\n" .
-                "- Pollastre Rostit / Bolets i Tòfona / Formatge Cabrales: **7,90€**\n\n" .
-                "🍟 **Patates:**\n" .
-                "- Casolanes: **5,80€** | Especials: **7,00€** | Al Forn: **2,00€**\n\n" .
-                "🍗 **Plats Preparats:**\n" .
-                "- Aletes (8 ud): **8,00€** | Aletes BBQ (8 ud): **7,50€**\n" .
-                "- Nuggets (8 ud): **6,50€** | Chicken Bites (12 ud): **6,00€**\n" .
-                "- Chicken Fingers: **7,80€** | Canelons: **8,00€**\n" .
-                "- Callos: **8,00€** | Fideuà: **7,50€** | Pollastre al Curri: **6,50€**\n" .
-                "- Albergínia Farcida: **5,50€** | Pasta Bolonyesa: **5,50€**\n\n" .
-                "🥗 **Amanides:**\n" .
-                "- Cèsar: **7,90€** | Russa amb Tonyina: **6,90€** | Pasta amb Feta: **5,95€**\n\n" .
-                "🥤 **Begudes:**\n" .
-                "- Coca-Cola / Coca-Cola Zero / Nestea: **2,00€**\n" .
-                "- Aquarius: **2,10€** | Estrella Galicia: **2,00€**\n" .
-                "- Aigua 1,5L: **3,00€**\n" .
-                "- Vi Negre de la Casa: **6,00€** | Verdejo: **7,00€** | Lambrusco: **7,00€**\n" .
-                "- Ampolla Peñalosa: **8,00€**",
-
-        'es' => "🍗 **Carta completa – Pit o Cuixa**\n\n" .
-                "**Combos Pollo a l'ast:**\n" .
-                "- Pollo entero: **16,90€**\n" .
-                "- Pollo + Patatas + Alioli: **22,90€**\n" .
-                "- Pollo + Ensalada + Alioli: **22,90€**\n" .
-                "- Pollo + Patatas + 1 Plato Preparado (o 6 Croquetas) + Alioli: **27,90€**\n" .
-                "- Pollo + 6 Canelones + Patatas + Alioli: **28,50€**\n" .
-                "- Pollo + Patatas + 12 Croquetas + Alioli: **31,90€**\n" .
-                "- Pollo + Patatas + 6 Croquetas + Ensaladilla Rusa + Alioli: **31,90€**\n" .
-                "- Pollo + Patatas + 2 Platos Preparados + Alioli: **31,90€**\n\n" .
-                "🍽️ **Menú Diario (Lunes a Viernes):**\n" .
-                "- 2 Platos Preparados + Bebida: **12,50€**\n\n" .
-                "🥟 **Croquetas (6 unidades):**\n" .
-                "- Pollo Asado / Setas y Trufa / Queso Cabrales: **7,90€**\n\n" .
-                "🍟 **Patatas:**\n" .
-                "- Caseras: **5,80€** | Especiales: **7,00€** | Al Horno: **2,00€**\n\n" .
-                "🍗 **Comidas Preparadas:**\n" .
-                "- Alitas (8 ud): **8,00€** | Alitas BBQ (8 ud): **7,50€**\n" .
-                "- Nuggets (8 ud): **6,50€** | Chicken Bites (12 ud): **6,00€**\n" .
-                "- Chicken Fingers: **7,80€** | Canelones: **8,00€**\n" .
-                "- Callos: **8,00€** | Fideuà: **7,50€** | Pollo al Curry: **6,50€**\n" .
-                "- Berenjena Rellena: **5,50€** | Pasta Boloñesa: **5,50€**\n\n" .
-                "🥗 **Ensaladas:**\n" .
-                "- César: **7,90€** | Rusa con Atún: **6,90€** | Pasta con Feta: **5,95€**\n\n" .
-                "🥤 **Bebidas:**\n" .
-                "- Coca-Cola / Coca-Cola Zero / Nestea: **2,00€**\n" .
-                "- Aquarius: **2,10€** | Estrella Galicia: **2,00€**\n" .
-                "- Agua 1,5L: **3,00€**\n" .
-                "- Vino Tinto de la Casa: **6,00€** | Verdejo: **7,00€** | Lambrusco: **7,00€**\n" .
-                "- Botella Peñalosa: **8,00€**",
-
-        'en' => "🍗 **Full Menu – Pit o Cuixa**\n\n" .
-                "**Rotisserie Chicken Combos:**\n" .
-                "- Whole Rotisserie Chicken: **€16.90**\n" .
-                "- Chicken + Fries + Alioli: **€22.90**\n" .
-                "- Chicken + Salad + Alioli: **€22.90**\n" .
-                "- Chicken + Fries + 1 Prepared Dish or 6 Croquettes + Alioli: **€27.90**\n" .
-                "- Chicken + 6 Cannelloni + Fries + Alioli: **€28.50**\n" .
-                "- Chicken + Fries + 12 Croquettes + Alioli: **€31.90**\n" .
-                "- Chicken + Fries + 6 Croquettes + Russian Salad + Alioli: **€31.90**\n" .
-                "- Chicken + Fries + 2 Prepared Dishes + Alioli: **€31.90**\n\n" .
-                "🍽️ **Daily Menu (Monday–Friday):**\n" .
-                "- 2 Prepared Dishes + Drink: **€12.50**\n\n" .
-                "🥟 **Croquettes (6 pieces):**\n" .
-                "- Roast Chicken / Mushroom & Truffle / Cabrales Cheese: **€7.90**\n\n" .
-                "🍟 **Potatoes:**\n" .
-                "- Homemade Fries: **€5.80** | Special Fries: **€7.00** | Baked Potato: **€2.00**\n\n" .
-                "🍗 **Prepared Foods:**\n" .
-                "- Chicken Wings (8): **€8.00** | BBQ Wings (8): **€7.50**\n" .
-                "- Chicken Nuggets (8): **€6.50** | Chicken Bites (12): **€6.00**\n" .
-                "- Chicken Fingers: **€7.80** | Cannelloni: **€8.00**\n" .
-                "- Callos: **€8.00** | Fideuà: **€7.50** | Chicken Curry Rice: **€6.50**\n" .
-                "- Stuffed Eggplant: **€5.50** | Pasta Bolognese: **€5.50**\n\n" .
-                "🥗 **Salads:**\n" .
-                "- Caesar Salad: **€7.90** | Russian Salad with Tuna: **€6.90** | Pasta Salad with Feta: **€5.95**\n\n" .
-                "🥤 **Drinks:**\n" .
-                "- Coca-Cola / Coca-Cola Zero / Nestea: **€2.00**\n" .
-                "- Aquarius: **€2.10** | Estrella Galicia (Can): **€2.00**\n" .
-                "- Water (1.5 L): **€3.00**\n" .
-                "- House Red Wine: **€6.00** | Verdejo: **€7.00** | Lambrusco: **€7.00**\n" .
-                "- Peñalosa Bottle: **€8.00**",
-
-        'uk' => "🍗 **Повне меню – Pit o Cuixa**\n\n" .
-                "**Комбінації з куркою на рожні:**\n" .
-                "- Ціла курка: **16,90€**\n" .
-                "- Курка + Картопля + Айолі: **22,90€**\n" .
-                "- Курка + Салат + Айолі: **22,90€**\n" .
-                "- Курка + Картопля + 1 Готова страва (або 6 Крокетів) + Айолі: **27,90€**\n" .
-                "- Курка + 6 Канолонів + Картопля + Айолі: **28,50€**\n" .
-                "- Курка + Картопля + 12 Крокетів + Айолі: **31,90€**\n" .
-                "- Курка + Картопля + 6 Крокетів + Російський салат + Айолі: **31,90€**\n" .
-                "- Курка + Картопля + 2 Готові страви + Айолі: **31,90€**\n\n" .
-                "🍽️ **Щоденне меню (понеділок–п’ятниця):**\n" .
-                "- 2 Готові страви + Напій: **12,50€**\n\n" .
-                "🥟 **Крокети (6 штук):**\n" .
-                "- Смажена курка / Гриби та трюфель / Сир Кабралес: **7,90€**\n\n" .
-                "🍟 **Картопля:**\n" .
-                "- Домашня: **5,80€** | Спеціальна: **7,00€** | Запечена: **2,00€**\n\n" .
-                "🍗 **Готові страви:**\n" .
-                "- Крильця (8 шт): **8,00€** | Крильця BBQ (8 шт): **7,50€**\n" .
-                "- Нагетси (8 шт): **6,50€** | Chicken Bites (12 шт): **6,00€**\n" .
-                "- Chicken Fingers: **7,80€** | Канолони: **8,00€**\n" .
-                "- Кальос: **8,00€** | Фідеуа: **7,50€** | Курка з каррі: **6,50€**\n" .
-                "- Фаршировані баклажани: **5,50€** | Паста болоньєзе: **5,50€**\n\n" .
-                "🥗 **Салати:**\n" .
-                "- Цезар: **7,90€** | Російський з тунцем: **6,90€** | Паста з фетою: **5,95€**\n\n" .
-                "🥤 **Напої:**\n" .
-                "- Coca-Cola / Coca-Cola Zero / Nestea: **2,00€**\n" .
-                "- Aquarius: **2,10€** | Estrella Galicia: **2,00€**\n" .
-                "- Вода 1,5 л: **3,00€**\n" .
-                "- Домашнє червоне вино: **6,00€** | Verdejo: **7,00€** | Lambrusco: **7,00€**\n" .
-                "- Пляшка Peñalosa: **8,00€**",
     ],
 
     'greeting' => [
@@ -409,10 +363,82 @@ function buildFaqReply(string $faqLang, string $userMessage, bool $specificOnly 
     return implode("\n", $lines);
 }
 
+// ── Section-aware menu reply (from the DATABASE) ──────────────────────
+// Replaces the hardcoded $responses['menu'] string. Returns only the
+// requested sections, or the full menu when the request is generic.
+function buildMenuReply(string $lang, string $userMessage): string
+{
+    $groups = \Pit\Cuixa\Backend\Api\Menu::groups($lang);
+
+    // Map each section slug to its localized aliases (matched case-insensitively).
+    // NOTE: singular "menú"/"menu" and "carta" are intentionally EXCLUDED from
+    // the specific triggers — they are the generic "show me everything" words.
+    // Only the plural / Ukrainian forms target the Menú section specifically, so
+    // "menús" → Menú only, while "muéstrame la carta" → full menu.
+    $sectionAliases = [
+        'menus'    => ['menús', 'menus', 'меню'],
+        'platos'   => ['platos', 'principal', 'principals', 'plats', 'main dishes', 'mains'],
+        'entrantes' => ['entrantes', 'picoteo', 'entrants', 'pica-pica', 'starters'],
+        'bebidas'  => ['bebidas', 'begudes', 'drinks'],
+        'postres'  => ['postres', 'desserts'],
+        'otros'    => ['otros', 'altres', 'others'],
+    ];
+
+    $msg     = $userMessage;
+    $matched = [];
+
+    foreach ($groups as $group) {
+        $slug    = (string) ($group['slug'] ?? '');
+        $isMatch = $slug !== '' && mb_strpos($msg, $slug) !== false;
+
+        if (!$isMatch) {
+            foreach ($sectionAliases[$slug] ?? [] as $alias) {
+                if (mb_strpos($msg, $alias) !== false) {
+                    $isMatch = true;
+                    break;
+                }
+            }
+        }
+
+        if ($isMatch) {
+            $matched[] = $group;
+        }
+    }
+
+    // Generic browse ("carta", "menú", "muéstrame la carta", or any request that
+    // names no specific section) → return the full menu.
+    $sections = $matched !== [] ? $matched : $groups;
+
+    $lines = [];
+    foreach ($sections as $group) {
+        $sectionName = (string) ($group['name'] ?? '');
+        $lines[]     = "🍗 **" . $sectionName . "**";
+
+        foreach ($group['items'] ?? [] as $item) {
+            $name  = (string) ($item['name'] ?? '');
+            $price = isset($item['price']) ? number_format((float) $item['price'], 2, '.', '') : '';
+            $desc  = (string) ($item['description'] ?? '');
+
+            $line = "- " . $name . ": **" . $price . "€**";
+            if ($desc !== '') {
+                $line .= " — " . $desc;
+            }
+            $lines[] = $line;
+        }
+
+        $lines[] = "";
+    }
+
+    return trim(implode("\n", $lines));
+}
+
 // ── Main logic ──────────────────────────────────────────────────────────
 if ($intent === 'faq') {
     // Explicit FAQ request: always answer from the real FAQ source.
     $reply = buildFaqReply($lang, $userMessage) ?: ($fallbacks[$lang] ?? $fallbacks['en']);
+} elseif ($intent === 'menu') {
+    // Section-aware reply built from the live database catalog.
+    $reply = buildMenuReply($lang, $userMessage);
 } elseif ($intent && isset($responses[$intent][$lang])) {
     $reply = $responses[$intent][$lang];
 } elseif ($intent && isset($responses[$intent]['en'])) {

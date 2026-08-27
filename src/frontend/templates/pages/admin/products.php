@@ -34,7 +34,7 @@ $lang       = $pageData['locale'] ?? LANG;
         <header class="admin-header">
             <h1 class="admin-header__title">Productos</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← Dashboard</a>
+                <a href="/pitocuixa" class="admin-header__back">← Dashboard</a>
             </div>
         </header>
 
@@ -64,10 +64,32 @@ $lang       = $pageData['locale'] ?? LANG;
                     <input type="hidden" name="_method" data-field-method value="POST">
 
                     <div class="admin-form__grid">
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-slug">Slug <small style="font-weight:normal;color:var(--color-text-muted);">(Opcional)</small></label>
-                            <input id="prod-slug" name="slug" class="admin-field__input"
-                                   pattern="[a-z0-9-]+" title="Minúsculas, números y guiones. Dejar vacío para autogenerar desde el título.">
+                        <!-- ══ Tipo de Producto — Toggle Principal ══ -->
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label">¿Qué vas a crear?</label>
+                            <div class="admin-type-toggle" style="display:flex;gap:8px;margin-top:8px;">
+                                <button type="button" class="admin-type-btn" data-type-value="simple" style="flex:1;padding:12px;border:2px solid var(--color-outline-variant, #cbd5e1);border-radius:8px;background:var(--color-surface, #fff);cursor:pointer;transition:all 0.2s;font-weight:600;">
+                                    🍽️<br>Producto
+                                </button>
+                                <button type="button" class="admin-type-btn" data-type-value="menu" style="flex:1;padding:12px;border:2px solid var(--color-outline-variant, #cbd5e1);border-radius:8px;background:var(--color-surface, #fff);cursor:pointer;transition:all 0.2s;font-weight:600;">
+                                    📋<br>Menú
+                                </button>
+                                <button type="button" class="admin-type-btn" data-type-value="carta" style="flex:1;padding:12px;border:2px solid var(--color-outline-variant, #cbd5e1);border-radius:8px;background:var(--color-surface, #fff);cursor:pointer;transition:all 0.2s;font-weight:600;">
+                                    📖<br>Carta
+                                </button>
+                            </div>
+                            <input type="hidden" name="type" value="simple" data-type-input>
+                        </div>
+
+                        <!-- ══ Campos Básicos (siempre visibles) ══ -->
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-name-es">Nombre *</label>
+                            <input id="prod-name-es" name="name_es" class="admin-field__input" placeholder="Ej: Pollo a l'ast entero, Menú del día, Carta de vinos" required>
+                        </div>
+
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-desc-es">Descripción</label>
+                            <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2" placeholder="Ej: Pollo asado crujiente al estilo tradicional..."></textarea>
                         </div>
 
                         <div class="admin-field">
@@ -82,31 +104,18 @@ $lang       = $pageData['locale'] ?? LANG;
                             </select>
                         </div>
 
-                        <div class="admin-field admin-field--full">
-                            <label class="admin-field__label" for="prod-name-es">Título / Nombre del Producto *</label>
-                            <input id="prod-name-es" name="name_es" class="admin-field__input" placeholder="Ej: Pollo a l'ast entero" required>
-                        </div>
-
-                        <div class="admin-field admin-field--full">
-                            <label class="admin-field__label" for="prod-desc-es">Descripción del Producto</label>
-                            <textarea id="prod-desc-es" name="description_es" class="admin-field__textarea" rows="2" placeholder="Ej: Pollo asado crujiente al estilo tradicional..."></textarea>
-                        </div>
-
-                        <div class="admin-field admin-field--full">
-                            <label class="admin-checkbox" style="font-size:0.85rem;color:var(--color-primary);">
-                                <input type="checkbox" name="auto_translate" value="1" checked>
-                                🌐 Traducir automáticamente con DeepL (Inglés, Catalán, Ucraniano)
-                            </label>
-                        </div>
-
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-price">Precio (€)</label>
+                        <div class="admin-field" data-price-container>
+                            <label class="admin-field__label" for="prod-price" data-price-label>Precio (€)</label>
                             <input id="prod-price" name="price" type="number" step="0.01" min="0"
-                                   class="admin-field__input" value="0">
+                                   class="admin-field__input" value="0" data-price-field>
+                            <small style="display:block;margin-top:4px;color:var(--color-text-muted);" data-price-help>
+                                Precio del producto
+                            </small>
                         </div>
 
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-image">Imagen del Producto</label>
+                        <!-- ══ Imagen (siempre visible) ══ -->
+                        <div class="admin-field admin-field--full">
+                            <label class="admin-field__label" for="prod-image">Imagen / Cartel</label>
                             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                                 <input id="prod-image" name="image_url" class="admin-field__input"
                                        placeholder="https://... o sube una imagen" style="flex:1;min-width:200px;">
@@ -118,42 +127,15 @@ $lang       = $pageData['locale'] ?? LANG;
                             </div>
                         </div>
 
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-shop-url">last.shop URL</label>
-                            <input id="prod-shop-url" name="last_shop_url" type="url" class="admin-field__input"
-                                   placeholder="https://last.shop/..."
-                                   title="Debe empezar con https://">
-                        </div>
-
-                        <div class="admin-field">
-                            <label class="admin-field__label" for="prod-order">Orden</label>
-                            <input id="prod-order" name="sort_order" type="number" min="0"
-                                   class="admin-field__input" value="0">
-                        </div>
-
+                        <!-- ══ Auto-traducir ══ -->
                         <div class="admin-field admin-field--full">
-                            <label class="admin-field__label">Canales de Disponibilidad</label>
-                            <div class="admin-checkboxes">
-                                <label class="admin-checkbox">
-                                    <input type="checkbox" name="is_dine_in" value="1" checked>
-                                    🍽️ Restaurante (Local)
-                                </label>
-                                <label class="admin-checkbox">
-                                    <input type="checkbox" name="is_delivery" value="1" checked>
-                                    🛵 Domicilio (Delivery)
-                                </label>
-                            </div>
+                            <label class="admin-checkbox" style="font-size:0.85rem;color:var(--color-primary);">
+                                <input type="checkbox" name="auto_translate" value="1" checked>
+                                🌐 Traducir automáticamente con DeepL (Inglés, Catalán, Ucraniano)
+                            </label>
                         </div>
 
-                        <div class="admin-field admin-field--full">
-                            <label class="admin-field__label" for="prod-type">Tipo de Producto</label>
-                            <select id="prod-type" name="type" class="admin-field__select" data-type-select>
-                                <option value="simple">Producto Simple (A la carta)</option>
-                                <option value="menu">Menú / Pack Combo</option>
-                                <option value="carta">Carta (Precios por plato)</option>
-                            </select>
-                        </div>
-
+                        <!-- ══ Diseñador Visual (solo Menú y Carta) ══ -->
                         <div class="admin-field admin-field--full" data-menu-editor hidden>
                             <label class="admin-field__label">Diseñador Visual de Menú</label>
                             <p style="font-size:0.8rem;color:var(--color-text-muted);margin-bottom:8px;">
@@ -191,14 +173,11 @@ $lang       = $pageData['locale'] ?? LANG;
                             </details>
                         </div>
 
-                        <div class="admin-field admin-checkboxes">
+                        <!-- ══ Estado ══ -->
+                        <div class="admin-field admin-field--full">
                             <label class="admin-checkbox">
                                 <input type="checkbox" name="is_active" value="1" checked>
-                                Activo
-                            </label>
-                            <label class="admin-checkbox">
-                                <input type="checkbox" name="is_featured" value="1">
-                                Destacado
+                                ✓ Activo (visible en la web)
                             </label>
                         </div>
                     </div>
@@ -219,14 +198,10 @@ $lang       = $pageData['locale'] ?? LANG;
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Slug</th>
-                            <th>Nombre (ES)</th>
-                            <th>Precio</th>
-                            <th>Categoría</th>
-                            <th>Canal</th>
+                            <th>Nombre</th>
                             <th>Tipo</th>
-                            <th>Clics</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
                             <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
@@ -234,7 +209,7 @@ $lang       = $pageData['locale'] ?? LANG;
                     <tbody data-products-tbody>
                         <?php if ($products === []): ?>
                             <tr>
-                                <td colspan="10" class="admin-table__empty">
+                                <td colspan="6" class="admin-table__empty">
                                     No hay productos. ¡Crea el primero!
                                 </td>
                             </tr>
@@ -248,39 +223,23 @@ $lang       = $pageData['locale'] ?? LANG;
                                     break;
                                 }
                             }
-                            $channels = [];
-                            if (!empty($p['is_dine_in'])) $channels[] = '🍽️ Local';
-                            if (!empty($p['is_delivery'])) $channels[] = '🛵 Delivery';
-                            $channelStr = implode(' ', $channels) ?: 'Ninguno';
-                            $typeStr = ($p['type'] ?? 'simple') === 'menu' ? '🗂️ Menú' : (($p['type'] ?? 'simple') === 'carta' ? '📋 Carta' : 'Simple');
+                            $typeStr = ($p['type'] ?? 'simple') === 'menu' ? '📋 Menú' : (($p['type'] ?? 'simple') === 'carta' ? '📖 Carta' : '🍽️ Producto');
                             $menuDataAttr = is_array($p['menu_data']) ? json_encode($p['menu_data'], JSON_UNESCAPED_UNICODE) : (string)($p['menu_data'] ?? '');
                         ?>
                             <tr data-product-id="<?= (int) $p['id'] ?>">
-                                <td><?= (int) $p['id'] ?></td>
-                                <td><?= htmlspecialchars($p['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($p['name_es'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td>€<?= number_format((float) ($p['price'] ?? 0), 2) ?></td>
-                                <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><small><?= htmlspecialchars($channelStr, ENT_QUOTES, 'UTF-8') ?></small></td>
                                 <td><small><?= htmlspecialchars($typeStr, ENT_QUOTES, 'UTF-8') ?></small></td>
-                                <td>🔥 <?= (int) ($p['clicks_count'] ?? 0) ?></td>
+                                <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
+                                <td>€<?= number_format((float) ($p['price'] ?? 0), 2) ?></td>
                                 <td><?= !empty($p['is_active']) ? '✓' : '✗' ?></td>
                                 <td class="admin-table__actions">
                                     <button class="admin-btn-sm" data-edit-product="<?= (int) $p['id'] ?>"
-                                            data-slug="<?= htmlspecialchars($p['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                             data-name-es="<?= htmlspecialchars($p['name_es'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-name-en="<?= htmlspecialchars($p['name_en'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                             data-desc-es="<?= htmlspecialchars($p['description_es'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-desc-en="<?= htmlspecialchars($p['description_en'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                             data-price="<?= (float) ($p['price'] ?? 0) ?>"
                                             data-category-id="<?= (int) ($p['category_id'] ?? 0) ?>"
                                             data-image-url="<?= htmlspecialchars($p['image_url'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-last-shop-url="<?= htmlspecialchars($p['last_shop_url'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-sort-order="<?= (int) ($p['sort_order'] ?? 0) ?>"
                                             data-is-active="<?= !empty($p['is_active']) ? '1' : '0' ?>"
-                                            data-is-featured="<?= !empty($p['is_featured']) ? '1' : '0' ?>"
-                                            data-is-dine-in="<?= !empty($p['is_dine_in']) ? '1' : '0' ?>"
-                                            data-is-delivery="<?= !empty($p['is_delivery']) ? '1' : '0' ?>"
                                             data-type="<?= htmlspecialchars($p['type'] ?? 'simple', ENT_QUOTES, 'UTF-8') ?>"
                                             data-menu-data='<?= htmlspecialchars($menuDataAttr, ENT_QUOTES, 'UTF-8') ?>'>
                                         Editar
@@ -320,7 +279,7 @@ import {
     initKeyboardShortcuts
 } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
-const API_BASE = '/api/admin/products';
+const API_BASE = '/api/pitocuixa/products';
 const TBODY = document.querySelector('[data-products-tbody]');
 const CATEGORIES = <?= json_encode(array_map(function($c) { return ['id' => (int)$c['id'], 'name_es' => $c['name_es'], 'name_en' => $c['name_en']]; }, $categories)) ?>;
 const LANG = '<?= $lang ?>';
@@ -346,38 +305,23 @@ function escHtml(str) {
 
 /** Build a product table row HTML from data */
 function buildRow(p) {
-    const channels = [];
-    if (p.is_dine_in) channels.push('🍽️ Local');
-    if (p.is_delivery) channels.push('🛵 Delivery');
-    const channelStr = channels.join(' ') || 'Ninguno';
-    const typeStr = (p.type === 'menu') ? '🗂️ Menú' : ((p.type === 'carta') ? '📋 Carta' : 'Simple');
+    const typeStr = (p.type === 'menu') ? '📋 Menú' : ((p.type === 'carta') ? '📖 Carta' : '🍽️ Producto');
     const menuDataAttr = (typeof p.menu_data === 'object' && p.menu_data !== null) ? JSON.stringify(p.menu_data) : (p.menu_data || '');
 
     return `<tr data-product-id="${p.id}">
-        <td>${p.id}</td>
-        <td>${escHtml(p.slug)}</td>
         <td>${escHtml(p.name_es)}</td>
-        <td>€${parseFloat(p.price).toFixed(2)}</td>
-        <td>${escHtml(catName(p.category_id))}</td>
-        <td><small>${escHtml(channelStr)}</small></td>
         <td><small>${escHtml(typeStr)}</small></td>
+        <td>${escHtml(catName(p.category_id))}</td>
+        <td>€${parseFloat(p.price).toFixed(2)}</td>
         <td>${p.is_active ? '✓' : '✗'}</td>
         <td class="admin-table__actions">
             <button class="admin-btn-sm" data-edit-product="${p.id}"
-                    data-slug="${escHtml(p.slug)}"
                     data-name-es="${escHtml(p.name_es)}"
-                    data-name-en="${escHtml(p.name_en)}"
                     data-desc-es="${escHtml(p.description_es || '')}"
-                    data-desc-en="${escHtml(p.description_en || '')}"
                     data-price="${p.price}"
                     data-category-id="${p.category_id}"
                     data-image-url="${escHtml(p.image_url || '')}"
-                    data-last-shop-url="${escHtml(p.last_shop_url || '')}"
-                    data-sort-order="${p.sort_order || 0}"
                     data-is-active="${p.is_active ? '1' : '0'}"
-                    data-is-featured="${p.is_featured ? '1' : '0'}"
-                    data-is-dine-in="${p.is_dine_in ? '1' : '0'}"
-                    data-is-delivery="${p.is_delivery ? '1' : '0'}"
                     data-type="${escHtml(p.type || 'simple')}"
                     data-menu-data='${escHtml(menuDataAttr)}'>
                 Editar
@@ -397,12 +341,15 @@ const menuBuilderIncludesInput = document.querySelector('[data-menu-builder-incl
 const menuBuilderSectionsContainer = document.querySelector('[data-menu-builder-sections]');
 
 function createItemRow(name = '', price = '') {
+    const currentType = typeInput?.value || 'simple';
+    const showPrice = currentType === 'carta';
+    
     const div = document.createElement('div');
     div.className = 'menu-item-row';
     div.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:4px;';
     div.innerHTML = `
         <input type="text" class="admin-field__input data-item-name" placeholder="Nombre del plato (Ej: Ensalada)" value="${escHtml(name)}" style="flex:2;font-size:0.8rem;padding:4px 8px;">
-        <input type="number" step="0.01" min="0" class="admin-field__input data-item-price" placeholder="€ (Opcional)" value="${price !== '' && price !== null ? escHtml(String(price)) : ''}" style="flex:1;max-width:110px;font-size:0.8rem;padding:4px 8px;">
+        <input type="number" step="0.01" min="0" class="admin-field__input data-item-price" placeholder="€" value="${price !== '' && price !== null ? escHtml(String(price)) : ''}" style="flex:1;max-width:110px;font-size:0.8rem;padding:4px 8px;${showPrice ? '' : 'display:none;'}">
         <button type="button" class="admin-btn-sm admin-btn-sm--danger data-btn-remove-item" title="Eliminar plato" style="padding:2px 6px;font-size:0.75rem;">&times;</button>
     `;
     div.querySelector('.data-btn-remove-item').addEventListener('click', () => {
@@ -410,7 +357,8 @@ function createItemRow(name = '', price = '') {
         syncMenuBuilderToJson();
     });
     div.querySelector('.data-item-name').addEventListener('input', syncMenuBuilderToJson);
-    div.querySelector('.data-item-price').addEventListener('input', syncMenuBuilderToJson);
+    const priceInput = div.querySelector('.data-item-price');
+    if (priceInput) priceInput.addEventListener('input', syncMenuBuilderToJson);
     return div;
 }
 
@@ -556,29 +504,19 @@ function getFormData(form) {
     }
 
     return {
-        slug: form.querySelector('[name="slug"]').value,
         name_es: form.querySelector('[name="name_es"]').value,
         description_es: form.querySelector('[name="description_es"]').value,
         auto_translate: form.querySelector('[name="auto_translate"]')?.checked ? 1 : 0,
         price: parseFloat(form.querySelector('[name="price"]').value) || 0,
         category_id: parseInt(form.querySelector('[name="category_id"]').value) || 0,
         image_url: form.querySelector('[name="image_url"]').value,
-        last_shop_url: form.querySelector('[name="last_shop_url"]').value,
-        sort_order: parseInt(form.querySelector('[name="sort_order"]').value) || 0,
         is_active: form.querySelector('[name="is_active"]').checked,
-        is_featured: form.querySelector('[name="is_featured"]').checked,
-        is_dine_in: form.querySelector('[name="is_dine_in"]').checked ? 1 : 0,
-        is_delivery: form.querySelector('[name="is_delivery"]').checked ? 1 : 0,
-        source: form.querySelector('[name="last_shop_url"]').value ? 'delivery' : 'manual',
+        is_dine_in: 1,  // Always local
+        is_delivery: 0, // No delivery for local management
+        source: 'manual',
         type: form.querySelector('[name="type"]').value,
         menu_data: parsedMenuData,
     };
-}
-
-/** Toggle menu editor visibility */
-function toggleMenuEditor(type) {
-    const editor = document.querySelector('[data-menu-editor]');
-    if (editor) editor.hidden = (type !== 'menu' && type !== 'carta');
 }
 
 /** Fill form with product data for editing */
@@ -595,27 +533,38 @@ function fillForm(btn) {
     form.querySelector('[data-field-method]').value = 'PUT';
     form.querySelector('[data-field-id]').value = btn.dataset.editProduct;
 
+    // Fill basic fields
     const fields = {
-        slug: 'slug',
         name_es: 'nameEs',
         description_es: 'descEs',
         price: 'price',
         category_id: 'categoryId',
         image_url: 'imageUrl',
-        last_shop_url: 'lastShopUrl',
-        sort_order: 'sortOrder',
-        type: 'type',
     };
 
     for (const [name, dataKey] of Object.entries(fields)) {
         const input = form.querySelector(`[name="${name}"]`);
-        if (input) input.value = btn.dataset[dataKey] || (name === 'type' ? 'simple' : '');
+        if (input) input.value = btn.dataset[dataKey] || '';
+    }
+
+    // Set type and update toggle buttons
+    const type = btn.dataset.type || 'simple';
+    form.querySelector('[name="type"]').value = type;
+    
+    // Update toggle button styles
+    typeButtons.forEach(b => {
+        b.style.borderColor = 'var(--color-outline-variant, #cbd5e1)';
+        b.style.background = 'var(--color-surface, #fff)';
+        b.style.color = 'inherit';
+    });
+    const activeBtn = document.querySelector(`[data-type-value="${type}"]`);
+    if (activeBtn) {
+        activeBtn.style.borderColor = 'var(--color-primary, #3b82f6)';
+        activeBtn.style.background = 'var(--color-primary, #3b82f6)';
+        activeBtn.style.color = 'white';
     }
 
     form.querySelector('[name="is_active"]').checked = btn.dataset.isActive === '1';
-    form.querySelector('[name="is_featured"]').checked = btn.dataset.isFeatured === '1';
-    form.querySelector('[name="is_dine_in"]').checked = btn.dataset.isDineIn !== '0';
-    form.querySelector('[name="is_delivery"]').checked = btn.dataset.isDelivery !== '0';
 
     const rawMenu = btn.dataset.menuData || '';
     const menuDataInput = form.querySelector('[name="menu_data"]');
@@ -631,7 +580,8 @@ function fillForm(btn) {
     }
     renderMenuBuilder(parsedMenu);
 
-    toggleMenuEditor(btn.dataset.type || 'simple');
+    // Update form visibility based on type
+    updateFormForType(type);
 }
 
 /** Reset form for create mode */
@@ -649,14 +599,25 @@ function resetForm() {
     form.querySelector('[data-field-id]').value = '';
     form.reset();
     form.querySelector('[name="is_active"]').checked = true;
-    form.querySelector('[name="is_dine_in"]').checked = true;
-    form.querySelector('[name="is_delivery"]').checked = true;
     form.querySelector('[name="type"]').value = 'simple';
+
+    // Reset toggle buttons
+    typeButtons.forEach(b => {
+        b.style.borderColor = 'var(--color-outline-variant, #cbd5e1)';
+        b.style.background = 'var(--color-surface, #fff)';
+        b.style.color = 'inherit';
+    });
+    if (typeButtons.length > 0) {
+        typeButtons[0].style.borderColor = 'var(--color-primary, #3b82f6)';
+        typeButtons[0].style.background = 'var(--color-primary, #3b82f6)';
+        typeButtons[0].style.color = 'white';
+    }
 
     renderMenuBuilder(null);
     syncMenuBuilderToJson();
 
-    toggleMenuEditor('simple');
+    // Reset form visibility
+    updateFormForType('simple');
 
     // Clear image preview if present
     const previewEl = document.querySelector('[data-preview="image"]');
@@ -666,10 +627,75 @@ function resetForm() {
     }
 }
 
-// ── Type Select Change Event ───────────────────────────────────────
-document.querySelector('[data-type-select]')?.addEventListener('change', (e) => {
-    toggleMenuEditor(e.target.value);
+// ── Type Toggle Buttons ─────────────────────────────────────────────
+const typeButtons = document.querySelectorAll('[data-type-value]');
+const typeInput = document.querySelector('[data-type-input]');
+
+typeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const type = btn.dataset.typeValue;
+        
+        // Update hidden input
+        if (typeInput) typeInput.value = type;
+        
+        // Update button styles
+        typeButtons.forEach(b => {
+            b.style.borderColor = 'var(--color-outline-variant, #cbd5e1)';
+            b.style.background = 'var(--color-surface, #fff)';
+            b.style.color = 'inherit';
+        });
+        btn.style.borderColor = 'var(--color-primary, #3b82f6)';
+        btn.style.background = 'var(--color-primary, #3b82f6)';
+        btn.style.color = 'white';
+        
+        // Update form fields based on type
+        updateFormForType(type);
+    });
 });
+
+// Initialize first button as selected
+if (typeButtons.length > 0) {
+    typeButtons[0].click();
+}
+
+/** Update form fields visibility based on product type */
+function updateFormForType(type) {
+    const priceContainer = document.querySelector('[data-price-container]');
+    const priceLabel = document.querySelector('[data-price-label]');
+    const priceHelp = document.querySelector('[data-price-help]');
+    const menuEditor = document.querySelector('[data-menu-editor]');
+    
+    // Price visibility
+    if (priceContainer) {
+        if (type === 'carta') {
+            priceContainer.hidden = true;
+        } else {
+            priceContainer.hidden = false;
+            if (priceLabel) priceLabel.textContent = type === 'menu' ? 'Precio Global del Menú (€)' : 'Precio (€)';
+            if (priceHelp) priceHelp.textContent = type === 'menu' ? 'Precio fijo para todo el menú' : 'Precio del producto';
+        }
+    }
+    
+    // Menu editor visibility
+    if (menuEditor) {
+        menuEditor.hidden = (type !== 'menu' && type !== 'carta');
+    }
+    
+    // Update item price visibility in menu builder
+    updateMenuItemPrices(type);
+}
+
+/** Show/hide price field in menu items based on type */
+function updateMenuItemPrices(type) {
+    const itemPrices = document.querySelectorAll('.data-item-price');
+    itemPrices.forEach(input => {
+        if (type === 'menu') {
+            input.parentElement.style.display = 'none';
+        } else {
+            input.parentElement.style.display = '';
+        }
+    });
+}
 
 // ── Pre-fill Sample Menu Template ──────────────────────────────────
 document.querySelector('[data-btn-template-menu]')?.addEventListener('click', () => {
@@ -800,7 +826,7 @@ TBODY?.addEventListener('click', (e) => {
                 const row = TBODY.querySelector(`[data-product-id="${id}"]`);
                 if (row) {
                     await removeTableRow(row);
-                    toggleEmptyState(TBODY, 8, 'No hay productos. ¡Crea el primero!');
+                    toggleEmptyState(TBODY, 6, 'No hay productos. ¡Crea el primero!');
                     updateCount();
                 }
                 showToast('Producto eliminado', 'success');
@@ -832,7 +858,7 @@ async function loadPage(page) {
     // Build rows from data
     const rowsHtml = json.data.map(p => buildRow(p)).join('\n');
     swapTableRows(TBODY, rowsHtml);
-    toggleEmptyState(TBODY, 8, 'No hay productos.');
+    toggleEmptyState(TBODY, 6, 'No hay productos.');
 
     // Update pagination
     currentPaginationPage = json.page;
@@ -937,7 +963,7 @@ fileInput?.addEventListener('change', async (e) => {
     uploadBtn.textContent = '⏳ Subiendo...';
 
     try {
-        const response = await fetch('/api/admin/upload', {
+        const response = await fetch('/api/pitocuixa/upload', {
             method: 'POST',
             body: formData,
             headers: {

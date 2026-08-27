@@ -28,8 +28,8 @@ class Robots
         $lines = [
             'User-agent: *',
             'Allow: /',
-            'Disallow: /admin/',
-            'Disallow: /api/admin/',
+            'Disallow: /pitocuixa/',
+            'Disallow: /api/pitocuixa/',
             '',
             'Sitemap: ' . $siteUrl . '/sitemap.xml',
             '# LLM / AI Summary File',

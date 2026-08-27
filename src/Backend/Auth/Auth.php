@@ -255,21 +255,21 @@ class Auth
         $token = self::extractCookieToken();
 
         if ($token === null) {
-            Response::redirect('/admin/login');
+            Response::redirect('/pitocuixa/login');
             exit;
         }
 
         $user = self::validateToken($token);
 
         if ($user === null) {
-            Response::redirect('/admin/login');
+            Response::redirect('/pitocuixa/login');
             exit;
         }
 
         // Role check: only admin/superadmin can access admin pages
         $role = $user['role'] ?? 'admin';
         if ($role !== 'admin' && $role !== 'superadmin') {
-            Response::redirect('/admin/login');
+            Response::redirect('/pitocuixa/login');
             exit;
         }
 

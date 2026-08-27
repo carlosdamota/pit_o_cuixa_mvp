@@ -367,42 +367,52 @@ return [
 
     // ── FAQ Page ─────────────────────────────────────────────────
     'faq.title' => 'Frequently Asked Questions',
+    'faq.suggest' => "I couldn't find an exact answer, but these questions might help:",
     'faq.desc' => 'Answers to the most common questions about our food, home delivery, and rotisserie chicken orders in Torredembarra.',
     'faq.items' => [
         [
             'q' => 'What does the rotisserie chicken include and what menu options are available?',
+            'keywords' => ['chicken','rotisserie','ast','menu','combos','aioli','croquettes','salad','prices','options'],
             'a' => 'Our rotisserie chicken (pollo a l\'ast) is served whole or half, always accompanied by our homemade aioli. We offer combo menus with homemade French fries, salads (Caesar, mixed, Russian salad), roasted meat cannelloni, or croquettes. You can view updated options and prices in our online menu.',
         ],
         [
             'q' => 'Where does your chicken come from and what quality guarantees do you offer?',
+            'keywords' => ['chicken','origin','source','quality','guarantee','certification','iso','cereal','breed','supplier'],
             'a' => 'We work with the "Pollastre Groc Català" certification from Alimentbarna (cereal-fed chicken raised in Catalonia). Our supplier holds ISO 9001 and ISO 22000 international quality and food safety certifications audited by Bureau Veritas.',
         ],
         [
             'q' => 'Do you offer home delivery and which areas do you cover?',
+            'keywords' => ['delivery','home','areas','zones','torredembarra','altafulla','creixell','coverage','shipping','cover'],
             'a' => 'Yes, we deliver in Torredembarra and nearby areas such as Altafulla, Creixell, La Móra, La Pobla de Montornès, and La Nou de Gaià. Estimated delivery time is 35 to 45 minutes, and delivery fees are calculated automatically during online checkout.',
         ],
         [
             'q' => 'Do you have a weekday takeaway menu?',
+            'keywords' => ['menu','weekday','takeaway','daily','lunch','dishes','monday','friday','affordable','carryout'],
             'a' => 'Yes, from Monday to Friday we offer an affordable takeaway menu featuring 2 dishes to choose from (Russian salad, pasta bolognese, croquettes, roasted chicken, etc.) plus a drink.',
         ],
         [
             'q' => 'What other prepared dishes do you offer and how can I order paella or fideuà?',
+            'keywords' => ['dishes','paella','fideua','fideuà','cannelloni','croquettes','wings','salads','order','groups'],
             'a' => 'Besides rotisserie chicken, we prepare BBQ wings, roasted meat cannelloni, stuffed aubergines, homemade croquettes, and salads. We also make seafood paella, black rice, and fideuà for groups, available upon advance order with at least 24 hours notice.',
         ],
         [
             'q' => 'Do you offer options for allergies, celiacs, or vegetarian diets?',
+            'keywords' => ['allergies','allergy','celiac','gluten','vegetarian','vegan','diet','free','options'],
             'a' => 'Our traditional rotisserie chicken marinade is gluten-free. We also offer vegetarian side dishes (salads, potatoes). Please inform us of any allergies or celiac condition so we can take extra precautions against cross-contamination.',
         ],
         [
             'q' => 'Is it necessary to order in advance or make a reservation?',
+            'keywords' => ['order','advance','reservation','reserve','booking','ahead','weekend','online','shop','phone'],
             'a' => 'We highly recommend ordering in advance, especially on weekends when demand is high. You can easily place your order online through our shop (pitocuixa.last.shop) or by calling us by phone.',
         ],
         [
             'q' => 'Where are you located and what facilities do you have?',
+            'keywords' => ['located','address','where','location','terrace','dining','parking','access','facilities','wheelchair'],
             'a' => 'We are located at Carrer Major, 25, in Torredembarra (Tarragona). We have an indoor dining area and an outdoor terrace, wheelchair-accessible facilities, and public parking nearby.',
         ],
         [
             'q' => 'What payment methods do you accept and how do I report an issue with my order?',
+            'keywords' => ['payment','pay','card','cash','contact','issue','problem','phone','complaint','order'],
             'a' => 'We accept credit/debit cards, online website payments, and cash. If you experience any issue with your order, contact us by phone or send us a photo of your order so we can resolve it immediately.',
         ],
     ],

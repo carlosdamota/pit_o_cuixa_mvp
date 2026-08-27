@@ -1,0 +1,244 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# CD Pipeline — Production (dinahosting, pitocuixa.es)
+# ──────────────────────────────────────────────────────────────────────────────
+# Deploys the client-facing production site on every push to `main`.
+# dinahosting account layout: the docroot is `www/`; app code lives beside it.
+# `db/` and `log/` at the account root are hosting-managed — our migrations
+# merge into db/migrations/ and PHP error logs land in log/.
+# Required GitHub Secrets (production-specific, NEVER reuse preprod values):
+#   FTP_HOST_PROD            — FTP server hostname (e.g. ftp.dinahosting.com)
+#   FTP_USER_PROD            — FTP username
+#   FTP_PASS_PROD            — FTP password
+#   DB_PATH_PROD             — Absolute path to SQLite DB on server (e.g. ./data/pitocuixa.db)
+#   SERVICE_API_TOKEN_PROD   — Bearer token for /api/migrate authentication
+#   SITE_URL_PROD            — Public URL of the deployed site (e.g. https://pitocuixa.es)
+# ──────────────────────────────────────────────────────────────────────────────
+# DATABASE SAFETY
+# The SQLite database is a live data file on the server. It is protected by
+# four independent layers:
+#   1. `data/` (and *.db) is gitignored — a dev→main merge can never carry a
+#      database file through git.
+#   2. The "Guard" step fails the deploy if any DB file appears in the tree.
+#   3. The lftp mirror excludes `data/` and `*.db*` — code deploys never touch
+#      the server-side database file.
+#   4. Every deploy downloads a timestamped backup of the live DB first and
+#      uploads it as a workflow artifact (restoring = re-uploading that file).
+# Schema changes reach production only via numbered migrations applied by
+# POST /api/migrate after the code deploy.
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to dinahosting (production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: none
+          coverage: none
+
+      - name: PHP Syntax Check (lint)
+        run: |
+          EXIT_CODE=0
+          while IFS= read -r -d '' FILE; do
+            php -l "$FILE" || EXIT_CODE=$?
+          done < <(find . -name '*.php' -not -path './vendor/*' -not -path './data/*' -print0)
+          exit $EXIT_CODE
+
+      - name: Run tests
+        run: php scripts/test-sync.php
+
+      - name: Validate required secrets
+        run: |
+          MISSING=()
+          for SECRET in FTP_HOST_PROD FTP_USER_PROD FTP_PASS_PROD DB_PATH_PROD SERVICE_API_TOKEN_PROD SITE_URL_PROD; do
+            if [ -z "${!SECRET}" ]; then
+              MISSING+=("$SECRET")
+            fi
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "All required secrets are configured."
+        env:
+          FTP_HOST_PROD: ${{ secrets.FTP_HOST_PROD }}
+          FTP_USER_PROD: ${{ secrets.FTP_USER_PROD }}
+          FTP_PASS_PROD: ${{ secrets.FTP_PASS_PROD }}
+          DB_PATH_PROD: ${{ secrets.DB_PATH_PROD }}
+          SERVICE_API_TOKEN_PROD: ${{ secrets.SERVICE_API_TOKEN_PROD }}
+          SITE_URL_PROD: ${{ secrets.SITE_URL_PROD }}
+
+      # Fail-closed: a SQLite file in the tree means someone committed live data.
+      # Deploying it could overwrite or shadow the server's real database.
+      - name: Guard - no database files in tree
+        run: |
+          HITS=$(find . \( -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' -o -name '*.db-wal' -o -name '*.db-shm' \) -type f -print)
+          if [ -n "$HITS" ]; then
+            echo "::error::Database files detected in the working tree. SQLite databases must never be committed or deployed:"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "Guard passed: no database files in the deploy tree."
+
+      - name: Build .env from secrets
+        run: |
+          cat > .env <<EOF
+          DB_PATH=${DB_PATH_PROD}
+          SERVICE_API_TOKEN=${SERVICE_API_TOKEN_PROD}
+          SITE_URL=${SITE_URL_PROD}
+          EOF
+          echo ".env file generated."
+        env:
+          DB_PATH_PROD: ${{ secrets.DB_PATH_PROD }}
+          SERVICE_API_TOKEN_PROD: ${{ secrets.SERVICE_API_TOKEN_PROD }}
+          SITE_URL_PROD: ${{ secrets.SITE_URL_PROD }}
+
+      # Download the live production DB before touching anything. The backup is
+      # stored under $RUNNER_TEMP (NEVER in the workspace, or the mirror step
+      # would upload it back to the server). First deploy has no DB yet: warn
+      # and continue. If the DB exists but the backup fails: abort the deploy.
+      - name: Backup production database
+        id: backup
+        run: |
+          command -v lftp >/dev/null 2>&1 || { echo "::group::Installing lftp"; sudo apt-get update -y && sudo apt-get install -y lftp; echo "::endgroup::"; }
+          BACKUP_DIR="$RUNNER_TEMP/backup"
+          mkdir -p "$BACKUP_DIR"
+          STAMP=$(date -u +%Y%m%d-%H%M%S)
+          BACKUP_FILE="$BACKUP_DIR/pitocuixa-$STAMP.db"
+          REMOTE_DB="${DB_PATH_PROD#./}"
+
+          REMOTE_LISTING=$(lftp -c "
+            set net:timeout 60;
+            set net:max-retries 5;
+            set ftp:passive-mode true;
+            set ftp:ssl-allow false;
+            open -u '$FTP_USER_PROD','$FTP_PASS_PROD' '$FTP_HOST_PROD';
+            cls --sort=name $(dirname "$REMOTE_DB")/
+          " 2>&1) || REMOTE_LISTING=""
+
+          if ! echo "$REMOTE_LISTING" | grep -q "$(basename "$REMOTE_DB")"; then
+            echo "::warning::No remote database found at $REMOTE_DB (first deploy?). Skipping backup."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          lftp -c "
+            set net:timeout 60;
+            set net:max-retries 5;
+            set ftp:passive-mode true;
+            set ftp:ssl-allow false;
+            open -u '$FTP_USER_PROD','$FTP_PASS_PROD' '$FTP_HOST_PROD';
+            get '$REMOTE_DB' -o '$BACKUP_FILE'
+          "
+
+          if [ ! -s "$BACKUP_FILE" ]; then
+            echo "::error::Remote database exists but the backup download failed or is empty. Aborting deploy — production is never deployed without a fresh backup."
+            exit 1
+          fi
+
+          echo "file=$BACKUP_FILE" >> "$GITHUB_OUTPUT"
+          echo "Backup saved: $BACKUP_FILE ($(wc -c < "$BACKUP_FILE") bytes)"
+        env:
+          FTP_HOST_PROD: ${{ secrets.FTP_HOST_PROD }}
+          FTP_USER_PROD: ${{ secrets.FTP_USER_PROD }}
+          FTP_PASS_PROD: ${{ secrets.FTP_PASS_PROD }}
+          DB_PATH_PROD: ${{ secrets.DB_PATH_PROD }}
+
+      - name: Upload database backup artifact
+        if: steps.backup.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-db-backup-${{ github.run_number }}
+          path: ${{ steps.backup.outputs.file }}
+          retention-days: 30
+          if-no-files-found: error
+
+      # dinahosting docroot is `www/` (not public_html like GoogieHost).
+      # public/ content is staged into www/ so the single root mirror publishes it.
+      # The mirror runs WITHOUT --delete: files on the server that don't exist
+      # locally (e.g. legacy WordPress leftovers) are never removed by deploys.
+      - name: Prepare www docroot for hosting
+        run: |
+          mkdir -p www
+          cp -r public/* www/
+          cp -r public/.[!.]* www/ 2>/dev/null || true
+          echo "www docroot prepared for deployment."
+
+      # `data/` and *.db exclusions are THE layer that keeps the live server
+      # database intact across deploys — never remove or weaken them.
+      - name: FTP Deploy (lftp mirror)
+        run: |
+          command -v lftp >/dev/null 2>&1 || { echo "::group::Installing lftp"; sudo apt-get update -y && sudo apt-get install -y lftp; echo "::endgroup::"; }
+          lftp -c "
+            set net:timeout 60;
+            set net:max-retries 5;
+            set net:reconnect-interval-base 5;
+            set ftp:passive-mode true;
+            set ftp:ssl-allow false;
+            open -u '$FTP_USER_PROD','$FTP_PASS_PROD' '$FTP_HOST_PROD';
+            mirror --reverse --verbose --no-perms \
+              --exclude-glob 'data/' \
+              --exclude-glob '*.db' \
+              --exclude-glob '*.sqlite' \
+              --exclude-glob '*.sqlite3' \
+              --exclude-glob 'backup/' \
+              --exclude-glob '.git/' \
+              --exclude-glob '.github/' \
+              --exclude-glob '.gitignore' \
+              --exclude-glob 'public/' \
+              --exclude-glob 'vendor/' \
+              ./ ./
+          "
+        env:
+          FTP_HOST_PROD: ${{ secrets.FTP_HOST_PROD }}
+          FTP_USER_PROD: ${{ secrets.FTP_USER_PROD }}
+          FTP_PASS_PROD: ${{ secrets.FTP_PASS_PROD }}
+
+      - name: Post-deploy migration
+        run: |
+          echo "Triggering post-deploy migration..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${SITE_URL_PROD}/api/migrate" \
+            -H "Authorization: Bearer ${SERVICE_API_TOKEN_PROD}" \
+            -H "Content-Type: application/json")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response Body: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
+            echo "::error::Migration endpoint returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+          # Fail the job if the migration body reports failures (success:false),
+          # even when the HTTP status is 200/201.
+          if echo "$BODY" | grep -q '"success"[[:space:]]*:[[:space:]]*false'; then
+            echo "::error::Migration endpoint reported failures: $BODY"
+            exit 1
+          fi
+          echo "Migration completed successfully."
+        env:
+          SITE_URL_PROD: ${{ secrets.SITE_URL_PROD }}
+          SERVICE_API_TOKEN_PROD: ${{ secrets.SERVICE_API_TOKEN_PROD }}

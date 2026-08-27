@@ -26,7 +26,7 @@ class ImportExport
         $meta = [
             'title'       => 'Importar / Exportar — Admin — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin/import-export',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/import-export',
             'index'       => false,
         ];
 

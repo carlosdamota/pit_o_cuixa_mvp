@@ -27,7 +27,7 @@ $lang                  = $pageData['locale'] ?? LANG;
         <header class="admin-header">
             <h1 class="admin-header__title">Ajustes del Sistema</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← Volver al Dashboard</a>
+                <a href="/pitocuixa" class="admin-header__back">← Volver al Dashboard</a>
             </div>
         </header>
 
@@ -96,7 +96,7 @@ if (toggle) {
         if (alertError) alertError.hidden = true;
 
         try {
-            const result = await api('PUT', '/api/admin/settings', {
+            const result = await api('PUT', '/api/pitocuixa/settings', {
                 menu_slider_enabled: enabled,
             });
 

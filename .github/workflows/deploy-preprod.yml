@@ -14,7 +14,7 @@ name: Deploy Preproduction
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
   workflow_dispatch:
 
 concurrency:
@@ -91,7 +91,6 @@ jobs:
           cp -r public/* public_html/
           cp -r public/.[!.]* public_html/ 2>/dev/null || true
           echo "public_html prepared for deployment."
-
       - name: FTP Deploy (lftp mirror)
         run: |
           command -v lftp >/dev/null 2>&1 || { echo "::group::Installing lftp"; sudo apt-get update -y && sudo apt-get install -y lftp; echo "::endgroup::"; }

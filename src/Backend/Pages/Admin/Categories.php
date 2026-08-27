@@ -33,7 +33,7 @@ class Categories
         $meta = [
             'title'       => 'Categorías — Admin — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin/categories',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/categories',
             'index'       => false,
         ];
 

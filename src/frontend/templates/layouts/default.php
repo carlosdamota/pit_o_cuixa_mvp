@@ -94,8 +94,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
-    <?php $v = '?v=1.5.0'; ?>
-    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= assetVersion('/css/components/cookie-banner.css') ?>">
 
     <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
     <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
@@ -214,9 +213,31 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php require __DIR__ . '/../partials/chat-widget.php'; ?>
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
+    
+    <!-- Cookie settings + banner (hidden on admin: admins don't need consent UI) -->
+    <?php if (!$isAdmin): ?>
+    <button
+        id="cookie-settings-home"
+        class="cookie-settings-button"
+        data-cookie-settings
+        hidden
+        aria-label="Configuración de cookies"
+        title="Configuración de cookies">
+
+        <img
+            src="/img/icons/galleta.png"
+            alt=""
+            width="24"
+            height="24">
+
+    </button>
+
+    <!-- ── Cookie Banner ───────────────────────────────────────── -->
+    <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+    <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
-    <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>
+    <script type="module" src="/js/cookie-banner.js<?= assetVersion('/js/cookie-banner.js') ?>"></script>
     <script type="module" src="/js/main.js<?= assetVersion('/js/main.js') ?>"></script>
 </body>
 </html>

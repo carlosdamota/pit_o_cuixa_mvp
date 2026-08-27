@@ -114,7 +114,8 @@
   }
 
   .accordion-header__price {
-    font-size: 1.15rem;
+    padding: 4px 10px;
+    font-size: 0.9rem;
   }
 
   .listview-item {
@@ -199,9 +200,15 @@
 }
 
 .accordion-header__price {
-  font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background-color: var(--color-primary-50, #fffbeb);
+  border: 1px solid var(--color-primary-light, #fef3c7);
+  border-radius: var(--radius-full, 999px);
+  font-size: 1rem;
   font-weight: 800;
-  color: var(--color-primary, #d97706);
+  color: var(--color-primary-dark, #b45309);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -331,4 +338,101 @@
   flex-shrink: 0;
   align-self: flex-start;
   margin-top: 2px;
+}
+
+/* ── Local Page Header: Title Sentence + Reserve CTA ─────────────── */
+.menu-local-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md, 16px);
+  margin-bottom: var(--space-lg, 24px);
+}
+
+.menu-local-header__title {
+  margin: 0;
+  font-size: clamp(1.35rem, 1.05rem + 1.6vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--color-text, #1e293b);
+}
+
+.reserve-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background-color: var(--color-on-surface, #141414);
+  color: var(--color-surface-container-lowest, #ffffff);
+  border-radius: var(--radius-full, 999px);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold, 600);
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease), background-color var(--transition-fast, 0.15s ease);
+}
+
+.reserve-cta:hover {
+  color: var(--color-primary, #d97706);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.reserve-cta:focus-visible {
+  outline: 2px solid var(--color-primary-dark, #b45309);
+  outline-offset: 2px;
+}
+
+/* Phone vibrate: rapid small jitters (~0.7s buzz) then rest (~5.3s) */
+@keyframes cta-phone-shake {
+  0%   { transform: translateX(0) rotate(0deg); }
+  1%   { transform: translateX(-1.5px) rotate(-4deg); }
+  2%   { transform: translateX(1.5px) rotate(4deg); }
+  3%   { transform: translateX(-1.5px) rotate(-4deg); }
+  4%   { transform: translateX(1.5px) rotate(4deg); }
+  5%   { transform: translateX(-1.2px) rotate(-3deg); }
+  6%   { transform: translateX(1.2px) rotate(3deg); }
+  7%   { transform: translateX(-1.2px) rotate(-3deg); }
+  8%   { transform: translateX(1.2px) rotate(3deg); }
+  9%   { transform: translateX(-1px) rotate(-2deg); }
+  10%  { transform: translateX(1px) rotate(2deg); }
+  11%  { transform: translateX(0) rotate(0deg); }
+  17%, 100% { transform: translateX(0) rotate(0deg); }
+}
+
+.reserve-cta__icon {
+  flex-shrink: 0;
+  transform-origin: 50% 60%;
+  animation: cta-phone-shake 6s linear infinite;
+}
+
+/* Thumbnail poster on closed menu & carta accordion headers */
+.accordion-header__thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background-color: var(--color-surface, #f8f9fa);
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .menu-local-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .menu-local-header .reserve-cta {
+    justify-content: center;
+  }
+
+  .accordion-header__thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
 }

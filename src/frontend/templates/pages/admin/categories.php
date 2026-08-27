@@ -25,7 +25,7 @@ $lang       = $pageData['locale'] ?? LANG;
         <header class="admin-header">
             <h1 class="admin-header__title">Categorías</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← Dashboard</a>
+                <a href="/pitocuixa" class="admin-header__back">← Dashboard</a>
             </div>
         </header>
 
@@ -163,7 +163,7 @@ import {
     initKeyboardShortcuts
 } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
-const API_BASE = '/api/admin/categories';
+const API_BASE = '/api/pitocuixa/categories';
 const TBODY = document.querySelector('[data-categories-tbody]');
 
 /** Escape HTML */

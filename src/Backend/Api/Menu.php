@@ -20,15 +20,35 @@ class Menu
 {
     /**
      * GET /api/menu — grouped by category, localised.
+     *
+     * Delegates the grouping to groups() (the single source of truth) so the
+     * same localized section data powers both this endpoint and the chatbot's
+     * section-aware replies.
      */
     public static function grouped(): void
+    {
+        Response::json([
+            'data'  => self::groups(LANG),
+            'error' => false,
+        ]);
+    }
+
+    /**
+     * Build the localized section groups consumed by both the /api/menu
+     * endpoint and the chatbot's section-aware menu replies.
+     *
+     * Each group: { slug, name, items: [{ name, price (float), description }] }.
+     * Empty categories are skipped.
+     *
+     * @return array<int, array{slug:string, name:string, items:array<int, array{name:string, price:float, description:string}>}>
+     */
+    public static function groups(string $lang): array
     {
         $catRepo  = new CategoryRepo();
         $prodRepo = new ProductRepo();
 
         $categories = $catRepo->all();
         $products   = $prodRepo->all();
-        $lang       = LANG;
 
         $groups = [];
 
@@ -47,23 +67,14 @@ class Menu
             }
 
             $groups[] = [
-                'id'         => (int) $category['id'],
-                'slug'       => $category['slug'],
-                'name'       => $category["name_{$lang}"],
-                'sort_order' => (int) $category['sort_order'],
-                'products'   => array_map(
+                'slug'  => (string) $category['slug'],
+                'name'  => self::localized($category, 'name', $lang),
+                'items' => array_map(
                     function (array $p) use ($lang): array {
                         return [
-                            'id'              => (int) $p['id'],
-                            'slug'            => $p['slug'],
-                            'name'            => $p["name_{$lang}"],
-                            'description'     => $p["description_{$lang}"],
-                            'price'           => (float) $p['price'],
-                            'price_formatted' => sprintf('€%.2f', (float) $p['price']),
-                            'image_url'       => ($p['image_url'] ?? '') !== '' ? $p['image_url'] : null,
-                            'last_shop_url'   => $p['last_shop_url'],
-                            'is_featured'     => (bool) $p['is_featured'],
-                            'sort_order'      => (int) $p['sort_order'],
+                            'name'        => self::localized($p, 'name', $lang),
+                            'price'       => (float) $p['price'],
+                            'description' => self::localized($p, 'description', $lang),
                         ];
                     },
                     $catProducts
@@ -71,9 +82,33 @@ class Menu
             ];
         }
 
-        Response::json([
-            'data'  => $groups,
-            'error' => false,
-        ]);
+        return $groups;
+    }
+
+    /**
+     * Localized field lookup with empty-string fallback, mirroring
+     * Pit\Cuixa\Backend\Pages\Menu::translateField(). Falls back through the
+     * requested locale → es → en → ca so a missing/empty translation never
+     * yields a blank name (e.g. Catalan product names are often empty in the
+     * DB, yet "carta" is detected as Catalan by detectLanguage()).
+     *
+     * @param  array<string, mixed> $row
+     */
+    private static function localized(array $row, string $field, string $lang): string
+    {
+        $keys = [
+            "{$field}_{$lang}",
+            "{$field}_es",
+            "{$field}_en",
+            "{$field}_ca",
+        ];
+
+        foreach ($keys as $key) {
+            if (isset($row[$key]) && $row[$key] !== '') {
+                return (string) $row[$key];
+            }
+        }
+
+        return '';
     }
 }

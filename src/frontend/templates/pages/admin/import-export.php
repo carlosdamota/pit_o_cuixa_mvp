@@ -22,7 +22,7 @@ $lang      = $pageData['locale'] ?? LANG;
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">Importar / Exportar</h1>
-            <a href="/admin" class="admin-header__back">← Dashboard</a>
+            <a href="/pitocuixa" class="admin-header__back">← Dashboard</a>
         </header>
 
         <!-- ── Alert region ─────────────────────────────────────────── -->
@@ -44,7 +44,7 @@ $lang      = $pageData['locale'] ?? LANG;
                     </code>
                 </p>
 
-                <form id="import-form" method="POST" action="/api/admin/import" enctype="multipart/form-data">
+                <form id="import-form" method="POST" action="/api/pitocuixa/import" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
                     <div class="admin-field">
@@ -86,7 +86,7 @@ $lang      = $pageData['locale'] ?? LANG;
                 </p>
 
                 <div class="admin-header__actions">
-                    <a href="/api/admin/export?type=products" class="admin-btn admin-btn--primary" data-export-products>
+                    <a href="/api/pitocuixa/export?type=products" class="admin-btn admin-btn--primary" data-export-products>
                         Exportar productos
                     </a>
                     <button type="button" class="admin-btn admin-btn--secondary" data-export-categories disabled title="Próximamente">
@@ -159,7 +159,7 @@ importForm?.addEventListener('submit', async (e) => {
 
     await withLoading(importBtn, async () => {
         try {
-            const res = await fetch('/api/admin/import', {
+            const res = await fetch('/api/pitocuixa/import', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-Token': getCsrfToken(),

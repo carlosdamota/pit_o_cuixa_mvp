@@ -1316,3 +1316,60 @@
     gap: var(--space-xs);
   }
 }
+
+/* ── 2FA enrollment (login screen) ──────────────────────────────────────── */
+.admin-2fa-status {
+  color: var(--color-text-muted, #666);
+  margin-bottom: var(--space-md, 1rem);
+}
+
+.admin-2fa-qr {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md, 1rem);
+  background: #fff;
+  border-radius: var(--radius-sm, 4px);
+  margin-bottom: var(--space-md, 1rem);
+}
+
+.admin-2fa-qr img,
+.admin-2fa-qr canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.admin-2fa-secret-label {
+  margin: var(--space-md, 1rem) 0 0;
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.admin-2fa-secret {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--color-surface-container-low, #f2f2f2);
+  border-radius: var(--radius-sm, 4px);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 1px;
+  word-break: break-all;
+}
+
+.admin-2fa-backup-title {
+  margin-top: var(--space-lg, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.admin-2fa-backup {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px var(--space-md, 1rem);
+  font-family: var(--font-mono, monospace);
+}
+
+.admin-2fa-backup li {
+  padding: 4px 8px;
+  background: var(--color-surface-container-low, #f2f2f2);
+  border-radius: var(--radius-sm, 4px);
+}
