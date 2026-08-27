@@ -323,16 +323,20 @@ class AuthController
             $backupCodes
         );
 
-        // Persist in PENDING state, replacing any previous pending codes.
+        // Persist the NEW secret in a PENDING (staged) state on the challenge
+        // row — NOT on users.totp_secret. The active secret stays valid until
+        // the new one is CONFIRMED, so an admin who aborts re-enrollment mid-flow
+        // is never locked out. Backup codes are regenerated server-side below.
         $backupRepo = new BackupCode();
         $backupRepo->clearForUser($userId);
-        $userRepo->saveTotpSecret($userId, Crypto::encrypt($secret));
+        $challengeRepo->storePendingSecret($enrollToken, Crypto::encrypt($secret));
         $backupRepo->storeMany($userId, $backupHashes);
 
         // NOTE: secret_base32 and backup_codes are intentionally NOT returned
-        // to the client. The pending secret is still persisted encrypted above
-        // for the confirm step, and backup codes are stored server-side (hashed)
-        // so recovery keeps working — but neither is displayed in the UI.
+        // to the client. The pending secret is staged encrypted on the challenge
+        // row (above) for the confirm step, and backup codes are stored
+        // server-side (hashed) so recovery keeps working — but neither is
+        // displayed in the UI.
         Response::json([
             'error' => false,
             'data'  => [
@@ -407,7 +411,11 @@ class AuthController
 
         $userId   = (int) $challenge['user_id'];
         $userRepo = new UserRepo();
-        $encrypted = $userRepo->getEncryptedTotpSecret($userId);
+
+        // Read the STAGED secret from the challenge row (not the active
+        // users.totp_secret). If the admin aborted a previous re-enrollment the
+        // staged value is NULL and we must not proceed.
+        $encrypted = $challengeRepo->getPendingSecret($enrollToken);
 
         if ($encrypted === null) {
             $limiter->recordFailure("2fa:challenge:{$enrollToken}");
@@ -433,7 +441,12 @@ class AuthController
             return;
         }
 
-        // Success — enable 2FA, consume the challenge, start a real session.
+        // Success — swap the staged secret into the active slot, clear the
+        // staging column, then enable 2FA and start a real session.
+        // enableTotp is idempotent: it keeps totp_enabled = 1 for re-enroll and
+        // sets it for first-time enrollment (and stamps totp_verified_at).
+        $userRepo->saveTotpSecret($userId, $encrypted);
+        $challengeRepo->clearPendingSecret($enrollToken);
         $userRepo->enableTotp($userId);
         $challengeRepo->delete($enrollToken);
         $limiter->reset("2fa:challenge:{$enrollToken}");

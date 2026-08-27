@@ -88,18 +88,16 @@ $csrfToken = $pageData['csrf_token'] ?? '';
                 Verificar
             </button>
 
-            <label class="admin-login__backup-toggle">
-                <input type="checkbox" data-2fa-backup-toggle>
-                Usar código de respaldo
-            </label>
+            <a href="#" class="admin-login__reenroll" data-2fa-reenroll>Perdí mi autentificador</a>
         </form>
 
         <!-- ── Step 3: 2FA enrollment (hidden until required) ───────── -->
         <form class="admin-login__form" data-admin-enroll hidden>
-            <p class="admin-login__subtitle">Configurar autenticación en dos pasos</p>
+            <p class="admin-login__subtitle">Configura o reconfigura tu autenticación en dos pasos</p>
             <p class="admin-login__desc">
                 Escanea el código QR con tu app autenticadora y confirma con el
                 código de 6 dígitos para activar la protección de este acceso.
+                Si ya tenías un autenticador configurado, este paso lo sustituye.
             </p>
 
             <div data-enroll-status class="admin-2fa-status" role="status"></div>
@@ -126,6 +124,16 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             <button type="submit" class="admin-btn admin-btn--primary admin-login__submit">
                 Activar y acceder
             </button>
+
+            <p class="admin-login__alt">
+                ¿No tienes el autenticador a mano?
+                <a href="#" data-backup-toggle>Usa un código de respaldo</a>
+            </p>
+            <div class="admin-field" data-backup-wrap hidden>
+                <label for="backup-code" class="admin-field__label">Código de respaldo</label>
+                <input id="backup-code" name="backup_code" type="text" class="admin-field__input" maxlength="32" autocomplete="off">
+                <button type="button" class="admin-btn admin-btn--ghost" data-backup-submit>Entrar con respaldo</button>
+            </div>
         </form>
 
         <a href="/" class="admin-login__back">← Volver al sitio</a>
@@ -143,7 +151,6 @@ const loginForm   = document.querySelector('[data-admin-login]');
 const twoFaForm   = document.querySelector('[data-admin-2fa]');
 const loginError  = document.querySelector('[data-login-error]');
 const twoFaError  = document.querySelector('[data-2fa-error]');
-const backupToggle = document.querySelector('[data-2fa-backup-toggle]');
 
 const enrollForm  = document.querySelector('[data-admin-enroll]');
 const enrollError = document.querySelector('[data-enroll-error]');
@@ -198,7 +205,7 @@ loginForm?.addEventListener('submit', async (e) => {
             // Admin has no 2FA yet — enroll at the login screen.
             showEnrollment(json.enroll_token);
         } else {
-            window.location.href = '/admin';
+            window.location.href = '/pitocuixa';
         }
     } catch (err) {
         showError(loginError, 'Error de conexión');
@@ -240,7 +247,7 @@ twoFaForm?.addEventListener('submit', async (e) => {
         if (json.error) {
             showError(twoFaError, json.message || 'Código incorrecto');
         } else {
-            window.location.href = '/admin';
+            window.location.href = '/pitocuixa';
         }
     } catch (err) {
         showError(twoFaError, 'Error de conexión');
@@ -250,16 +257,14 @@ twoFaForm?.addEventListener('submit', async (e) => {
     }
 });
 
-// Toggle placeholder/label depending on backup-code mode
-backupToggle?.addEventListener('change', () => {
-    const codeInput = twoFaForm?.querySelector('input[name="code"]');
-    if (!codeInput) return;
-    if (backupToggle.checked) {
-        codeInput.placeholder = 'Código de respaldo';
-        codeInput.maxLength = 32;
-    } else {
-        codeInput.placeholder = '';
-        codeInput.maxLength = 6;
+// Re-enroll handler: reuse the existing enroll flow with the current challenge
+// token. enroll-start accepts it whether totp_enabled = 0 (first-time) or = 1
+// (re-enroll), so this safely stages a new secret without overwriting the
+// active one until confirmed.
+document.querySelector('[data-2fa-reenroll]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (challengeToken) {
+        showEnrollment(challengeToken);
     }
 });
 
@@ -352,13 +357,71 @@ enrollForm?.addEventListener('submit', async (e) => {
             showError(enrollError, json.message || 'Código incorrecto');
         } else {
             // Session cookie is set server-side; just enter the admin.
-            window.location.href = '/admin';
+            window.location.href = '/pitocuixa';
         }
     } catch (err) {
         showError(enrollError, 'Error de conexión');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Activar y acceder';
+    }
+});
+
+// ── Backup-code alternative on the enroll/recovery screen ────────────────
+// Show/hide the backup-code field. When shown, the 6-digit enroll input is
+// hidden so the user enters only the backup code.
+document.querySelector('[data-backup-toggle]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const wrap   = document.querySelector('[data-backup-wrap]');
+    const enrollCode = document.getElementById('enroll-code');
+    if (!wrap) return;
+    wrap.hidden = !wrap.hidden;
+    if (enrollCode) enrollCode.closest('.admin-field')?.classList.toggle('admin-field--hidden', !wrap.hidden);
+});
+
+// Submit a backup code: POST to 2fa-verify using the same token (the challenge
+// token when reached via re-enroll, or the enroll token for first-time enroll
+// — both are valid challenge tokens).
+document.querySelector('[data-backup-submit]')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const wrap       = document.querySelector('[data-backup-wrap]');
+    const codeInput  = wrap?.querySelector('input[name="backup_code"]');
+
+    if (!enrollToken) {
+        showError(enrollError, 'Sesión de enrolamiento caducada. Vuelve a iniciar sesión.');
+        return;
+    }
+    if (!codeInput || codeInput.value.trim() === '') {
+        showError(enrollError, 'Introduce el código de respaldo.');
+        return;
+    }
+
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+        const res  = await fetch('/api/auth/2fa-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                challenge_token: enrollToken,
+                code: codeInput.value.trim(),
+            }),
+        });
+
+        const json = await res.json();
+
+        if (json.error) {
+            showError(enrollError, json.message || 'Código de respaldo incorrecto');
+        } else {
+            window.location.href = '/pitocuixa';
+        }
+    } catch (err) {
+        showError(enrollError, 'Error de conexión');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar con respaldo';
     }
 });
 </script>

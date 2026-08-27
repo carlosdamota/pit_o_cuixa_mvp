@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS two_factor_challenges (
     token       TEXT    NOT NULL UNIQUE,
     expires_at  TEXT    NOT NULL,
     attempts    INTEGER NOT NULL DEFAULT 0,
+    pending_secret TEXT    NULL,        -- staged new TOTP secret for re-enrollment (NULL until staged)
     created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 

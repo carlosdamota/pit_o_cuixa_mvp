@@ -96,4 +96,50 @@ class TwoFactorChallenge
         $stmt = $this->pdo->prepare('DELETE FROM two_factor_challenges WHERE token = :token');
         $stmt->execute([':token' => $token]);
     }
+
+    /**
+     * Stage an ENCRYPTED pending TOTP secret on a challenge row during
+     * (re-)enrollment. The active users.totp_secret is NOT touched until the
+     * secret is confirmed, so aborting mid-flow cannot lock the admin out.
+     */
+    public function storePendingSecret(string $token, string $encrypted): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE two_factor_challenges SET pending_secret = :enc WHERE token = :token'
+        );
+        $stmt->execute([
+            ':enc'   => $encrypted,
+            ':token' => $token,
+        ]);
+    }
+
+    /**
+     * Read the staged pending secret for a challenge token.
+     *
+     * @return string|null The encrypted pending secret, or null if not staged.
+     */
+    public function getPendingSecret(string $token): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT pending_secret FROM two_factor_challenges WHERE token = :token');
+        $stmt->execute([':token' => $token]);
+        $row = $stmt->fetch();
+
+        if ($row === false || $row['pending_secret'] === null) {
+            return null;
+        }
+
+        return (string) $row['pending_secret'];
+    }
+
+    /**
+     * Clear the staged pending secret once it has been swapped into the
+     * active slot (called after a successful confirm).
+     */
+    public function clearPendingSecret(string $token): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE two_factor_challenges SET pending_secret = NULL WHERE token = :token'
+        );
+        $stmt->execute([':token' => $token]);
+    }
 }

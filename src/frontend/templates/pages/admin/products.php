@@ -34,7 +34,7 @@ $lang       = $pageData['locale'] ?? LANG;
         <header class="admin-header">
             <h1 class="admin-header__title">Productos</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← Dashboard</a>
+                <a href="/pitocuixa" class="admin-header__back">← Dashboard</a>
             </div>
         </header>
 
@@ -320,7 +320,7 @@ import {
     initKeyboardShortcuts
 } from '/js/admin.js<?= assetVersion('/js/admin.js') ?>';
 
-const API_BASE = '/api/admin/products';
+const API_BASE = '/api/pitocuixa/products';
 const TBODY = document.querySelector('[data-products-tbody]');
 const CATEGORIES = <?= json_encode(array_map(function($c) { return ['id' => (int)$c['id'], 'name_es' => $c['name_es'], 'name_en' => $c['name_en']]; }, $categories)) ?>;
 const LANG = '<?= $lang ?>';
@@ -937,7 +937,7 @@ fileInput?.addEventListener('change', async (e) => {
     uploadBtn.textContent = '⏳ Subiendo...';
 
     try {
-        const response = await fetch('/api/admin/upload', {
+        const response = await fetch('/api/pitocuixa/upload', {
             method: 'POST',
             body: formData,
             headers: {

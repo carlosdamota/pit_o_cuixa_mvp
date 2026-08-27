@@ -22,7 +22,7 @@ class Login
         $meta = [
             'title'       => __('nav.login') . ' — ' . __('site.name'),
             'description' => __('error.401.desc'),
-            'canonical'   => \Config::siteUrl() . '/admin/login',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/login',
             'index'       => false, // noindex
         ];
 
