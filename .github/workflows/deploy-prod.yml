@@ -126,7 +126,11 @@ jobs:
           mkdir -p "$BACKUP_DIR"
           STAMP=$(date -u +%Y%m%d-%H%M%S)
           BACKUP_FILE="$BACKUP_DIR/pitocuixa-$STAMP.db"
-          REMOTE_DB="${DB_PATH_PROD#./}"
+          # FTP path of the live DB, relative to the FTP root. Both hostings
+          # keep data/ at the FTP root (GoogieHost Linux and dinahosting
+          # Windows, whose DB_PATH_PROD is a Windows absolute path that is
+          # NOT valid as an FTP path — never derive this from DB_PATH_PROD).
+          REMOTE_DB="data/pitocuixa.db"
 
           REMOTE_LISTING=$(lftp -c "
             set net:timeout 60;
