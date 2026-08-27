@@ -215,7 +215,8 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
     
-    <!-- Cookie settings -->
+    <!-- Cookie settings + banner (hidden on admin: admins don't need consent UI) -->
+    <?php if (!$isAdmin): ?>
     <button
         id="cookie-settings-home"
         class="cookie-settings-button"
@@ -234,6 +235,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
 
     <!-- ── Cookie Banner ───────────────────────────────────────── -->
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+    <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>
