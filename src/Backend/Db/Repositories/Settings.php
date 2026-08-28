@@ -36,9 +36,54 @@ class Settings
                 value TEXT NOT NULL
             )'
         );
-        $pdo->exec(
-            "INSERT OR IGNORE INTO settings (key, value) VALUES ('menu_slider_enabled', '0')"
+
+        // Self-seed defaults (INSERT OR IGNORE skips keys that already exist,
+        // so admin-edited values are never overwritten).
+        $defaults = [
+            'menu_slider_enabled' => '0',
+            'company_address'     => '',
+            'company_phone'       => \Config::phone(),
+            'company_whatsapp'    => '',
+        ];
+
+        $stmt = $pdo->prepare(
+            'INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)'
         );
+
+        foreach ($defaults as $key => $value) {
+            $stmt->execute([':key' => $key, ':value' => $value]);
+        }
+    }
+
+    /**
+     * Company address shown in the public footer.
+     * Empty string when unset — templates fall back to the i18n string.
+     */
+    public static function companyAddress(): string
+    {
+        return trim(self::get('company_address', ''));
+    }
+
+    /**
+     * Primary company phone (display format, e.g. "+34 977 64 20 10").
+     * Falls back to the canonical Config phone when unset.
+     */
+    public static function companyPhone(): string
+    {
+        $phone = trim(self::get('company_phone', ''));
+
+        return $phone !== '' ? $phone : \Config::phone();
+    }
+
+    /**
+     * Secondary mobile for the WhatsApp button. Optional — falls back to
+     * the primary phone so the floating button always works.
+     */
+    public static function companyWhatsapp(): string
+    {
+        $whatsapp = trim(self::get('company_whatsapp', ''));
+
+        return $whatsapp !== '' ? $whatsapp : self::companyPhone();
     }
 
     /**
