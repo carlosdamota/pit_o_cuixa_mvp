@@ -13,8 +13,8 @@ declare(strict_types=1);
 return [
     // ── Global / Layout ──────────────────────────────────────────
     'site.name' => 'Pit o Cuixa',
-    'site.tagline' => 'Pollería y rosticería en Torredembarra',
-    'site.description' => 'Pollería y rosticería artesana en Torredembarra. Pollo al ast, brochetas, hamburguesas y más. Pide online y recoge en tienda.',
+    'site.tagline' => 'Pollería asadora en Torredembarra',
+    'site.description' => 'Pollería asadora artesana en Torredembarra. Pollo al ast, brochetas, hamburguesas y más. Pide online y recoge en tienda.',
     'nav.home' => 'Inicio',
     'nav.menu' => 'Carta',
     'nav.admin' => 'Admin',
@@ -418,7 +418,7 @@ return [
 
     // ── Home Page ────────────────────────────────────────────────
     'home.title' => 'Pit o Cuixa — Pollería en Torredembarra',
-    'home.desc' => 'La mejor pollería y rosticería de Torredembarra. Pollo al ast, brochetas, hamburguesas y platos caseros.',
+    'home.desc' => 'La mejor pollería asadora de Torredembarra. Pollo al ast, brochetas, hamburguesas y platos caseros.',
     'home.hero.title' => 'El mejor pollo al ast de Torredembarra',
     'home.hero.subtitle' => 'Desde 1998 cocinando con amor para ti y los tuyos.',
     'home.hero.cta' => 'Ver la carta',

@@ -83,7 +83,7 @@ function status(string $label, string $message): void
 echo "\n";
 echo "  ╔══════════════════════════════════╗\n";
 echo "  ║     Pit o Cuixa — Setup          ║\n";
-echo "  ║     Pollería y rostería           ║\n";
+echo "  ║     Pollería asadora             ║\n";
 echo "  ║     Torredembarra, Tarragona     ║\n";
 echo "  ╚══════════════════════════════════╝\n";
 echo "\n";
