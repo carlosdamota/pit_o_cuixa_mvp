@@ -107,16 +107,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <link rel="stylesheet" href="/css/components/chat-widget.css<?= assetVersion('/css/components/chat-widget.css') ?>">
     <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
 
-    <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
-    <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
-    <link rel="stylesheet" href="/css/base.css<?= assetVersion('/css/base.css') ?>">
-    <link rel="stylesheet" href="/css/layouts/header.css<?= assetVersion('/css/layouts/header.css') ?>">
-    <link rel="stylesheet" href="/css/layouts/footer.css<?= assetVersion('/css/layouts/footer.css') ?>">
-    <link rel="stylesheet" href="/css/components/product-card.css<?= assetVersion('/css/components/product-card.css') ?>">
-    <link rel="stylesheet" href="/css/components/filter-bar.css<?= assetVersion('/css/components/filter-bar.css') ?>">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= assetVersion('/css/components/whatsapp-float.css') ?>">
-    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= assetVersion('/css/components/cookie-banner.css') ?>">
-    <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
+
 
     <!-- Home landing CSS (only on home page) -->
     <?php if ($pageName === 'home'): ?>
