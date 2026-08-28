@@ -36,6 +36,7 @@ use Pit\Cuixa\Backend\Pages\Admin\Products as AdminProductsPage;
 use Pit\Cuixa\Backend\Pages\Admin\Categories as AdminCategoriesPage;
 use Pit\Cuixa\Backend\Pages\Admin\SettingsPage as AdminSettingsPage;
 use Pit\Cuixa\Backend\Api\AdminSettings;
+use Pit\Cuixa\Backend\Db\Repositories\Settings;
 use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\FaqPage;
 use Pit\Cuixa\Backend\Pages\Privacy;
@@ -67,6 +68,10 @@ function renderPage(string $page, array $meta = [], array $data = [], int $code 
         Response::error('Invalid page', 400);
         return;
     }
+
+    // Every page layout renders the footer, which reads company settings.
+    // Self-heal the settings table + seeds before any page render (idempotent).
+    Settings::ensureSchema();
 
     http_response_code($code);
 

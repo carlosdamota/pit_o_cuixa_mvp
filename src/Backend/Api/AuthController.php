@@ -219,6 +219,7 @@ class AuthController
                 }
             } catch (\RuntimeException $e) {
                 // Decryption failure — treat as invalid, fall through to backup code check
+                error_log('2FA: TOTP secret decrypt failed for user ' . $userId . ' — ' . $e->getMessage());
                 $success = false;
             }
         }
@@ -432,6 +433,7 @@ class AuthController
             }
         } catch (\RuntimeException $e) {
             // Decryption failure — treat as invalid.
+            error_log('2FA: pending secret decrypt failed for user ' . $userId . ' — ' . $e->getMessage());
             $success = false;
         }
 

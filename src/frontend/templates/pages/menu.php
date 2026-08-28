@@ -16,6 +16,7 @@ $catList      = $pageData['categories']   ?? [];
 $locale       = $pageData['locale']       ?? LANG;
 $showSlider   = $pageData['show_slider']   ?? false;
 $sliderImages = $pageData['slider_images'] ?? [];
+$companyPhone = $pageData['company_phone'] ?? \Config::phone();
 
 // Mode requested from onboarding drag & drop: 'local' (dine_in) vs 'delivery'
 $requestedMode  = $_GET['mode'] ?? '';
@@ -108,7 +109,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
     <header class="menu-local-header">
         <h1 class="menu-local-header__title">Los mejores platos y menús de Pit o Cuixa</h1>
         <a class="reserve-cta"
-           href="tel:<?= str_replace(' ', '', \Config::phone()) ?>"
+           href="tel:<?= str_replace(' ', '', $companyPhone) ?>"
            aria-label="Reservar mesa por teléfono">
             <svg class="reserve-cta__icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>

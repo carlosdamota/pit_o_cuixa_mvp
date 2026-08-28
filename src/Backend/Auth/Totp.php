@@ -83,7 +83,15 @@ final class Totp
      */
     private static function hotp(string $key, int $counter): string
     {
-        $counterBytes = pack('J', $counter);
+        // pack('J') (unsigned 64-bit BE) throws ValueError on 32-bit PHP
+        // builds (e.g. dinahosting's i586). Encode the 64-bit big-endian
+        // counter as two unsigned 32-bit halves instead — identical bytes
+        // on every PHP build. On 32-bit PHP the counter can never reach
+        // 2^32, so the high word is always zero there.
+        $hi = PHP_INT_SIZE === 8 ? ($counter >> 32) : 0;
+        $lo = $counter & 0xFFFFFFFF;
+        $counterBytes = pack('NN', $hi, $lo);
+
         $hmac = hash_hmac('sha1', $counterBytes, $key, true);
 
         $offset = ord($hmac[19]) & 0x0F;
