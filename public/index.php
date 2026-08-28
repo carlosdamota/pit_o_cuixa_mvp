@@ -50,6 +50,20 @@ use Pit\Cuixa\Backend\Pages\LlmsTxt;
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri    = $_SERVER['REQUEST_URI'] ?? '/';
 
+// Shared IIS hosting (dinahosting) only routes GET/HEAD/POST to PHP:
+// PUT/DELETE are rejected by the web server (405) before this script runs.
+// The admin client tunnels those verbs through POST with the standard
+// X-HTTP-Method-Override header — unwrap it here, whitelisted, so the
+// router sees the intended verb. Real PUT/DELETE requests (Apache, PHP
+// built-in server) keep working unchanged.
+if ($method === 'POST' && isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
+    $override = strtoupper(trim((string) $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']));
+
+    if (in_array($override, ['PUT', 'PATCH', 'DELETE'], true)) {
+        $method = $override;
+    }
+}
+
 // ── 3. Helper: Render an SSR HTML page ────────────────────────────────
 
 /**
