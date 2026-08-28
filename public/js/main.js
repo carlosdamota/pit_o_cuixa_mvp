@@ -110,6 +110,7 @@ function initLangDropdown() {
       } else {
         toggle.setAttribute('aria-expanded', 'true');
         menu.removeAttribute('hidden');
+        positionMenu(); // lift onboarding menu to <body> above chat (99998) and onboarding (9999)
       }
     });
   });
