@@ -2,8 +2,8 @@
  * Pit o Cuixa — Service Worker
  *
  * Cache strategies:
- *   HTML pages     → network-first, fallback to cache (pages-v1)
- *   CSS / JS / Fonts → cache-first (static-v1)
+ *   HTML pages     → network-first, fallback to cache (pages-v3)
+ *   CSS / JS / Fonts → cache-first (static-v5)
  *   Images         → cache-first with LRU cap (images-v1)
  *   API responses  → network-first, fallback to cache (api-v1)
  *   Offline fallback → offline.html
@@ -12,8 +12,8 @@
  */
 
 const CACHE_NAMES = {
-  pages: 'pages-v2',
-  static: 'static-v4',
+  pages: 'pages-v3',
+  static: 'static-v5',
   images: 'images-v1',
   api: 'api-v1',
 };
