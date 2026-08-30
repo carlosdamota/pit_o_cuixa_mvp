@@ -119,10 +119,7 @@
   font-size: calc(1rem - 25%) !important;
   text-decoration: none;
   white-space: nowrap;
-<<<<<<< HEAD
-=======
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
->>>>>>> dev
 }
 
 .delivery-map-card__cta:hover {
