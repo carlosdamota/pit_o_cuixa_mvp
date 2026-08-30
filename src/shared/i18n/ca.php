@@ -13,8 +13,8 @@ declare(strict_types=1);
 return [
     // ── Global / Layout ──────────────────────────────────────────
     'site.name' => 'Pit o Cuixa',
-    'site.tagline' => 'Pollería i rostería a Torredembarra',
-    'site.description' => 'Pollería i rostería artesana a Torredembarra. Pollo a l\'ast, broquetes, hamburgueses i més. Demana online i recull a la botiga.',
+    'site.tagline' => 'Polleria i rostisseria a Torredembarra',
+    'site.description' => 'Polleria i rostisseria artesana a Torredembarra. Pollastre a l\'ast, broquetes, hamburgueses i més. Demana online i recull a la botiga.',
     'nav.home' => 'Inici',
     'nav.menu' => 'Carta',
     'nav.admin' => 'Admin',
@@ -416,9 +416,9 @@ return [
     ],
 
     // ── Home Page ────────────────────────────────────────────────
-    'home.title' => 'Pit o Cuixa — Pollería a Torredembarra',
-    'home.desc' => 'La millor pollería i rostería de Torredembarra. Pollo a l\'ast, broquetes, hamburgueses i plats casolans.',
-    'home.hero.title' => 'El millor pollo a l\'ast de Torredembarra',
+    'home.title' => 'Pit o Cuixa — Polleria a Torredembarra',
+    'home.desc' => 'La millor polleria i rostisseria de Torredembarra. Pollastre a l\'ast, broquetes, hamburgueses i plats casolans.',
+    'home.hero.title' => 'El millor pollastre a l\'ast de Torredembarra',
     'home.hero.subtitle' => 'Des de 1998 cuinant amb amor per a tu i els teus.',
     'home.hero.cta' => 'Veure la carta',
     'home.featured' => 'Més demanats',

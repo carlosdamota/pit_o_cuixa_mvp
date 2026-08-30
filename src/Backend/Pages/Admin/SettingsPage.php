@@ -32,7 +32,7 @@ class SettingsPage
         $meta = [
             'title'       => 'Settings — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin/settings',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa/settings',
             'index'       => false,
         ];
 
@@ -40,6 +40,9 @@ class SettingsPage
             'locale'                 => LANG,
             'user'                   => $user,
             'menu_slider_enabled'    => $all['menu_slider_enabled'] ?? '0',
+            'company_address'        => $all['company_address'] ?? '',
+            'company_phone'          => Settings::companyPhone(),
+            'company_whatsapp'       => $all['company_whatsapp'] ?? '',
             'image_count'            => $imageCount,
             'csrf_token'             => Auth::getCsrfToken(),
         ];

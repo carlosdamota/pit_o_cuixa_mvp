@@ -94,8 +94,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- ── CSS (with asset versioning for cache buster) ────────────── -->
-    <?php $v = '?v=1.5.0'; ?>
-    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= $v ?>">
+    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= assetVersion('/css/components/cookie-banner.css') ?>">
 
     <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
     <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
@@ -108,16 +107,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <link rel="stylesheet" href="/css/components/chat-widget.css<?= assetVersion('/css/components/chat-widget.css') ?>">
     <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
 
-    <!-- ── CSS (auto cache-busting via filemtime) ──────────────────── -->
-    <link rel="stylesheet" href="/css/tokens.css<?= assetVersion('/css/tokens.css') ?>">
-    <link rel="stylesheet" href="/css/base.css<?= assetVersion('/css/base.css') ?>">
-    <link rel="stylesheet" href="/css/layouts/header.css<?= assetVersion('/css/layouts/header.css') ?>">
-    <link rel="stylesheet" href="/css/layouts/footer.css<?= assetVersion('/css/layouts/footer.css') ?>">
-    <link rel="stylesheet" href="/css/components/product-card.css<?= assetVersion('/css/components/product-card.css') ?>">
-    <link rel="stylesheet" href="/css/components/filter-bar.css<?= assetVersion('/css/components/filter-bar.css') ?>">
-    <link rel="stylesheet" href="/css/components/whatsapp-float.css<?= assetVersion('/css/components/whatsapp-float.css') ?>">
-    <link rel="stylesheet" href="/css/components/cookie-banner.css<?= assetVersion('/css/components/cookie-banner.css') ?>">
-    <link rel="stylesheet" href="/css/pages/error.css<?= assetVersion('/css/pages/error.css') ?>">
+
 
     <!-- Home landing CSS (only on home page) -->
     <?php if ($pageName === 'home'): ?>
@@ -215,10 +205,15 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php require __DIR__ . '/../partials/whatsapp-float.php'; ?>
     <?php endif; ?>
     
+<<<<<<< HEAD
     <!-- Cookie settings -->
     <?php if (!$isAdmin): ?>
 
     <!-- Cookie settings -->
+=======
+    <!-- Cookie settings + banner (hidden on admin: admins don't need consent UI) -->
+    <?php if (!$isAdmin): ?>
+>>>>>>> dev
     <button
         id="cookie-settings-home"
         class="cookie-settings-button"
@@ -237,11 +232,12 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
 
     <!-- Cookie Banner -->
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
+    <?php endif; ?>
 
     <?php endif; ?> 
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
-    <script type="module" src="/js/cookie-banner.js<?= $v ?>"></script>
+    <script type="module" src="/js/cookie-banner.js<?= assetVersion('/js/cookie-banner.js') ?>"></script>
     <script type="module" src="/js/main.js<?= assetVersion('/js/main.js') ?>"></script>
 </body>
 </html>

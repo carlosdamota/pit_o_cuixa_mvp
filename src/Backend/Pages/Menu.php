@@ -166,6 +166,7 @@ class Menu
             'locale'            => $lang,
             'show_slider'       => $showSlider,
             'slider_images'     => $sliderImages,
+            'company_phone'     => Settings::companyPhone(),
         ];
 
         \renderPage('menu', $meta, $data);

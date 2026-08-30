@@ -118,3 +118,4 @@ $lang            = $pageData['locale'] ?? LANG;
         });
     });
 </script>
+

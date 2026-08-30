@@ -16,6 +16,7 @@ $catList      = $pageData['categories']   ?? [];
 $locale       = $pageData['locale']       ?? LANG;
 $showSlider   = $pageData['show_slider']   ?? false;
 $sliderImages = $pageData['slider_images'] ?? [];
+$companyPhone = $pageData['company_phone'] ?? \Config::phone();
 
 // Mode requested from onboarding drag & drop: 'local' (dine_in) vs 'delivery'
 $requestedMode  = $_GET['mode'] ?? '';
@@ -104,11 +105,21 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
      CHANNEL 1: Carta en Local (Restaurante) — Accordions
      ============================================================ -->
 <div class="container section" data-channel-view="dine_in"<?= $isDeliveryMode ? ' hidden' : '' ?>>
+    <!-- ── Page Title Sentence + Reservation CTA ─────────────────── -->
+    <header class="menu-local-header">
+        <h1 class="menu-local-header__title">Los mejores platos y menús de Pit o Cuixa</h1>
+        <a class="reserve-cta"
+           href="tel:<?= str_replace(' ', '', $companyPhone) ?>"
+           aria-label="Reservar mesa por teléfono">
+            <svg class="reserve-cta__icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>
+            </svg>
+            <span>Reservar ahora</span>
+        </a>
+    </header>
+
     <?php if ($dineInMenus !== []): ?>
         <section style="margin-bottom:var(--space-xl, 32px);" data-category="all">
-            <h2 class="section__title">
-                Menús del Día y Promociones
-            </h2>
             <div class="accordion-list">
                 <?php foreach ($dineInMenus as $index => $m):
                     $mName = $m["name_{$locale}"] ?? $m['name_es'];
@@ -119,10 +130,22 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     $sections = $mData['sections'] ?? [];
                     $isOpen = ($index === 0);
                     $mSearchText = mb_strtolower($mName . ' ' . $mDesc . ' ' . $badge . ' ' . $includes);
+                    // Image fallback chain: uploaded poster/Cloudinary URL (display-optimized
+                    // via ProductImage::displayUrl — f_auto,q_auto,w_112) → /img/fallback_img.webp.
+                    // Mirrors listview items below (data-image-slug keeps main.js chain working).
+                    $mThumbUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
+                        $m['image_url'] ?? null,
+                        \Pit\Cuixa\Backend\Services\ProductImage::THUMB_WIDTH
+                    ) ?? '/img/fallback_img.webp';
                 ?>
                     <article class="accordion-item accordion-item--featured <?= $isOpen ? 'accordion-item--open' : '' ?>"
                              data-search-text="<?= htmlspecialchars($mSearchText, ENT_QUOTES, 'UTF-8') ?>">
                         <button class="accordion-header" data-accordion-toggle aria-expanded="<?= $isOpen ? 'true' : 'false' ?>">
+                            <img src="<?= htmlspecialchars($mThumbUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                 alt=""
+                                 class="accordion-header__thumb"
+                                 loading="lazy" width="56" height="56"
+                                 <?php if (!empty($m['slug'])): ?>data-image-slug="<?= htmlspecialchars($m['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>>
                             <div class="accordion-header__title-wrap">
                                 <span class="accordion-header__title"><?= htmlspecialchars($mName, ENT_QUOTES, 'UTF-8') ?></span>
                                 <?php if ($badge !== ''): ?>
@@ -172,7 +195,7 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 
                             <?php if ($includes !== ''): ?>
                                 <div class="menu-includes-note">
-                                    💡 <?= htmlspecialchars($includes, ENT_QUOTES, 'UTF-8') ?>
+                                    <?= htmlspecialchars($includes, ENT_QUOTES, 'UTF-8') ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -184,9 +207,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
 
     <!-- Carta en local por Secciones / Categorías (ListView colapsable) -->
     <section>
-        <h2 class="section__title">
-            A la Carta en Restaurante
-        </h2>
         <div class="accordion-list">
             <?php foreach ($dineInGroups as $catIndex => $group):
                 $category = $group['category'];
@@ -200,7 +220,6 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     <button class="accordion-header" data-accordion-toggle aria-expanded="<?= $isOpenCat ? 'true' : 'false' ?>">
                         <div class="accordion-header__title-wrap">
                             <span class="accordion-header__title"><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="accordion-header__subtitle"><?= count($catProducts) ?> opciones</span>
                         </div>
                         <svg class="accordion-header__icon" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
                     </button>
@@ -211,13 +230,14 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                 $pName = $p["name_{$locale}"] ?? $p['name_es'];
                                 $pDesc = $p["description_{$locale}"] ?? $p['description_es'];
                                 $pSearchText = mb_strtolower($pName . ' ' . $pDesc);
-                                // Same image fallback chain as product-card.php:
-                                // scraped/Cloudinary URL → /img/fallback_img.webp.
-                                // data-image-slug keeps the client-side chain in
-                                // main.js working.
-                                $imgUrl = !empty($p['image_url'])
-                                    ? $p['image_url']
-                                    : '/img/fallback_img.webp';
+                                // Same image fallback chain as product-card.php, with the
+                                // thumbnail width: display-optimized Cloudinary URL →
+                                // /img/fallback_img.webp. data-image-slug keeps the
+                                // client-side chain in main.js working.
+                                $imgUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
+                                    $p['image_url'] ?? null,
+                                    \Pit\Cuixa\Backend\Services\ProductImage::THUMB_WIDTH
+                                ) ?? '/img/fallback_img.webp';
                             ?>
                                 <div class="listview-item" data-search-text="<?= htmlspecialchars($pSearchText, ENT_QUOTES, 'UTF-8') ?>">
                                     <div class="listview-item__left">

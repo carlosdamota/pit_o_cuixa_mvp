@@ -128,8 +128,6 @@ class CookieBanner {
             }
 
             this.loadPreferences();
-
-            console.log("Preferencias detectadas:", this.cookieCategories);
             this.hide();
 
         } catch (error) {
@@ -267,8 +265,6 @@ class CookieBanner {
                 return;
         }
 
-        console.log("Preferencias guardadas:", preferences);
-
         this.cookieCategories = {
             necessary: preferences.necessary,
             analytics: preferences.analytics
@@ -280,11 +276,6 @@ class CookieBanner {
         );
 
         this.hide();
-
-        console.log(
-            "Analytics permitido:",
-            this.hasConsent("analytics")
-        );
     }
 
     hasConsent(category) {

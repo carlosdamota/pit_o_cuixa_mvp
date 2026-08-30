@@ -21,6 +21,11 @@ export function getCsrfToken() {
  * Generic admin API fetch wrapper.
  * Automatically injects CSRF token and JSON content-type.
  *
+ * IIS shared hosting (dinahosting) only routes GET/HEAD/POST to PHP —
+ * PUT/DELETE requests are rejected by the web server with 405 before PHP
+ * runs. Tunnels those verbs through POST with the standard
+ * X-HTTP-Method-Override header, which the front controller unwraps.
+ *
  * @param   {string}  method  HTTP method (GET, POST, PUT, DELETE)
  * @param   {string}  url     Full URL to fetch
  * @param   {object}  [body]  Optional JSON body (will be JSON.stringify'd)
@@ -32,8 +37,14 @@ export async function api(method, url, body = null) {
     'X-CSRF-Token': getCsrfToken(),
   };
 
+  let fetchMethod = method;
+  if (['PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+    fetchMethod = 'POST';
+    headers['X-HTTP-Method-Override'] = method.toUpperCase();
+  }
+
   const res = await fetch(url, {
-    method,
+    method: fetchMethod,
     headers,
     body: body ? JSON.stringify(body) : null,
     credentials: 'same-origin',
@@ -939,7 +950,7 @@ if (typeof document !== 'undefined') {
     } catch (_) {
       // ignore
     }
-    window.location.href = '/admin/login';
+    window.location.href = '/pitocuixa/login';
   });
 }
 

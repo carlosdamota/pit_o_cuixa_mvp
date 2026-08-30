@@ -5,6 +5,9 @@
  * Variables from $pageData:
  *   - user: authenticated user row
  *   - menu_slider_enabled: '0' or '1'
+ *   - company_address: string ('' when unset)
+ *   - company_phone: primary phone (falls back to Config::phone())
+ *   - company_whatsapp: secondary mobile ('' when unset)
  *   - image_count: int
  *   - csrf_token: CSRF token
  *
@@ -13,6 +16,9 @@
 
 $user                  = $pageData['user'] ?? [];
 $sliderEnabled         = $pageData['menu_slider_enabled'] ?? '0';
+$companyAddress        = (string) ($pageData['company_address'] ?? '');
+$companyPhone          = (string) ($pageData['company_phone'] ?? '');
+$companyWhatsapp       = (string) ($pageData['company_whatsapp'] ?? '');
 $imageCount            = (int) ($pageData['image_count'] ?? 0);
 $csrfToken             = $pageData['csrf_token'] ?? '';
 $lang                  = $pageData['locale'] ?? LANG;
@@ -27,7 +33,7 @@ $lang                  = $pageData['locale'] ?? LANG;
         <header class="admin-header">
             <h1 class="admin-header__title">Ajustes del Sistema</h1>
             <div class="admin-header__actions">
-                <a href="/admin" class="admin-header__back">← Volver al Dashboard</a>
+                <a href="/pitocuixa" class="admin-header__back">← Volver al Dashboard</a>
             </div>
         </header>
 
@@ -73,6 +79,70 @@ $lang                  = $pageData['locale'] ?? LANG;
                 </p>
             </div>
         </section>
+
+        <!-- ── Company Data ─────────────────────────────────────────── -->
+        <section class="admin-section">
+            <h2 class="admin-section__title">Datos de la Empresa</h2>
+
+            <form data-company-form>
+                <div class="admin-field">
+                    <label class="admin-field__label" for="company-address">
+                        Dirección
+                    </label>
+                    <input type="text"
+                           id="company-address"
+                           name="company_address"
+                           class="admin-field__input"
+                           data-company-input="company_address"
+                           value="<?= htmlspecialchars($companyAddress, ENT_QUOTES, 'UTF-8') ?>"
+                           maxlength="200"
+                           autocomplete="off">
+                    <p class="admin-field__hint">
+                        Se muestra en el pie de página de la web. Si lo dejas vacío se usa el texto por defecto.
+                    </p>
+                </div>
+
+                <div class="admin-field">
+                    <label class="admin-field__label" for="company-phone">
+                        Teléfono principal (reservas)
+                    </label>
+                    <input type="tel"
+                           id="company-phone"
+                           name="company_phone"
+                           class="admin-field__input"
+                           data-company-input="company_phone"
+                           value="<?= htmlspecialchars($companyPhone, ENT_QUOTES, 'UTF-8') ?>"
+                           maxlength="20"
+                           placeholder="+34 977 64 20 10"
+                           autocomplete="off">
+                    <p class="admin-field__hint">
+                        Usado en el botón «Reservar ahora» y en el pie de página. Formato: +34 977 64 20 10
+                    </p>
+                </div>
+
+                <div class="admin-field">
+                    <label class="admin-field__label" for="company-whatsapp">
+                        Móvil de WhatsApp (opcional)
+                    </label>
+                    <input type="tel"
+                           id="company-whatsapp"
+                           name="company_whatsapp"
+                           class="admin-field__input"
+                           data-company-input="company_whatsapp"
+                           value="<?= htmlspecialchars($companyWhatsapp, ENT_QUOTES, 'UTF-8') ?>"
+                           maxlength="20"
+                           placeholder="+34 612 34 56 78"
+                           autocomplete="off">
+                    <p class="admin-field__hint">
+                        Si tienes un móvil secundario para WhatsApp, indícalo aquí. Si lo dejas vacío se usa el teléfono principal.
+                    </p>
+                </div>
+
+                <button type="submit" class="admin-btn admin-btn--primary" data-company-submit>
+                    Guardar cambios
+                </button>
+            </form>
+        </section>
     </main>
 </div>
 
@@ -96,7 +166,7 @@ if (toggle) {
         if (alertError) alertError.hidden = true;
 
         try {
-            const result = await api('PUT', '/api/admin/settings', {
+            const result = await api('PUT', '/api/pitocuixa/settings', {
                 menu_slider_enabled: enabled,
             });
 
@@ -123,6 +193,56 @@ if (toggle) {
                 alertError.hidden = false;
             }
             toggle.checked = !toggle.checked;
+        }
+    });
+}
+
+/**
+ * Company data form handler.
+ * Sends PUT /api/admin/settings with all company fields at once.
+ */
+const companyForm = document.querySelector('[data-company-form]');
+
+if (companyForm) {
+    companyForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const alertSuccess = document.querySelector('[data-alert-success]');
+        const alertError = document.querySelector('[data-alert-error]');
+        const submitBtn = companyForm.querySelector('[data-company-submit]');
+
+        const payload = {};
+        companyForm.querySelectorAll('[data-company-input]').forEach((input) => {
+            payload[input.dataset.companyInput] = input.value.trim();
+        });
+
+        if (alertSuccess) alertSuccess.hidden = true;
+        if (alertError) alertError.hidden = true;
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            const result = await api('PUT', '/api/pitocuixa/settings', payload);
+
+            if (result.error) {
+                if (alertError) {
+                    alertError.textContent = result.errors?.join('. ') || 'Error al guardar los ajustes';
+                    alertError.hidden = false;
+                }
+                return;
+            }
+
+            if (alertSuccess) {
+                alertSuccess.textContent = 'Datos de la empresa guardados correctamente';
+                alertSuccess.hidden = false;
+                setTimeout(() => { alertSuccess.hidden = true; }, 3000);
+            }
+        } catch (err) {
+            if (alertError) {
+                alertError.textContent = 'Network error: ' + err.message;
+                alertError.hidden = false;
+            }
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
 }

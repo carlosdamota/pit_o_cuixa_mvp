@@ -46,6 +46,9 @@ if ($flagHelp) {
     exit(0);
 }
 
+// ── Bootstrap (autoloader + Config) so we can use Totp / Crypto / Config ──
+require_once __DIR__ . '/../src/shared/bootstrap.php';
+
 // ── Helper: Read a line from stdin ───────────────────────────────────────
 function prompt(string $message): string
 {
@@ -80,7 +83,7 @@ function status(string $label, string $message): void
 echo "\n";
 echo "  ╔══════════════════════════════════╗\n";
 echo "  ║     Pit o Cuixa — Setup          ║\n";
-echo "  ║     Pollería y rostería           ║\n";
+echo "  ║     Pollería asadora             ║\n";
 echo "  ║     Torredembarra, Tarragona     ║\n";
 echo "  ╚══════════════════════════════════╝\n";
 echo "\n";
@@ -223,8 +226,17 @@ if ($adminCount > 0) {
     // ── 9. Get admin credentials ─────────────────────────────────────────────
     echo "\n── Admin User Creation ──\n\n";
 
-    $username = prompt('Username [admin]: ');
-    $username = $username === '' ? 'admin' : $username;
+    $username = prompt('Admin username (email) [admin@pitocuixa.es]: ');
+    $username = $username === '' ? 'admin@pitocuixa.es' : $username;
+
+    // Username IS the email (single unified field). Validate it as one.
+    while (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+        status('✗', 'That is not a valid email address.');
+        $username = prompt('Admin username (email): ');
+        if ($username === '') {
+            $username = 'admin@pitocuixa.es';
+        }
+    }
 
     $displayName = prompt('Display name [Admin]: ');
     $displayName = $displayName === '' ? 'Admin' : $displayName;
@@ -255,23 +267,80 @@ if ($adminCount > 0) {
     try {
         $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 
+        // ── 2FA (TOTP) enrollment at install time ─────────────────────
+        // Generates the shared secret, encrypts it at rest, and enables 2FA
+        // immediately so the admin is protected on first login.
+        // NOTE: Totp::generateSecret() / getProvisioningUri() are intentionally
+        // left unimplemented (see src/Backend/Auth/Totp.php). Setup will fail
+        // here until those methods are implemented — which is the intended gap.
+        $totpSecret  = \Pit\Cuixa\Backend\Auth\Totp::generateSecret();
+        $otpAuthUri  = \Pit\Cuixa\Backend\Auth\Totp::getProvisioningUri($totpSecret, $username);
+        $encrypted   = \Pit\Cuixa\Backend\Auth\Crypto::encrypt($totpSecret);
+
+        // Generate 10 single-use backup codes (plaintext shown below, hash stored)
+        $backupAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        $backupCodes    = [];
+        for ($i = 0; $i < 10; $i++) {
+            $code = '';
+            for ($j = 0; $j < 10; $j++) {
+                $code .= $backupAlphabet[random_int(0, strlen($backupAlphabet) - 1)];
+            }
+            $backupCodes[] = $code;
+        }
+        $backupHashes = array_map(
+            static fn(string $c): string => password_hash($c, PASSWORD_BCRYPT),
+            $backupCodes
+        );
+
         $stmt = $pdo->prepare(
-            'INSERT INTO users (username, password, display_name, role, is_active) VALUES (:u, :p, :d, :r, 1)'
+            'INSERT INTO users (
+                username, password, display_name, role, is_active,
+                totp_secret, totp_enabled, totp_verified_at
+             ) VALUES (:u, :p, :d, :r, 1, :secret, 1, datetime(\'now\'))'
         );
         $stmt->execute([
-            ':u' => $username,
-            ':p' => $hash,
-            ':d' => $displayName,
-            ':r' => 'admin',
+            ':u'      => $username,
+            ':p'      => $hash,
+            ':d'      => $displayName,
+            ':r'      => 'admin',
+            ':secret' => $encrypted,
         ]);
 
+        $adminId = (int) $pdo->lastInsertId();
+
+        // Persist backup codes
+        $bcStmt = $pdo->prepare(
+            'INSERT INTO backup_codes (user_id, code_hash) VALUES (:uid, :h)'
+        );
+        foreach ($backupHashes as $h) {
+            $bcStmt->execute([':uid' => $adminId, ':h' => $h]);
+        }
+
         status('✓', "Admin user '{$username}' created successfully.");
+
+        // Print enrollment material for the human operator to scan/save.
+        echo "\n";
+        echo "  ╔════════════════════════════════════════════════════════╗\n";
+        echo "  ║         2FA (TOTP) ENROLLMENT — SAVE THIS NOW         ║\n";
+        echo "  ╚════════════════════════════════════════════════════════╝\n\n";
+        echo "  Authenticator URI (otpauth):\n    {$otpAuthUri}\n\n";
+        echo "  Secret (base32, manual entry):\n    {$totpSecret}\n\n";
+        echo "  Backup codes (one-time each):\n";
+        foreach ($backupCodes as $bc) {
+            echo "    {$bc}\n";
+        }
+        echo "\n  ⚠  These are shown ONLY once. Add the account to your\n";
+        echo "     authenticator app and store the backup codes safely.\n\n";
     } catch (\PDOException $e) {
         if (str_contains($e->getMessage(), 'UNIQUE constraint')) {
             status('✗', "User '{$username}' already exists.");
         } else {
             status('✗', "Error creating user: " . $e->getMessage());
         }
+        exit(1);
+    } catch (\Throwable $e) {
+        status('✗', "2FA enrollment failed: " . $e->getMessage());
+        status('!', "Admin NOT created. Implement src/Backend/Auth/Totp.php first, then re-run setup.");
         exit(1);
     }
 }

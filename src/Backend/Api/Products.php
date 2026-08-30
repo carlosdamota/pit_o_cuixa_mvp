@@ -16,6 +16,7 @@ use Pit\Cuixa\Backend\Http\Response;
 use Pit\Cuixa\Backend\Db\Repositories\Product as ProductRepo;
 use Pit\Cuixa\Backend\Db\Repositories\Category as CategoryRepo;
 use Pit\Cuixa\Backend\Auth\ClickRateLimiter;
+use Pit\Cuixa\Backend\Services\ProductImage;
 
 class Products
 {
@@ -148,7 +149,7 @@ class Products
             'description'     => $product["description_{$lang}"],
             'price'           => (float) $product['price'],
             'price_formatted' => sprintf('€%.2f', (float) $product['price']),
-            'image_url'       => ($product['image_url'] ?? '') !== '' ? $product['image_url'] : null,
+            'image_url'       => ProductImage::displayUrl($product['image_url'] ?? null),
             'last_shop_url'   => $product['last_shop_url'],
             'category_id'     => (int) $product['category_id'],
             'category_slug'   => $product['category_slug'],

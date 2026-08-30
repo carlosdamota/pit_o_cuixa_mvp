@@ -110,7 +110,7 @@ function initLangDropdown() {
       } else {
         toggle.setAttribute('aria-expanded', 'true');
         menu.removeAttribute('hidden');
-        positionMenu();
+        positionMenu(); // lift onboarding menu to <body> above chat (99998) and onboarding (9999)
       }
     });
   });
@@ -337,40 +337,85 @@ function initChatWidget() {
 
   const isOpen = () => widget.getAttribute('aria-hidden') !== 'true';
 
-  const positionInput = () => {
-    const inputRow = widget.querySelector('.chat-widget__input');
-    if (!inputRow) return;
-    const wRect = widget.getBoundingClientRect();
-    document.body.appendChild(inputRow);
-    inputRow.style.position = 'fixed';
-    inputRow.style.bottom = `${window.innerHeight - wRect.bottom}px`;
-    inputRow.style.left = `${wRect.left}px`;
-    inputRow.style.width = `${wRect.width}px`;
-    inputRow.style.zIndex = '99998'; // above onboarding (10000), below lang (99999)
-    inputRow.style.borderRadius = '0 0 var(--radius) var(--radius)';
+  // Lift the widget chrome (header, message body, input) out of its
+  // container and pin each piece to the viewport, so the whole chat sits
+  // above the onboarding overlay (z-index 10000) but below the lang menu
+  // (99999). Read every rect BEFORE moving any node — reparenting one
+  // shifts the layout of the others.
+  const positionChrome = () => {
+    const header = widget.querySelector('.chat-widget__header');
+    const body = widget.querySelector('#messages');
+    const input = widget.querySelector('.chat-widget__input');
+
+    const headerRect = header ? header.getBoundingClientRect() : null;
+    const bodyRect = body ? body.getBoundingClientRect() : null;
+    const inputRect = input ? input.getBoundingClientRect() : null;
+
+    const lift = (el, rect, role) => {
+      if (!el || !rect) return;
+      if (!el.__chatParent) el.__chatParent = el.parentNode;
+      document.body.appendChild(el);
+      el.style.position = 'fixed';
+      el.style.left = `${rect.left}px`;
+      el.style.width = `${rect.width}px`;
+      el.style.zIndex = '99998'; // above onboarding (10000), below lang (99999)
+      el.style.boxShadow = 'var(--shadow-lg)';
+      if (role === 'input') {
+        el.style.bottom = `${window.innerHeight - rect.bottom}px`;
+        el.style.top = '';
+        el.style.height = '';
+        el.style.borderRadius = '0 0 var(--radius) var(--radius)';
+      } else if (role === 'header') {
+        el.style.top = `${rect.top}px`;
+        el.style.bottom = '';
+        el.style.height = '';
+        el.style.borderRadius = 'var(--radius) var(--radius) 0 0';
+      } else {
+        el.style.top = `${rect.top}px`;
+        el.style.bottom = '';
+        el.style.height = `${rect.height}px`;
+        el.style.borderRadius = '0';
+      }
+    };
+
+    lift(header, headerRect, 'header');
+    lift(body, bodyRect, 'body');
+    lift(input, inputRect, 'input');
+
+    widget.style.display = 'none'; // hide the now-empty shell
   };
 
-  const restoreInput = () => {
-    const inputRow = document.querySelector('.chat-widget__input');
-    if (!inputRow) return;
-    widget.appendChild(inputRow);
-    inputRow.style.position = '';
-    inputRow.style.bottom = '';
-    inputRow.style.left = '';
-    inputRow.style.width = '';
-    inputRow.style.zIndex = '';
-    inputRow.style.borderRadius = '';
+  const restoreChrome = () => {
+    const restore = (el) => {
+      if (!el) return;
+      widget.style.display = '';
+      const parent = el.__chatParent || widget;
+      parent.appendChild(el);
+      el.style.position = '';
+      el.style.top = '';
+      el.style.left = '';
+      el.style.width = '';
+      el.style.height = '';
+      el.style.bottom = '';
+      el.style.zIndex = '';
+      el.style.boxShadow = '';
+      el.style.borderRadius = '';
+      el.__chatParent = null;
+    };
+    restore(document.querySelector('.chat-widget__header'));
+    restore(document.getElementById('messages'));
+    restore(document.querySelector('.chat-widget__input'));
   };
 
   const open = () => {
     widget.setAttribute('aria-hidden', 'false');
-    positionInput();
+    positionChrome();
     userInput.focus();
   };
 
   const close = () => {
     widget.setAttribute('aria-hidden', 'true');
-    restoreInput();
+    restoreChrome();
   };
 
   if (openTrigger) {

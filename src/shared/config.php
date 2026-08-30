@@ -95,12 +95,25 @@ final class Config
     }
 
     /**
-     * Absolute path to the public/web root directory (supports public or public_html).
+     * Absolute path to the public/web root directory.
+     *
+     * Environment layouts:
+     *   - dinahosting production: docroot is `www/`
+     *   - GoogieHost preprod:     docroot is `public_html/`
+     *   - local dev:              `public/`
+     * Each environment has exactly one of them; first match wins.
      */
     public static function publicDir(): string
     {
         $root = dirname(__DIR__, 2);
-        return is_dir($root . '/public_html') ? ($root . '/public_html') : ($root . '/public');
+
+        foreach (['public_html', 'public', 'www'] as $dir) {
+            if (is_dir($root . '/' . $dir)) {
+                return $root . '/' . $dir;
+            }
+        }
+
+        return $root . '/public';
     }
 
     /**
@@ -185,5 +198,29 @@ final class Config
     public static function serviceApiToken(): string
     {
         return self::get('SERVICE_API_TOKEN', '');
+    }
+
+    /**
+     * 32-byte key (hex, 64 chars) used for AES-256-GCM encryption of TOTP
+     * secrets at rest in the `users.totp_secret` column.
+     *
+     * SECURITY: this is a generated placeholder. OVERRIDE it in production by
+     * setting `TOTP_ENC_KEY` in your .env file. If you change the key, any
+     * previously-encrypted secrets become undecryptable — re-enroll 2FA after
+     * rotation.
+     */
+    private const TOTP_ENC_KEY = 'fcaafb67034384033b28aa307ca1c15bc0bb714313e668aa27a6dbe9eb2d53d5';
+
+    /**
+     * 32-byte key for AES-256-GCM (raw binary after hex2bin).
+     */
+    public static function totpEncryptionKey(): string
+    {
+        $env = self::get('TOTP_ENC_KEY', '');
+        if ($env !== '') {
+            return $env;
+        }
+
+        return self::TOTP_ENC_KEY;
     }
 }

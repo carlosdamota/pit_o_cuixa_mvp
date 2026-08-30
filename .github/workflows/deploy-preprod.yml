@@ -14,7 +14,7 @@ name: Deploy Preproduction
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
   workflow_dispatch:
 
 concurrency:
@@ -91,30 +91,51 @@ jobs:
           cp -r public/* public_html/
           cp -r public/.[!.]* public_html/ 2>/dev/null || true
           echo "public_html prepared for deployment."
-      - name: FTP Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
-          port: 21
-          server-dir: ./
-          security: loose
-          exclude: |
-            **/data/**
-            **/.git/**
-            **/.github/**
-            **/.gitignore
-            **/public/**
-          dry-run: false
+      - name: FTP Deploy (lftp mirror)
+        run: |
+          command -v lftp >/dev/null 2>&1 || { echo "::group::Installing lftp"; sudo apt-get update -y && sudo apt-get install -y lftp; echo "::endgroup::"; }
+          lftp -c "
+            set net:timeout 60;
+            set net:max-retries 5;
+            set net:reconnect-interval-base 5;
+            set ftp:passive-mode true;
+            set ftp:ssl-allow false;
+            open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
+            mirror --reverse --verbose --no-perms \
+              --exclude-glob 'data/' \
+              --exclude-glob '.git/' \
+              --exclude-glob '.github/' \
+              --exclude-glob '.gitignore' \
+              --exclude-glob 'public/' \
+              --exclude-glob 'vendor/' \
+              --exclude-glob 'tests/' \
+              --exclude-glob 'scripts/' \
+              --exclude-glob 'openspec/' \
+              --exclude-glob 'sdd/' \
+              --exclude-glob 'scratch/' \
+              --exclude-glob '.agents/' \
+              --exclude-glob '.atl/' \
+              --exclude-glob '.codegraph/' \
+              --exclude-glob '.opencode/' \
+              --exclude-glob '.windsurf/' \
+              --exclude-glob '*.md' \
+              --exclude-glob '.env.example' \
+              --exclude-glob 'envelope.json' \
+              --exclude-glob 'skills-lock.json' \
+              ./ ./
+          "
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
 
       - name: Post-deploy migration
         run: |
           echo "Triggering post-deploy migration..."
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${SITE_URL}/api/migrate" \
             -H "Authorization: Bearer ${SERVICE_API_TOKEN}" \
-            -H "Content-Type: application/json")
+            -H "Content-Type: application/json" \
+            -H "Content-Length: 0")
           HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
           BODY=$(echo "$RESPONSE" | sed '$d')
 
@@ -123,6 +144,13 @@ jobs:
 
           if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
             echo "::error::Migration endpoint returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+          # Fail the job if the migration body reports failures (success:false),
+          # even when the HTTP status is 200/201.
+          if echo "$BODY" | grep -q '"success"[[:space:]]*:[[:space:]]*false'; then
+            echo "::error::Migration endpoint reported failures: $BODY"
             exit 1
           fi
           echo "Migration completed successfully."

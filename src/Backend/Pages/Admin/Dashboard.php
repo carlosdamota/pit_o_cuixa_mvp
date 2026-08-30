@@ -56,7 +56,7 @@ class Dashboard
         $meta = [
             'title'       => 'Admin — ' . __('site.name'),
             'description' => __('site.description'),
-            'canonical'   => \Config::siteUrl() . '/admin',
+            'canonical'   => \Config::siteUrl() . '/pitocuixa',
             'index'       => false,
         ];
 
