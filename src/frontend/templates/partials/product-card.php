@@ -37,11 +37,11 @@ $description = !empty($product['description'])
 $price       = (float) ($product['price'] ?? 0);
 $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.') . ' €';
 $slug        = $product['slug']        ?? '';
-// Image fallback chain: scraped/Cloudinary URL → generic /img/fallback_img.webp.
+// Image fallback chain: scraped/Cloudinary URL (display-optimized via
+// ProductImage::displayUrl — f_auto,q_auto,w_600) → generic /img/fallback_img.webp.
 // Mirrors the client-side chain in public/js/main.js (which uses data-image-slug).
-$imageUrl    = !empty($product['image_url'])
-    ? $product['image_url']
-    : '/img/fallback_img.webp';
+$imageUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl($product['image_url'] ?? null)
+    ?? '/img/fallback_img.webp';
 // Build the order URL: empty → disabled card; absolute http(s) → use as-is
 // (admin may have saved a full URL); anything else is a shop-relative path,
 // so prefix it with the shop domain from URL_PRODUCT.

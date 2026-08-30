@@ -130,11 +130,13 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     $sections = $mData['sections'] ?? [];
                     $isOpen = ($index === 0);
                     $mSearchText = mb_strtolower($mName . ' ' . $mDesc . ' ' . $badge . ' ' . $includes);
-                    // Image fallback chain: uploaded poster/Cloudinary URL → /img/fallback_img.webp.
+                    // Image fallback chain: uploaded poster/Cloudinary URL (display-optimized
+                    // via ProductImage::displayUrl — f_auto,q_auto,w_112) → /img/fallback_img.webp.
                     // Mirrors listview items below (data-image-slug keeps main.js chain working).
-                    $mThumbUrl = !empty($m['image_url'])
-                        ? $m['image_url']
-                        : '/img/fallback_img.webp';
+                    $mThumbUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
+                        $m['image_url'] ?? null,
+                        \Pit\Cuixa\Backend\Services\ProductImage::THUMB_WIDTH
+                    ) ?? '/img/fallback_img.webp';
                 ?>
                     <article class="accordion-item accordion-item--featured <?= $isOpen ? 'accordion-item--open' : '' ?>"
                              data-search-text="<?= htmlspecialchars($mSearchText, ENT_QUOTES, 'UTF-8') ?>">
@@ -228,13 +230,14 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                                 $pName = $p["name_{$locale}"] ?? $p['name_es'];
                                 $pDesc = $p["description_{$locale}"] ?? $p['description_es'];
                                 $pSearchText = mb_strtolower($pName . ' ' . $pDesc);
-                                // Same image fallback chain as product-card.php:
-                                // scraped/Cloudinary URL → /img/fallback_img.webp.
-                                // data-image-slug keeps the client-side chain in
-                                // main.js working.
-                                $imgUrl = !empty($p['image_url'])
-                                    ? $p['image_url']
-                                    : '/img/fallback_img.webp';
+                                // Same image fallback chain as product-card.php, with the
+                                // thumbnail width: display-optimized Cloudinary URL →
+                                // /img/fallback_img.webp. data-image-slug keeps the
+                                // client-side chain in main.js working.
+                                $imgUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
+                                    $p['image_url'] ?? null,
+                                    \Pit\Cuixa\Backend\Services\ProductImage::THUMB_WIDTH
+                                ) ?? '/img/fallback_img.webp';
                             ?>
                                 <div class="listview-item" data-search-text="<?= htmlspecialchars($pSearchText, ENT_QUOTES, 'UTF-8') ?>">
                                     <div class="listview-item__left">
