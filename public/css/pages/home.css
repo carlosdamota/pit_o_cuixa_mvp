@@ -611,6 +611,17 @@ body:has(.landing--onboarding) .main {
   }
 }
 
+/* Narrow phones (Pixel 7 / mid-range ~390-480px): lift the floating
+   buttons above the onboarding footer (language + FAQ) so they don't
+   overlap it. Scoped to onboarding only — other pages keep 16px. */
+@media (max-width: 480px) {
+  body:has(.landing--onboarding) .cookie-settings-button,
+  body:has(.landing--onboarding) .whatsapp-float {
+    /* footer top edge ~60px + clearance */
+    bottom: 85px;
+  }
+}
+
 /* FAQ Pill Button */
 .onboarding__faq-btn {
   margin-right: auto;
