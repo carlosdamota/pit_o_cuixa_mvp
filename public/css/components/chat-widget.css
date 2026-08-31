@@ -181,7 +181,7 @@
 @media (max-width: 767px) {
   .chat-widget {
     right: 16px;
-    bottom: calc(72px + 48px + 12px); /* Above the (smaller) mobile launcher */
+    bottom: calc(16px + 48px + 12px); /* Above the (smaller) mobile launcher */
     width: min(400px, calc(100vw - 24px));
     max-height: calc(100vh - 16px);
   }
