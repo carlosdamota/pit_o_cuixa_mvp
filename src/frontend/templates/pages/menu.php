@@ -130,22 +130,18 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                     $sections = $mData['sections'] ?? [];
                     $isOpen = ($index === 0);
                     $mSearchText = mb_strtolower($mName . ' ' . $mDesc . ' ' . $badge . ' ' . $includes);
-                    // Image fallback chain: uploaded poster/Cloudinary URL (display-optimized
-                    // via ProductImage::displayUrl — f_auto,q_auto,w_112) → /img/fallback_img.webp.
-                    // Mirrors listview items below (data-image-slug keeps main.js chain working).
-                    $mThumbUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
+                    // Large content image rendered below the expanded text on mobile / in the
+                    // right column on desktop: uploaded poster/Cloudinary URL (display-optimized
+                    // via ProductImage::displayUrl — f_auto,q_auto,w_600) → /img/fallback_img.webp.
+                    // data-image-slug keeps the client-side chain in main.js working.
+                    $mImageUrl = \Pit\Cuixa\Backend\Services\ProductImage::displayUrl(
                         $m['image_url'] ?? null,
-                        \Pit\Cuixa\Backend\Services\ProductImage::THUMB_WIDTH
+                        \Pit\Cuixa\Backend\Services\ProductImage::CARD_WIDTH
                     ) ?? '/img/fallback_img.webp';
                 ?>
                     <article class="accordion-item accordion-item--featured <?= $isOpen ? 'accordion-item--open' : '' ?>"
                              data-search-text="<?= htmlspecialchars($mSearchText, ENT_QUOTES, 'UTF-8') ?>">
                         <button class="accordion-header" data-accordion-toggle aria-expanded="<?= $isOpen ? 'true' : 'false' ?>">
-                            <img src="<?= htmlspecialchars($mThumbUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                 alt=""
-                                 class="accordion-header__thumb"
-                                 loading="lazy" width="56" height="56"
-                                 <?php if (!empty($m['slug'])): ?>data-image-slug="<?= htmlspecialchars($m['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>>
                             <div class="accordion-header__title-wrap">
                                 <span class="accordion-header__title"><?= htmlspecialchars($mName, ENT_QUOTES, 'UTF-8') ?></span>
                                 <?php if ($badge !== ''): ?>
@@ -163,41 +159,51 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
                         </button>
 
                         <div class="accordion-content" <?= $isOpen ? '' : 'hidden' ?>>
-                            <?php if (is_array($sections) && $sections !== []): ?>
-                                <div class="menu-sections">
-                                    <?php foreach ($sections as $sec):
-                                        $secTitle = $sec["title_{$locale}"] ?? $sec['title_es'] ?? '';
-                                        $secItems = $sec["items_{$locale}"] ?? $sec['items_es'] ?? [];
-                                    ?>
-                                        <div class="menu-section-block">
-                                            <h4 class="menu-section-block__title"><?= htmlspecialchars($secTitle, ENT_QUOTES, 'UTF-8') ?></h4>
-                                            <ul class="menu-section-block__list">
-                                                <?php foreach ($secItems as $item): ?>
-                                                    <?php if (is_array($item)):
-                                                        $itemName = $item["name_{$locale}"] ?? $item['name_es'] ?? $item['name'] ?? '';
-                                                        $itemPrice = (float) ($item['price'] ?? 0);
-                                                    ?>
-                                                        <li class="menu-section-block__item" style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
-                                                            <span>• <?= htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8') ?></span>
-                                                            <?php if ($itemPrice > 0): ?>
-                                                                <strong style="margin-left:12px;white-space:nowrap;color:var(--color-primary, #d97706);"><?= number_format($itemPrice, 2) ?> €</strong>
-                                                            <?php endif; ?>
-                                                        </li>
-                                                    <?php else: ?>
-                                                        <li class="menu-section-block__item">• <?= htmlspecialchars((string) $item, ENT_QUOTES, 'UTF-8') ?></li>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
+                            <div class="accordion-content__body">
+                                <?php if (is_array($sections) && $sections !== []): ?>
+                                    <div class="menu-sections">
+                                        <?php foreach ($sections as $sec):
+                                            $secTitle = $sec["title_{$locale}"] ?? $sec['title_es'] ?? '';
+                                            $secItems = $sec["items_{$locale}"] ?? $sec['items_es'] ?? [];
+                                        ?>
+                                            <div class="menu-section-block">
+                                                <h4 class="menu-section-block__title"><?= htmlspecialchars($secTitle, ENT_QUOTES, 'UTF-8') ?></h4>
+                                                <ul class="menu-section-block__list">
+                                                    <?php foreach ($secItems as $item): ?>
+                                                        <?php if (is_array($item)):
+                                                            $itemName = $item["name_{$locale}"] ?? $item['name_es'] ?? $item['name'] ?? '';
+                                                            $itemPrice = (float) ($item['price'] ?? 0);
+                                                        ?>
+                                                            <li class="menu-section-block__item" style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+                                                                <span>• <?= htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8') ?></span>
+                                                                <?php if ($itemPrice > 0): ?>
+                                                                    <strong style="margin-left:12px;white-space:nowrap;color:var(--color-primary, #d97706);"><?= number_format($itemPrice, 2) ?> €</strong>
+                                                                <?php endif; ?>
+                                                            </li>
+                                                        <?php else: ?>
+                                                            <li class="menu-section-block__item">• <?= htmlspecialchars((string) $item, ENT_QUOTES, 'UTF-8') ?></li>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
 
-                            <?php if ($includes !== ''): ?>
-                                <div class="menu-includes-note">
-                                    <?= htmlspecialchars($includes, ENT_QUOTES, 'UTF-8') ?>
-                                </div>
-                            <?php endif; ?>
+                                <?php if ($includes !== ''): ?>
+                                    <div class="menu-includes-note">
+                                        <?= htmlspecialchars($includes, ENT_QUOTES, 'UTF-8') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="accordion-content__media">
+                                <img src="<?= htmlspecialchars($mImageUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                     alt="<?= htmlspecialchars($mName, ENT_QUOTES, 'UTF-8') ?>"
+                                     class="accordion-content__img"
+                                     <?php if (!empty($m['slug'])): ?>data-image-slug="<?= htmlspecialchars($m['slug'], ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
+                                     loading="lazy" decoding="async">
+                            </div>
                         </div>
                     </article>
                 <?php endforeach; ?>

@@ -208,7 +208,8 @@ function handleProductImageError(img) {
 
 /**
  * Attach the image fallback listener. Only product images (scraped sources)
- * participate; logos, slider and admin images are left untouched.
+ * and featured accordion content images participate; logos, slider and admin
+ * images are left untouched.
  */
 function initImageFallback() {
   document.addEventListener('error', (event) => {
@@ -216,7 +217,9 @@ function initImageFallback() {
     if (!(target instanceof HTMLImageElement)) {
       return;
     }
-    if (!target.classList.contains('product-card__image') && !target.classList.contains('listview-item__img')) {
+    if (!target.classList.contains('product-card__image')
+        && !target.classList.contains('listview-item__img')
+        && !target.classList.contains('accordion-content__img')) {
       return;
     }
     handleProductImageError(target);
