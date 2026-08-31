@@ -23,6 +23,11 @@
   right: 32px;
   z-index: 9999 !important;
 
+  /* Prevent the aside from stealing clicks on catalog products.
+     pointer-events: none makes the container inert; the toggle and
+     the open menu re-enable it via pointer-events: auto. */
+  pointer-events: none;
+
   /* WF-008: Prevent horizontal overflow on narrow viewports */
   max-width: 100vw;
 
@@ -114,6 +119,7 @@
   cursor: pointer;
   position: relative;
   opacity: 0.95;
+  pointer-events: auto;
   transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
@@ -184,7 +190,7 @@
 /* Mobile responsive safe zone */
 @media (max-width: 767px) {
   .whatsapp-float {
-    bottom: 16px;
+    bottom: 72px;
     right: 16px;
   }
 
@@ -197,4 +203,5 @@
   .whatsapp-float__menu {
     min-width: 180px;
   }
+  
 }
