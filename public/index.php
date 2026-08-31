@@ -27,6 +27,7 @@ use Pit\Cuixa\Backend\Api\WebScraper;
 use Pit\Cuixa\Backend\Api\UpdateMenu;
 use Pit\Cuixa\Backend\Api\Migrate;
 use Pit\Cuixa\Backend\Api\AdminUpload;
+use Pit\Cuixa\Backend\Api\AdminTranslate;
 use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Pages\Home;
 use Pit\Cuixa\Backend\Pages\Menu as MenuPage;
@@ -41,7 +42,6 @@ use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\FaqPage;
 use Pit\Cuixa\Backend\Pages\Privacy;
 use Pit\Cuixa\Backend\Pages\Cookies;
-use Pit\Cuixa\Backend\Pages\Terms;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 use Pit\Cuixa\Backend\Pages\LlmsTxt;
@@ -226,6 +226,14 @@ $router->add('GET',    '/api/pitocuixa/export',         static function (array $
 $router->add('GET',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::get(); });
 $router->add('PUT',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::update(); });
 $router->add('POST',   '/api/pitocuixa/upload',         static function (array $params): void { AdminUpload::uploadImage(); });
+//POST /api/pitocuixa/translate — translate missing fields via DeepL, admin-session auth
+$router->add('POST',   '/api/pitocuixa/translate',      static function (array $params): void { AdminTranslate::run(); });
+
+//GET /api/pitocuixa/translate — 405: POST-only, must not trigger translation on GET
+$router->add('GET',    '/api/pitocuixa/translate',      static function (array $params): void {
+    header('Allow: POST');
+    Response::error('Method Not Allowed', 405);
+});
 
 // ── 4b. Sitemap and Robots (Phase 4) ──────────────────────────────────
 $router->add('GET', '/sitemap.xml', static function (array $params): void {
@@ -300,23 +308,6 @@ $router->add('GET', '/{lang}/cookies', static function (array $params): void {
 
     if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/cookies?lang=' . $lang, 302);
-        return;
-    }
-
-    Response::error('Not Found', 404);
-});
-
-// Terms page
-$router->add('GET', '/terms', static function (array $params): void {
-    Terms::render();
-});
-
-// Terms page with locale prefix
-$router->add('GET', '/{lang}/terms', static function (array $params): void {
-    $lang = $params['lang'] ?? '';
-
-    if (in_array($lang, \Config::supportedLocales(), true)) {
-        Response::redirect('/terms?lang=' . $lang, 302);
         return;
     }
 

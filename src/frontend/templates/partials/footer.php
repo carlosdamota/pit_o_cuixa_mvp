@@ -41,9 +41,6 @@ $phoneDisplay   = $companyPhone !== '' ? $companyPhone : __('home.info.phone');
                     <?= __('footer.cookies') ?>
                 </a>
 
-                <a href="/terms" class="footer__link">
-                    <?= __('footer.terms') ?>
-                </a>
             </nav>
             
             &copy; <?= date('Y') ?> <?= __('site.name') ?>. <?= __('footer.rights') ?>

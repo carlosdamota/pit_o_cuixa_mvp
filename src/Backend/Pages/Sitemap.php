@@ -118,18 +118,6 @@ class Sitemap
             ],
         ];
 
-        // ── Terms page ───────────────────────────────────────────────
-        $pages[] = [
-            'loc' => $siteUrl . '/terms',
-            'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/terms'],
-                ['hreflang' => 'es', 'href' => $siteUrl . '/terms?lang=es'],
-                ['hreflang' => 'en', 'href' => $siteUrl . '/terms?lang=en'],
-                ['hreflang' => 'uk', 'href' => $siteUrl . '/terms?lang=uk'],
-                ['hreflang' => 'x-default', 'href' => $siteUrl . '/terms'],
-            ],
-        ];
-
         return $pages;
     }
 

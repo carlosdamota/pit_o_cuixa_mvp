@@ -37,6 +37,28 @@
   transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
 }
 
+/*
+   CW-001: Closed (or unknown) state must NEVER capture clicks over the
+   catalogue. display:none is the strongest possible guarantee the empty shell
+   cannot intercept pointer events, on top of visibility/opacity/pointer-events
+   above. It is scoped to aria-hidden="true" so the open state
+   ([aria-hidden="false"]) keeps its layout for rect measurement in main.js's
+   positionChrome().
+
+   Conflict note: main.js hides the shell with an inline
+   widget.style.display='none' while the chat is OPEN (only its chrome is
+   reparented to <body>), and restoreChrome() resets that to ''. Because
+   opening sets aria-hidden="false" and reparents the chrome synchronously in
+   the same frame, the shell never visibly animates open anyway — so this
+   display:none cannot break any real transition. The robust cleanup of
+   orphaned chrome left floating in <body> is handled in main.js
+   (restoreChrome + sweepChromeless), since those nodes sit outside this shell.
+*/
+.chat-widget[aria-hidden="true"],
+.chat-widget:not([aria-hidden="false"]) {
+  display: none;
+}
+
 .chat-widget[aria-hidden="false"] {
   opacity: 1;
   transform: translateY(0);
@@ -181,7 +203,7 @@
 @media (max-width: 767px) {
   .chat-widget {
     right: 16px;
-    bottom: calc(72px + 48px + 12px); /* Above the (smaller) mobile launcher */
+    bottom: calc(16px + 48px + 12px); /* Above the (smaller) mobile launcher */
     width: min(400px, calc(100vw - 24px));
     max-height: calc(100vh - 16px);
   }
