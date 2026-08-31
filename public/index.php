@@ -27,6 +27,7 @@ use Pit\Cuixa\Backend\Api\WebScraper;
 use Pit\Cuixa\Backend\Api\UpdateMenu;
 use Pit\Cuixa\Backend\Api\Migrate;
 use Pit\Cuixa\Backend\Api\AdminUpload;
+use Pit\Cuixa\Backend\Api\AdminTranslate;
 use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Pages\Home;
 use Pit\Cuixa\Backend\Pages\Menu as MenuPage;
@@ -225,6 +226,14 @@ $router->add('GET',    '/api/pitocuixa/export',         static function (array $
 $router->add('GET',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::get(); });
 $router->add('PUT',    '/api/pitocuixa/settings',       static function (array $params): void { AdminSettings::update(); });
 $router->add('POST',   '/api/pitocuixa/upload',         static function (array $params): void { AdminUpload::uploadImage(); });
+//POST /api/pitocuixa/translate — translate missing fields via DeepL, admin-session auth
+$router->add('POST',   '/api/pitocuixa/translate',      static function (array $params): void { AdminTranslate::run(); });
+
+//GET /api/pitocuixa/translate — 405: POST-only, must not trigger translation on GET
+$router->add('GET',    '/api/pitocuixa/translate',      static function (array $params): void {
+    header('Allow: POST');
+    Response::error('Method Not Allowed', 405);
+});
 
 // ── 4b. Sitemap and Robots (Phase 4) ──────────────────────────────────
 $router->add('GET', '/sitemap.xml', static function (array $params): void {

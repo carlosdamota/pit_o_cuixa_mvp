@@ -30,18 +30,24 @@ class UpdateMenu
         $products = $scraper->scraper();
         $repo->sync($products);
 
-        // Auto-translate missing fields in CA, EN, UK
-        $translatedStats = ['categories' => 0, 'products' => 0];
+        // Auto-translate missing fields in CA, EN, UK. A translation failure
+        // must not fail the whole sync (scrape + persist already succeeded),
+        // but it is surfaced to the caller via 'translation_error' so the
+        // admin UI can show WHY DeepL failed instead of swallowing it.
+        $translatedStats  = ['categories' => 0, 'products' => 0];
+        $translationError = null;
         try {
             $translator = new MenuTranslator();
             $translatedStats = $translator->translateMissing();
         } catch (\Throwable $e) {
             error_log('Menu translation error: ' . $e->getMessage());
+            $translationError = $e->getMessage();
         }
 
         return [
-            'status'     => 'ok',
-            'translated' => $translatedStats,
+            'status'            => 'ok',
+            'translated'        => $translatedStats,
+            'translation_error' => $translationError,
         ];
     }
 }
