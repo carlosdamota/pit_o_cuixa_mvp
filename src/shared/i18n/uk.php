@@ -37,7 +37,7 @@ return [
     'privacy.desc' => 'Інформація про обробку персональних даних у Pit o Cuixa.',
 
     // ── Section 0 ────────
-    'privacy.intro.paragraph1' => 'Конфіденційність та безпека є основоположними цінностями для LAST SYSTEMS, S.L., і, відповідно, ми зобов’язуємося постійно забезпечувати конфіденційність Користувача та не збирати непотрібну інформацію. Нижче ми надаємо вам усю необхідну інформацію про нашу Політику конфіденційності щодо персональних даних, які ми збираємо:',
+    'privacy.intro.paragraph1' => 'Конфіденційність та безпека є основоположними цінностями для Fernando De Tasis Fernandez, і, відповідно, ми зобов’язуємося постійно забезпечувати конфіденційність Користувача та не збирати непотрібну інформацію. Нижче ми надаємо вам усю необхідну інформацію про нашу Політику конфіденційності щодо персональних даних, які ми збираємо:',
     'privacy.intro.item1' => 'Хто є відповідальним за обробку ваших даних.',
     'privacy.intro.item2' => 'Цілі, для яких ми запитуємо дані.',
     'privacy.intro.item3' => 'Правові підстави для обробки ваших даних.',
@@ -47,15 +47,15 @@ return [
 
     // ── Section 1 ────────
     'privacy.responsible.title' => 'Відповідальний за обробку',
-    'privacy.responsible.company' => 'LAST SYSTEMS, S.L. (B67417758)',
+    'privacy.responsible.company' => 'Fernando De Tasis Fernandez (12411723A)',
     'privacy.responsible.address' => 'C/ Maracaibo No. 8, 08030 Barcelona',
-    'privacy.responsible.email' => 'Email: legal@last.app',
-    'privacy.responsible.note' => "Надалі 'LAST SYSTEMS, S.L.', 'Ми' або 'Контролер даних'.",
+    'privacy.responsible.email' => 'Email: fertasis@gmail.com',
+    'privacy.responsible.note' => "Надалі 'Fernando De Tasis Fernandez', 'Ми' або 'Контролер даних'.",
 
     // ── Section 2 ────────
     'privacy.data.title' => 'Персональні дані',
     'privacy.data.paragraph1' => 'Персональні дані — це будь-яка інформація, яка дозволяє безпосередньо або опосередковано ідентифікувати вас. Персональні дані включають таке як ваше ім’я, прізвище та електронну адресу, а також унікальні числові ідентифікатори (IP-адреса) та інформацію, отриману через cookie.',
-    'privacy.data.paragraph2' => 'Загалом ця Політика конфіденційності охоплює всі персональні дані, зібрані та використані LAST SYSTEMS, S.L. через Платформу.',
+    'privacy.data.paragraph2' => 'Загалом ця Політика конфіденційності охоплює всі персональні дані, зібрані та використані Fernando De Tasis Fernandez через Платформу.',
     'privacy.data.paragraph3' => 'Користувач гарантує, що надані дані є точними та достовірними. Будь-яка шкода, спричинена наданням помилкової інформації, є відповідальністю користувача.',
     'privacy.data.paragraph4' => 'Ми можемо отримувати ваші дані безпосередньо від вас або автоматично через використання нашого вебсайту.',
 
@@ -64,7 +64,7 @@ return [
     'privacy.purpose.contact_form.title' => 'Форма зворотного зв’язку',
     'privacy.purpose.contact_form.paragraph1' => 'Зібрані дані: Ім’я, прізвище, електронна пошта та номер телефону.',
     'privacy.purpose.contact_form.paragraph2' => 'Цілі: Забезпечення зв’язку та відповіді на ваші запити.',
-    'privacy.purpose.contact_form.paragraph3' => 'Легітимація: Ваша згода та законний інтерес LAST SYSTEMS, S.L..',
+    'privacy.purpose.contact_form.paragraph3' => 'Легітимація: Ваша згода та законний інтерес Fernando De Tasis Fernandez.',
 
     'privacy.purpose.live_chat.title' => 'Онлайн-чат',
     'privacy.purpose.live_chat.paragraph1' => 'Внутрішній чат для прямого спілкування з нами.',
@@ -90,7 +90,7 @@ return [
 
     // ── Section 4 ────────
     'privacy.recipients.title' => 'Отримувачі даних',
-    'privacy.recipients.paragraph1' => 'Персональні дані можуть оброблятися членами команди LAST SYSTEMS, S.L..',
+    'privacy.recipients.paragraph1' => 'Персональні дані можуть оброблятися членами команди Fernando De Tasis Fernandez.',
     'privacy.recipients.paragraph2' => 'Дані можуть передаватися стороннім провайдерам хостингу, IT-послуг, аналітики та маркетингу.',
     'privacy.recipients.item1' => 'Провайдери хостингу та IT-підтримки.',
     'privacy.recipients.item2' => 'Аналітичні та CRM сервіси.',
@@ -108,7 +108,7 @@ return [
     'privacy.rights.item4 me' => 'Заперечити проти обробки даних.',
     'privacy.rights.item5' => 'Запитувати переносність даних.',
     'privacy.rights.item6' => 'Інші права згідно з чинним законодавством.',
-    'privacy.rights.paragraph3' => 'Для реалізації прав звертайтеся за адресою legal@last.app.',
+    'privacy.rights.paragraph3' => 'Для реалізації прав звертайтеся за адресою fertasis@gmail.com.',
     'privacy.rights.paragraph4' => 'Ви також можете подати скаргу до Агентства з захисту даних.',
 
     // ── Section 6 ────────
@@ -122,10 +122,10 @@ return [
 
     // ── Section 8 ────────
     'privacy.contact.title' => 'Контакти',
-    'privacy.contact.paragraph1' => 'З усіх питань щодо даних пишіть на legal@last.app.',
+    'privacy.contact.paragraph1' => 'З усіх питань щодо даних пишіть на fertasis@gmail.com.',
 
     // ── Section 9 ────────
-    'privacy.publication' => 'Дата публікації: 22 серпня 2019 р.',
+    'privacy.publication' => 'Дата публікації: 31 серпня 2026 р.',
 
     // ── Cookies Page ────────
     'cookies.title' => 'Політика використання файлів cookie Pit o Cuixa',
@@ -157,80 +157,6 @@ return [
     'cookies.consent.paragraph3' => 'Блокування cookie може обмежити функціональність сайту.',
     'cookies.consent.paragraph4' => 'Для відкликання згоди видаліть cookie у браузері.',
     'cookies.consent.paragraph5' => 'Рекомендуємо регулярно переглядати цю політику.',
-
-    // ── Terms Page ────────
-    'terms.title' => 'Правила та умови',
-    'terms.desc' => 'Загальні умови використання платформи Pit o Cuixa.',
-
-    'terms.intro.title' => 'Вступ',
-    'terms.intro.paragraph1' => 'Ці Загальні умови застосовуються до вебсайту та застосунку LAST SYSTEMS, S.L..',
-    'terms.intro.paragraph2' => 'Використання платформи означає повну згоду з цими умовами.',
-    'terms.intro.paragraph3' => 'Дані власника:',
-    'terms.intro.company_name' => 'Компанія: LAST SYSTEMS, S.L.',
-    'terms.intro.address' => 'Адреса: C/ Maracaibo No.8, 08030, Барселона, Іспанія',
-    'terms.intro.registry' => 'NIF: B67417758',
-    'terms.intro.paragraph4' => 'Платіжні дані обробляються сертифікованими провайдерами.',
-
-    'terms.object.title' => 'Предмет',
-    'terms.object.paragraph1' => 'Last надає технологічну платформу для замовлення страв та товарів.',
-    'terms.object.paragraph2' => 'Last виступає як посередник між клієнтом та закладом.',
-    'terms.object.paragraph3' => 'Платформа дозволяє оформлювати доставку та самовивіз.',
-    'terms.object.paragraph4' => 'Час доставки є орієнтовним.',
-    'terms.object.paragraph5' => 'Користувачі поділяються на Клієнтів та Кур’єрів.',
-
-    'terms.terms_of_use.title' => 'Умови використання',
-    'terms.terms_of_use.paragraph1' => 'Створення профілю означає прийняття умов та політик.',
-
-    'terms.customer_access.title' => 'Реєстрація та доступ',
-    'terms.customer_access.paragraph1' => 'Вимоги для реєстрації:',
-    'terms.customer_access.requirement1' => 'Вік від 18 років.',
-    'terms.customer_access.requirement2' => 'Точне заповнення реєстраційних полів.',
-    'terms.customer_access.requirement3' => 'Прийняття умов використання.',
-    'terms.customer_access.requirement4' => 'Прийняття політики конфіденційності.',
-    'terms.customer_access.requirement5' => 'Прийняття політики cookie.',
-    'terms.customer_access.paragraph2' => 'Користувач гарантує точність наданих даних.',
-    'terms.customer_access.paragraph3' => 'Надання неправдивих даних може призвести до блокування.',
-    'terms.customer_access.paragraph4' => 'Логін та пароль є конфіденційними.',
-    'terms.customer_access.paragraph5' => 'Користувач відповідає за безпеку свого облікового запису.',
-    'terms.customer_access.paragraph6' => 'Користувач володіє створеним ним контентом.',
-    'terms.customer_access.paragraph7' => 'Негайно повідомляйте про втрату доступу.',
-    'terms.customer_access.profile_title' => '3.1 Профіль',
-    'terms.customer_access.profile_paragraph1' => 'Ви можете редагувати свій профіль у будь-який час.',
-    'terms.customer_access.card_theft_title' => '3.2 Крадіжка або втрата картки',
-    'terms.customer_access.card_theft_paragraph1' => 'Негайно повідомляйте про втрату банківської картки.',
-    'terms.customer_access.card_theft_paragraph2' => 'Last співпрацює з правоохоронними органами у випадках шахрайства.',
-
-    'terms.service_operation.title' => 'Робота сервісу',
-    'terms.service_operation.paragraph1' => 'Замовлення оформлюється через вебсайт або застосунок.',
-    'terms.service_operation.paragraph2' => 'Клієнт відповідає за точність вказаної адреси.',
-    'terms.service_operation.paragraph3' => 'Додавайте детальні коментарі до замовлення.',
-    'terms.service_operation.paragraph4' => 'Для зв’язку використовуйте внутрішній чат.',
-    'terms.service_operation.paragraph5' => 'Клієнт несе відповідальність за помилки в описі товару.',
-    'terms.service_operation.paragraph6' => 'Ціни є орієнтовними.',
-    'terms.service_operation.paragraph7' => 'У разі відсутності товару кур’єр зв’яжеться з вами.',
-    'terms.service_operation.paragraph8' => 'У разі відсутності клієнта товар зберігається обмежений час.',
-    'terms.service_operation.paragraph9' => 'Після виконання ви отримуєте електронний чек.',
-    'terms.service_operation.paragraph10' => 'Підтвердження замовлення здійснюється підписом.',
-    'terms.service_operation.paragraph11' => 'Рекомендуємо перевіряти склад алергенів у стравах.',
-
-    'terms.product_returns.title' => 'Повернення товарів',
-    'terms.product_returns.paragraph1' => 'Повернення здійснюється відповідно до політики закладу.',
-    'terms.product_returns.paragraph2' => 'Для звернень використовуйте службу підтримки.',
-    'terms.product_returns.paragraph3' => 'Спеціальні умови для окремих партнерів.',
-    'terms.product_returns.paragraph4' => 'Для повернення надайте фотографію товару.',
-    'terms.product_returns.paragraph5' => 'Перевіряйте товар при отриманні.',
-    'terms.product_returns.paragraph6' => 'Заклад приймає остаточне рішення щодо повернення.',
-
-    'terms.pricing.title' => 'Тарифи та оплата',
-    'terms.pricing.paragraph1' => 'Реєстрація для клієнтів є безкоштовною.',
-    'terms.pricing.paragraph2' => 'Вартість послуг зазначається під час оформлення.',
-    'terms.pricing.paragraph3' => 'Оплата включає вартість товару та доставки.',
-    'terms.pricing.paragraph4' => 'Вартість доставки залежить від відстані та часу.',
-    'terms.pricing.paragraph5' => 'Ви можете залишити чайові кур’єру.',
-    'terms.pricing.paragraph6' => 'Ціни можуть змінюватися.',
-    'terms.pricing.paragraph7' => 'Скасування після початку приготування може тягти за собою оплату.',
-    'terms.pricing.payment_platforms_title' => '6.1 Платіжні платформи',
-    'terms.pricing.payment_platforms_paragraph1' => 'Платежі обробляються через захищені платіжні шлюзи.',
 
     // ── FAQ Section ─────────────────────────────────────────────
     'faq.title' => 'Часті запитання (FAQ) — Pit o Cuixa',

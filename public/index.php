@@ -41,7 +41,6 @@ use Pit\Cuixa\Backend\Pages\Admin\ImportExport as AdminImportExportPage;
 use Pit\Cuixa\Backend\Pages\FaqPage;
 use Pit\Cuixa\Backend\Pages\Privacy;
 use Pit\Cuixa\Backend\Pages\Cookies;
-use Pit\Cuixa\Backend\Pages\Terms;
 use Pit\Cuixa\Backend\Pages\Sitemap;
 use Pit\Cuixa\Backend\Pages\Robots;
 use Pit\Cuixa\Backend\Pages\LlmsTxt;
@@ -300,23 +299,6 @@ $router->add('GET', '/{lang}/cookies', static function (array $params): void {
 
     if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/cookies?lang=' . $lang, 302);
-        return;
-    }
-
-    Response::error('Not Found', 404);
-});
-
-// Terms page
-$router->add('GET', '/terms', static function (array $params): void {
-    Terms::render();
-});
-
-// Terms page with locale prefix
-$router->add('GET', '/{lang}/terms', static function (array $params): void {
-    $lang = $params['lang'] ?? '';
-
-    if (in_array($lang, \Config::supportedLocales(), true)) {
-        Response::redirect('/terms?lang=' . $lang, 302);
         return;
     }
 

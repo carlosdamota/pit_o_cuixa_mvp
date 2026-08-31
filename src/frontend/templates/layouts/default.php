@@ -227,8 +227,6 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
     <?php endif; ?>
 
-    <?php endif; ?> 
-
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/cookie-banner.js<?= assetVersion('/js/cookie-banner.js') ?>"></script>
     <script type="module" src="/js/main.js<?= assetVersion('/js/main.js') ?>"></script>
