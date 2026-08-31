@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de Administración — Pit o Cuixa</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 210mm; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8.1px; line-height: 1.42; color: #23262b;
+    background: #ffffff; padding: 8mm 9mm 6mm;
+  }
+  /* ── Header ─────────────────────────────── */
+  .head {
+    background: #1a1c1e; color: #fff; border-radius: 10px;
+    padding: 11px 16px 10px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 3px solid #f7e721;
+  }
+  .head .mark {
+    width: 34px; height: 34px; border-radius: 9px; background: #f7e721;
+    color: #1a1c1e; font-weight: 800; font-size: 17px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .head h1 { font-size: 15.5px; letter-spacing: .2px; }
+  .head h1 span { color: #f7e721; }
+  .head .sub { font-size: 8.3px; color: #c9ccd1; margin-top: 2px; }
+  .head .meta { margin-left: auto; text-align: right; font-size: 7.4px; color: #c9ccd1; line-height: 1.5; }
+  .head .meta b { color: #fff; font-size: 7.8px; }
+
+  /* ── Columns ────────────────────────────── */
+  .cols { display: flex; gap: 10px; margin-top: 9px; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+
+  .card {
+    border: 1px solid #e4e4de; border-radius: 9px; padding: 8px 10px 9px;
+    background: #fdfdfb;
+  }
+  .card h2 {
+    font-size: 10.3px; color: #1a1c1e; display: flex; align-items: center; gap: 6px;
+    padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid #eeeee7;
+  }
+  .card h2 .n {
+    background: #1a1c1e; color: #f7e721; font-size: 8.6px; font-weight: 700;
+    width: 15px; height: 15px; border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card h2 .ico { font-size: 11px; }
+  ul { list-style: none; }
+  li { padding-left: 9px; position: relative; margin-bottom: 2.6px; }
+  li::before { content: ''; position: absolute; left: 0; top: 4.4px; width: 4px; height: 4px; border-radius: 50%; background: #d9b900; }
+  li:last-child { margin-bottom: 0; }
+  b { color: #1a1c1e; }
+  .kbd {
+    font-family: Consolas, 'Courier New', monospace; font-size: 7.3px;
+    background: #f2f1e8; border: 1px solid #e3e2d5; border-radius: 3px; padding: 0 3px;
+    color: #3a3d42; white-space: nowrap;
+  }
+  .path { font-family: Consolas, 'Courier New', monospace; font-size: 7.3px; color: #7a5c00; font-weight: 600; }
+
+  .warn {
+    margin-top: 6px; background: #fdf3f2; border: 1px solid #f3cfcb; border-left: 3px solid #d32f2f;
+    border-radius: 6px; padding: 5px 7px; font-size: 7.7px; color: #7c221c;
+  }
+  .warn b { color: #b71c1c; }
+  .tip {
+    margin-top: 6px; background: #fffbe0; border: 1px solid #efe6a8; border-left: 3px solid #f7e721;
+    border-radius: 6px; padding: 5px 7px; font-size: 7.7px; color: #5c4d00;
+  }
+
+  table.fields { width: 100%; border-collapse: collapse; font-size: 7.8px; margin-top: 3px; }
+  table.fields td { padding: 1.8px 4px; border-bottom: 1px dashed #ecece4; vertical-align: top; }
+  table.fields td:first-child { white-space: nowrap; font-weight: 600; color: #1a1c1e; width: 34%; }
+
+  ol.steps { margin-left: 13px; }
+  ol.steps li { padding-left: 2px; margin-bottom: 2.6px; }
+  ol.steps li::before { display: none; }
+  ol.steps::marker li { color: #d9b900; }
+
+  .foot {
+    margin-top: 9px; background: #1a1c1e; color: #b9bdc4; border-radius: 8px;
+    padding: 6px 14px; font-size: 7.3px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .foot b { color: #f7e721; }
+  .flow { font-size: 7.6px; color: #55595f; background: #f6f6f0; border-radius: 5px; padding: 4px 7px; margin-top: 5px; }
+  .flow b { color: #1a1c1e; }
+</style>
+</head>
+<body>
+
+  <div class="head">
+    <div class="mark">P</div>
+    <div>
+      <h1>PIT O CUIXA <span>·</span> Panel de Administración</h1>
+      <div class="sub">Guía de funcionamiento — login, productos, ajustes, 2FA y traducciones DeepL</div>
+    </div>
+    <div class="meta">
+      <b>pitocuixa.es/pitocuixa</b><br>
+      Documento interno · Agosto 2026<br>
+      Versión 1.0
+    </div>
+  </div>
+
+  <div class="cols">
+    <!-- ══════════ COLUMNA IZQUIERDA ══════════ -->
+    <div class="col">
+
+      <div class="card">
+        <h2><span class="n">1</span><span class="ico">🔐</span> Acceso y login</h2>
+        <ul>
+          <li>Entra en <span class="path">pitocuixa.es/pitocuixa</span>. Si no tienes sesión, te redirige a la pantalla de <b>Login</b>.</li>
+          <li>Escribe tu <b>usuario</b> y <b>contraseña</b> y pulsa <b>Entrar</b>.</li>
+          <li>Protección anti fuerza bruta: <b>10 intentos/minuto</b> por IP y <b>5 intentos cada 5 min</b> por usuario. Si superas el límite, la cuenta se bloquea <b>15 minutos</b>.</li>
+          <li>La sesión se guarda en la cookie <span class="kbd">pit_session</span> y dura <b>8 horas</b>. Pulsa <b>Salir</b> para cerrarla.</li>
+          <li>Con la sesión activa accederás al <b>Dashboard</b> y al menú: Productos, Categorías, Import/Export y Ajustes.</li>
+        </ul>
+        <div class="flow"><b>Flujo:</b> Login → contraseña correcta → código 2FA (paso 2) → sesión iniciada</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">2</span><span class="ico">🛡️</span> 2FA: verificación en dos pasos</h2>
+        <ul>
+          <li>Tras la contraseña, el panel pide un <b>código de 6 dígitos</b> generado por tu app autenticadora (Google Authenticator, Authy, Microsoft Authenticator…). El código <b>cambia cada 30 segundos</b>.</li>
+          <li>Se acepta el código con ±30 s de margen por reloj. Máximo <b>5 intentos</b>: si fallas todos, el desafío se bloquea y debes hacer login de nuevo.</li>
+          <li><b>Primer alta:</b> el primer login te guía — escanea el <b>código QR</b> con tu app (emisor «Pit o Cuixa») y confirma con un código de 6 dígitos. Desde entonces el 2FA queda activado.</li>
+          <li>El secreto del autenticador se guarda <b>cifrado</b> en la base de datos (AES-256-GCM con la clave <span class="kbd">TOTP_ENC_KEY</span> del archivo <span class="kbd">.env</span>).</li>
+          <li><b>Códigos de respaldo:</b> el sistema genera <b>10 códigos de un solo uso</b> (10 caracteres cada uno). En la pantalla del código 2FA, pulsa el enlace <b>«Usa un código de respaldo»</b>, escribe uno y entra con <b>«Entrar con respaldo»</b>. Cada código vale <b>una sola vez</b>; después queda marcado como usado.</li>
+        </ul>
+        <div class="warn">⚠ <b>Importante:</b> en esta versión los códigos de respaldo se generan y se guardan cifrados (hash bcrypt) en la base de datos, pero <b>no se muestran en ninguna pantalla</b>. Si pierdes el móvil con la app autenticadora, los códigos actuales no se pueden consultar: solicita una <b>regeneración del alta 2FA</b> (vuelve a hacer login y repite el escaneo del QR), lo que crea 10 códigos nuevos y anula los anteriores. Guarda los códigos en un lugar seguro cuando se faciliten.</div>
+      </div>
+
+    </div>
+
+    <!-- ══════════ COLUMNA DERECHA ══════════ -->
+    <div class="col">
+
+      <div class="card">
+        <h2><span class="n">3</span><span class="ico">🍗</span> Productos: crear y editar</h2>
+        <ul>
+          <li><b>Crear:</b> botón <b>«+ Nuevo Producto»</b> → se abre un panel lateral con el formulario. Cámbialo a <b>Editar</b> pulsando cualquier fila de la tabla de productos.</li>
+        </ul>
+        <table class="fields">
+          <tr><td>Nombre (ES) *</td><td>Obligatorio. Es el texto base que se traduce al resto de idiomas.</td></tr>
+          <tr><td>Descripción (ES)</td><td>Texto descriptivo del producto en español.</td></tr>
+          <tr><td>Categoría *</td><td>Desplegable: Menús, Platos principales, Picoteo, Bebidas, Postres, Portes, Otros.</td></tr>
+          <tr><td>Precio (€)</td><td>Número con decimales (ej. <span class="kbd">12.50</span>).</td></tr>
+          <tr><td>Imagen / Cartel</td><td>Pega una URL o pulsa <b>«📁 Subir Imagen»</b> (JPG, PNG, WebP, GIF, AVIF · máx. 5 MB · se optimiza automáticamente a WebP).</td></tr>
+          <tr><td>🌐 Traducir auto.</td><td>Activada por defecto: al guardar, DeepL rellena Inglés, Catalán y Ucraniano.</td></tr>
+          <tr><td>✓ Activo</td><td>Marca si el producto se ve en la web pública.</td></tr>
+        </table>
+        <ul style="margin-top:5px;">
+          <li><b>Guardar</b> crea el producto (o aplica los cambios si editas). La web pública se actualiza al instante.</li>
+          <li><b>Eliminar</b> un producto no lo borra de la base de datos: lo <b>desactiva</b> (deja de verse en la web y puedes reactivarlo editándolo).</li>
+          <li>El sistema garantiza direcciones web (slug) únicas por tipo de producto; si hay colisión, renombra solo.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">4</span><span class="ico">⚙️</span> Ajustes (Settings)</h2>
+        <ul>
+          <li><b>Carrusel Visual de la Carta:</b> interruptor para activar/desactivar el visor interactivo de imágenes en la carta pública. Indica cuántas imágenes hay cargadas (se asignan editando cada producto).</li>
+          <li><b>Datos de la Empresa:</b> Dirección (pie de página público), Teléfono principal y <b>WhatsApp</b> (número del botón flotante de la web; si lo dejas vacío se usa el teléfono principal).</li>
+          <li>Pulsa <b>Guardar</b> para aplicar los cambios.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">5</span><span class="ico">🌐</span> DeepL: traducciones y API key</h2>
+        <ul>
+          <li>El <b>español (ES) es el idioma fuente</b>. El sistema traduce nombres y descripciones a <b>Catalán, Inglés (EN-US) y Ucraniano</b>.</li>
+          <li><b>Cuándo traduce:</b> ① casilla «Traducir automáticamente con DeepL» al guardar un producto · ② botón <b>«Traducir campos (DeepL)»</b> del Dashboard, que rellena solo los campos vacíos · ③ script manual <span class="path">scripts/translate.php</span>.</li>
+          <li>Si DeepL falla, el Dashboard muestra el motivo del error; el guardado del producto nunca se pierde por un fallo de traducción.</li>
+        </ul>
+        <div class="tip">
+          <b>Cómo conseguir la API key:</b>
+          <ol class="steps">
+            <li>Ve a <span class="path">deepl.com/pro-api</span> y crea una cuenta.</li>
+            <li>Elige el plan <b>Free</b> (gratis, 500.000 caracteres/mes; pide tarjeta solo para verificar) o el plan Pro de pago.</li>
+            <li>En el panel de tu cuenta, copia la <b>«Clave de autenticación»</b> (las claves Free terminan en <span class="kbd">:fx</span>).</li>
+            <li>Edita el archivo <span class="kbd">.env</span> del servidor y añade: <span class="kbd">DEEPL_API_KEY=tu-clave</span>.</li>
+          </ol>
+          Sin clave configurada las traducciones quedan desactivadas (el resto del panel funciona con normalidad). Con clave Free, el sistema detecta el servidor de DeepL automáticamente.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="foot">
+    <span><b>Pit o Cuixa</b> · Panel interno de gestión — documento de referencia rápida</span>
+    <span>Sesión: 8 h · Borrar = desactivar · Soporte técnico: equipo de desarrollo</span>
+  </div>
+
+</body>
+</html>
