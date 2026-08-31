@@ -13,17 +13,32 @@
  * @module animated-favicon
  */
 
+/** @type {boolean} Module-level guard — prevents re-init across multiple calls. */
+let initialized = false;
+
 /**
  * Initialise the animated favicon on the browser tab.
+ * Safe to call multiple times: only the first call after page load performs
+ * the actual setup. Subsequent calls are no-ops (the first call's options win).
  * @param {Object} [options]
  * @param {string} [options.iconPath='/img/icons/favicon.png'] - Path to favicon image
  * @param {number} [options.fps=15] - Target frames per second
  */
 export function initAnimatedFavicon(options = {}) {
-  // Respect reduced motion preferences
+  // Respect reduced motion preferences — checked first so reduced-motion
+  // users never trigger the animation or set the guard.
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
+
+  // Guard: only initialise once per page load. main.js calls this on every
+  // navigation, but the module is imported once (type="module") so the
+  // boolean persists. First call's options are authoritative — later calls
+  // (even with different options) are silently ignored.
+  if (initialized) {
+    return;
+  }
+  initialized = true;
 
   const iconPath = options.iconPath || '/img/icons/favicon.png';
   const targetFps = options.fps || 15;
@@ -39,9 +54,10 @@ export function initAnimatedFavicon(options = {}) {
   }
   linkEl.id = 'dynamic-favicon';
 
-  // Load chicken image
+  // Load chicken image (no crossOrigin — asset is same-origin, removing the
+  // CORS flag lets browser/Service Worker cache it normally instead of
+  // forcing a re-fetch on every navigation).
   const img = new Image();
-  img.crossOrigin = 'anonymous';
 
   img.onload = () => {
     startFaviconAnimation(img, linkEl, frameInterval);
@@ -135,8 +151,10 @@ function startFaviconAnimation(img, linkEl, frameInterval) {
 
     ctx.restore();
 
-    // Update <link rel="icon"> with canvas PNG data
-    linkEl.href = canvas.toDataURL('image/png');
+    // NOTE: linkEl.href is deliberately NOT updated here. Assigning it inside
+    // the requestAnimationFrame loop triggered a network/render request on
+    // every frame (console GET spam). The favicon is now committed to the
+    // <link> only on visibilitychange (see below).
   }
 
   /**
@@ -162,13 +180,17 @@ function startFaviconAnimation(img, linkEl, frameInterval) {
     animationFrameId = requestAnimationFrame(loop);
   }
 
-  // Handle Tab Visibility (Pause/Resume to optimize CPU)
+  // Handle Tab Visibility (Pause/Resume to optimize CPU).
+  // The favicon <link> href is committed here (and only here) to avoid updating
+  // it on every rAF frame, which caused console GET spam.
   document.addEventListener('visibilitychange', () => {
     isTabActive = !document.hidden;
     if (isTabActive) {
       lastFrameTime = performance.now();
-      // Joyful double hop when returning to tab
+      // Joyful double hop when returning to tab — also commits the current
+      // canvas frame to the <link> favicon.
       renderFrame(time);
+      linkEl.href = canvas.toDataURL('image/png');
     }
   });
 
