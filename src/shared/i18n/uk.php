@@ -48,7 +48,7 @@ return [
     // ── Section 1 ────────
     'privacy.responsible.title' => 'Відповідальний за обробку',
     'privacy.responsible.company' => 'Fernando De Tasis Fernandez (12411723A)',
-    'privacy.responsible.address' => 'C/ Maracaibo No. 8, 08030 Barcelona',
+    'privacy.responsible.address' => 'Carrer Hort de la Oca, 12, Local cormercial, 43830 Torredembarra, Tarragona',
     'privacy.responsible.email' => 'Email: fertasis@gmail.com',
     'privacy.responsible.note' => "Надалі 'Fernando De Tasis Fernandez', 'Ми' або 'Контролер даних'.",
 
