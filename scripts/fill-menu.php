@@ -281,13 +281,17 @@ try {
     status('✓', 'Synced ' . count($products) . ' product(s) into the database.');
 
     // 5. Auto-translate missing fields in CA, EN, UK (best effort)
-    try {
-        $translator = new MenuTranslator();
-        $stats      = $translator->translateMissing();
-        status('✓', "Translation complete: {$stats['categories']} category field(s) and {$stats['products']} product field(s) translated.");
-    } catch (\Throwable $e) {
-        error_log('Menu translation error: ' . $e->getMessage());
-        status('!', 'Translation skipped: ' . $e->getMessage());
+    if (empty(getenv('DEEPL_API_KEY'))) {
+        status('!', 'DEEPL_API_KEY no configurada en .env — traducción automática omitida. Añade la key para traducir a CA, EN, UK.');
+    } else {
+        try {
+            $translator = new MenuTranslator();
+            $stats      = $translator->translateMissing();
+            status('✓', "Translation complete: {$stats['categories']} category field(s) and {$stats['products']} product field(s) translated.");
+        } catch (\Throwable $e) {
+            error_log('Menu translation error: ' . $e->getMessage());
+            status('!', 'Translation skipped: ' . $e->getMessage());
+        }
     }
 
     status('✓', 'Menu fill complete.');

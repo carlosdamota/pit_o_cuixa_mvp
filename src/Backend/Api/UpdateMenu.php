@@ -32,16 +32,29 @@ class UpdateMenu
 
         // Auto-translate missing fields in CA, EN, UK
         $translatedStats = ['categories' => 0, 'products' => 0];
-        try {
-            $translator = new MenuTranslator();
-            $translatedStats = $translator->translateMissing();
-        } catch (\Throwable $e) {
-            error_log('Menu translation error: ' . $e->getMessage());
+        $warning = null;
+
+        if (empty(getenv('DEEPL_API_KEY'))) {
+            $warning = 'DEEPL_API_KEY no configurada en .env — traducción automática omitida.';
+            error_log('MenuTranslator skipped: ' . $warning);
+        } else {
+            try {
+                $translator = new MenuTranslator();
+                $translatedStats = $translator->translateMissing();
+            } catch (\Throwable $e) {
+                error_log('Menu translation error: ' . $e->getMessage());
+                $warning = 'Traducción falló: ' . $e->getMessage();
+            }
         }
 
-        return [
+        $result = [
             'status'     => 'ok',
             'translated' => $translatedStats,
         ];
+        if ($warning !== null) {
+            $result['warning'] = $warning;
+        }
+
+        return $result;
     }
 }
