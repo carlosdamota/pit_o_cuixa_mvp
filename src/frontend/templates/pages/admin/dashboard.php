@@ -80,13 +80,26 @@ $lang            = $pageData['locale'] ?? LANG;
             <p class="admin-section__desc">
                 Pulsa el botón para sincronizar manualmente la carta con el proveedor externo.
             </p>
-            <button
-                type="button"
-                id="btn-update-menu"
-                class="admin-btn admin-btn--primary"
-            >
-                Actualizar carta
-            </button>
+            <p class="admin-section__desc">
+                «Traducir campos (DeepL)» rellena los campos vacíos de CA/EN/UK con DeepL
+                (útil si la traducción automática falló durante la sincronización).
+            </p>
+            <div class="admin-header__actions">
+                <button
+                    type="button"
+                    id="btn-update-menu"
+                    class="admin-btn admin-btn--primary"
+                >
+                    Actualizar carta
+                </button>
+                <button
+                    type="button"
+                    id="btn-translate-fields"
+                    class="admin-btn admin-btn--secondary"
+                >
+                    Traducir campos (DeepL)
+                </button>
+            </div>
         </section>
     </main>
 </div>
@@ -103,6 +116,10 @@ $lang            = $pageData['locale'] ?? LANG;
                 const data = await api('POST', '/api/update-menu');
 
                 if (data?.status === 'ok') {
+                    if (data.translation_error) {
+                        showToast(`Carta actualizada, pero las traducciones fallaron: ${data.translation_error}`, 'error');
+                        return;
+                    }
                     const t = data.translated || {};
                     const parts = [];
                     if (t.categories) parts.push(`${t.categories} categorías`);
@@ -114,6 +131,30 @@ $lang            = $pageData['locale'] ?? LANG;
                 }
             } catch (err) {
                 showToast('Error de red al sincronizar la carta', 'error');
+            }
+        });
+    });
+
+    const btnTranslate = document.getElementById('btn-translate-fields');
+    if (!btnTranslate) throw new Error('Translate-fields button not found');
+
+    btnTranslate.addEventListener('click', () => {
+        withLoading(btnTranslate, async () => {
+            try {
+                const data = await api('POST', '/api/pitocuixa/translate');
+
+                if (data?.status === 'ok') {
+                    const t = data.translated || {};
+                    const parts = [];
+                    if (t.categories) parts.push(`${t.categories} categorías`);
+                    if (t.products) parts.push(`${t.products} productos`);
+                    const detail = parts.length ? ` — ${parts.join(', ')}` : '';
+                    showToast(`Traducciones aplicadas${detail}`, 'success');
+                } else {
+                    showToast(`No se pudo traducir: ${data?.message ?? 'error desconocido'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Error de red al traducir', 'error');
             }
         });
     });
