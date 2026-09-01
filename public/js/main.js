@@ -208,7 +208,8 @@ function handleProductImageError(img) {
 
 /**
  * Attach the image fallback listener. Only product images (scraped sources)
- * participate; logos, slider and admin images are left untouched.
+ * and featured accordion content images participate; logos, slider and admin
+ * images are left untouched.
  */
 function initImageFallback() {
   document.addEventListener('error', (event) => {
@@ -216,7 +217,9 @@ function initImageFallback() {
     if (!(target instanceof HTMLImageElement)) {
       return;
     }
-    if (!target.classList.contains('product-card__image') && !target.classList.contains('listview-item__img')) {
+    if (!target.classList.contains('product-card__image')
+        && !target.classList.contains('listview-item__img')
+        && !target.classList.contains('accordion-content__img')) {
       return;
     }
     handleProductImageError(target);
@@ -331,6 +334,14 @@ function initChatWidget() {
   const closeBtn = widget.querySelector('[data-chat-close]');
   const openTrigger = document.querySelector('[data-chat-open]');
 
+  // Capture the three repositionable chrome nodes up front. Keeping direct
+  // references lets restore/sweep always find them — even if a previous
+  // open/close was interrupted and left one floating in <body> with a fixed
+  // position (which would otherwise block clicks on the catalogue).
+  const headerChrome = widget.querySelector('.chat-widget__header');
+  const inputChrome = widget.querySelector('.chat-widget__input');
+  const chromeNodes = [headerChrome, messagesContainer, inputChrome].filter(Boolean);
+
   if (!userInput || !sendBtn || !messagesContainer || !closeBtn) {
     return;
   }
@@ -386,25 +397,69 @@ function initChatWidget() {
   };
 
   const restoreChrome = () => {
-    const restore = (el) => {
-      if (!el) return;
-      widget.style.display = '';
-      const parent = el.__chatParent || widget;
-      parent.appendChild(el);
-      el.style.position = '';
-      el.style.top = '';
-      el.style.left = '';
-      el.style.width = '';
-      el.style.height = '';
-      el.style.bottom = '';
-      el.style.zIndex = '';
-      el.style.boxShadow = '';
-      el.style.borderRadius = '';
-      el.__chatParent = null;
-    };
-    restore(document.querySelector('.chat-widget__header'));
-    restore(document.getElementById('messages'));
-    restore(document.querySelector('.chat-widget__input'));
+    // Restore every chrome node back into the widget shell and clear all the
+    // inline styles applied by positionChrome(). Uses the captured node
+    // references (never a fresh document lookup) and guards each node
+    // separately so a single missing/broken node can't abort the cleanup of
+    // the others. Any node left floating in <body> with position:fixed would
+    // block clicks over the catalogue, so this must run to completion.
+    chromeNodes.forEach((el) => {
+      try {
+        const parent = el.__chatParent || widget;
+        parent.appendChild(el);
+        el.style.position = '';
+        el.style.top = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.height = '';
+        el.style.bottom = '';
+        el.style.zIndex = '';
+        el.style.boxShadow = '';
+        el.style.borderRadius = '';
+        el.__chatParent = null;
+      } catch (err) {
+        // Keep cleaning the remaining nodes — a single failure must not leave
+        // the rest orphaned.
+        console.error('Failed to restore chat chrome node:', err);
+      }
+    });
+    // Always let the CSS govern the shell; never leave an inline display
+    // override behind after a close.
+    widget.style.display = '';
+  };
+
+  // Belt-and-suspenders: if the chat is closed but any chrome node is still
+  // floating in <body> (left behind by an interrupted open/close or a JS error
+  // mid-transition), force it back into the shell so it can never capture
+  // clicks. Runs at init and after every close.
+  const sweepChromeless = () => {
+    if (isOpen()) {
+      return;
+    }
+    let stray = false;
+    chromeNodes.forEach((el) => {
+      // A node is "stray" when it was reparented out of the shell and left
+      // floating in <body> with a fixed position — precisely the state that
+      // blocks clicks on the catalogue while the chat is closed.
+      if (el.parentNode === document.body && el.style.position === 'fixed') {
+        stray = true;
+        const parent = el.__chatParent || widget;
+        parent.appendChild(el);
+        el.style.position = '';
+        el.style.top = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.height = '';
+        el.style.bottom = '';
+        el.style.zIndex = '';
+        el.style.boxShadow = '';
+        el.style.borderRadius = '';
+        el.__chatParent = null;
+      }
+    });
+    if (stray) {
+      widget.style.display = ''; // let CSS hide the shell again
+    }
   };
 
   const open = () => {
@@ -416,6 +471,7 @@ function initChatWidget() {
   const close = () => {
     widget.setAttribute('aria-hidden', 'true');
     restoreChrome();
+    sweepChromeless(); // guarantee no orphaned chrome remains after closing
   };
 
   if (openTrigger) {
@@ -426,6 +482,11 @@ function initChatWidget() {
 
   // Expose state to the launcher so its toggle can close the chat when open.
   chatController = { isOpen, close };
+
+  // On load, clear any chrome that a previous session left orphaned in <body>
+  // (see sweepChromeless). The chat starts closed, so nothing should be
+  // floating at this point.
+  sweepChromeless();
 
   // Escape also closes the chat widget (open state only)
   document.addEventListener('keydown', (event) => {

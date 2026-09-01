@@ -223,12 +223,13 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
 
     </button>
 
-    <!-- ── Cookie Banner ───────────────────────────────────────── -->
+    <!-- Cookie Banner -->
     <?php require __DIR__ . '/../components/cookie-banner.php'; ?>
     <?php endif; ?>
 
     <!-- ── JS ───────────────────────────────────────────────────────── -->
     <script type="module" src="/js/cookie-banner.js<?= assetVersion('/js/cookie-banner.js') ?>"></script>
     <script type="module" src="/js/main.js<?= assetVersion('/js/main.js') ?>"></script>
+    <script type="module" src="/js/floating-buttons.js<?= assetVersion('/js/floating-buttons.js') ?>"></script>
 </body>
 </html>

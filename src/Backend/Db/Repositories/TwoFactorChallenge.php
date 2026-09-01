@@ -142,4 +142,73 @@ class TwoFactorChallenge
         );
         $stmt->execute([':token' => $token]);
     }
+
+    /**
+     * Store the HASHED mail-delivered backup code for a challenge, with a
+     * short expiry for single-use verification. The plaintext code is never
+     * persisted — only its bcrypt hash (same scheme as backup_codes).
+     *
+     * @param string $token     Challenge token
+     * @param string $hash      password_hash() of the 6-digit code
+     * @param int    $expiresAt Unix timestamp when the code stops being valid
+     */
+    public function storeMailCode(string $token, string $hash, int $expiresAt): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE two_factor_challenges
+             SET mail_code_hash = :hash, mail_code_expires_at = :expires
+             WHERE token = :token'
+        );
+        $stmt->execute([
+            ':hash'    => $hash,
+            ':expires' => date('Y-m-d H:i:s', $expiresAt),
+            ':token'   => $token,
+        ]);
+    }
+
+    /**
+     * Read the hashed mail code for a challenge, if one is set and not yet
+     * expired. Expired codes are cleared as a side effect and treated as absent.
+     *
+     * @return array{hash: string, expires_at: string}|null
+     */
+    public function getMailCode(string $token): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT mail_code_hash, mail_code_expires_at
+             FROM two_factor_challenges WHERE token = :token'
+        );
+        $stmt->execute([':token' => $token]);
+        $row = $stmt->fetch();
+
+        if ($row === false || $row['mail_code_hash'] === null) {
+            return null;
+        }
+
+        // The challenge itself is still alive (find() guards that), but the
+        // mail code has its own shorter, independent expiry window.
+        if ($row['mail_code_expires_at'] !== null && strtotime((string) $row['mail_code_expires_at']) < time()) {
+            $this->clearMailCode($token);
+            return null;
+        }
+
+        return [
+            'hash'       => (string) $row['mail_code_hash'],
+            'expires_at' => (string) $row['mail_code_expires_at'],
+        ];
+    }
+
+    /**
+     * Clear the mail code for a challenge. Used to enforce single-use: the
+     * code is invalidated after a successful or failed verification attempt.
+     */
+    public function clearMailCode(string $token): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE two_factor_challenges
+             SET mail_code_hash = NULL, mail_code_expires_at = NULL
+             WHERE token = :token'
+        );
+        $stmt->execute([':token' => $token]);
+    }
 }

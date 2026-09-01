@@ -121,6 +121,8 @@ CREATE TABLE IF NOT EXISTS two_factor_challenges (
     expires_at  TEXT    NOT NULL,
     attempts    INTEGER NOT NULL DEFAULT 0,
     pending_secret TEXT    NULL,        -- staged new TOTP secret for re-enrollment (NULL until staged)
+    mail_code_hash      TEXT NULL,      -- bcrypt hash of the email-delivered 2FA fallback code (014)
+    mail_code_expires_at TEXT NULL,     -- short expiry window for the mail code (014)
     created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
