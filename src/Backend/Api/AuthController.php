@@ -325,8 +325,15 @@ class AuthController
         $sent = mail($to, $subject, $body, $headers);
 
         if (!$sent) {
-            error_log("2FA mail-code: failed to send to {$to}");
-            Response::error('Error al enviar el email', 500);
+            $phpError = error_get_last();
+            $detail   = $phpError['message'] ?? 'unknown';
+            error_log("2FA mail-code: failed to send to {$to} — {$detail}");
+            Response::json([
+                'error'   => true,
+                'message' => 'Error al enviar el email',
+                'debug'   => $detail,
+                'code'    => 500,
+            ], 500);
             return;
         }
 
