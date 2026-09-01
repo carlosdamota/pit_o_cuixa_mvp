@@ -89,6 +89,15 @@ $csrfToken = $pageData['csrf_token'] ?? '';
             </button>
 
             <a href="#" class="admin-login__reenroll" data-2fa-reenroll>Perdí mi autentificador</a>
+
+            <p class="admin-login__alt">
+                <a href="#" data-mail-code-toggle>Envíame un código por email</a>
+            </p>
+            <div class="admin-field" data-mail-code-wrap hidden>
+                <label for="mail-code" class="admin-field__label">Código de 6 dígitos (email)</label>
+                <input id="mail-code" name="mail_code" type="text" class="admin-field__input" maxlength="6" autocomplete="one-time-code" inputmode="numeric">
+                <button type="button" class="admin-btn admin-btn--ghost" data-mail-code-submit>Entrar con código email</button>
+            </div>
         </form>
 
         <!-- ── Step 3: 2FA enrollment (hidden until required) ───────── -->
@@ -422,6 +431,76 @@ document.querySelector('[data-backup-submit]')?.addEventListener('click', async 
     } finally {
         btn.disabled = false;
         btn.textContent = 'Entrar con respaldo';
+    }
+});
+
+// ── Mail-code flow: request + verify ────────────────────────────────────────
+document.querySelector('[data-mail-code-toggle]')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (!challengeToken) {
+        showError(twoFaError, 'Sesión caducada. Vuelve a iniciar sesión.');
+        return;
+    }
+    // Request the code via email first
+    try {
+        const res  = await fetch('/api/auth/2fa-mail-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challenge_token: challengeToken }),
+        });
+        const json = await res.json();
+        if (json.error) {
+            showError(twoFaError, json.message || 'No se pudo enviar el código');
+            return;
+        }
+        // Show the code input
+        const wrap = document.querySelector('[data-mail-code-wrap]');
+        if (wrap) wrap.hidden = false;
+        showError(twoFaError, '');
+        twoFaError.hidden = true;
+    } catch (err) {
+        showError(twoFaError, 'Error de conexión');
+    }
+});
+
+document.querySelector('[data-mail-code-submit]')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const wrap      = document.querySelector('[data-mail-code-wrap]');
+    const codeInput = wrap?.querySelector('input[name="mail_code"]');
+
+    if (!challengeToken) {
+        showError(twoFaError, 'Sesión caducada. Vuelve a iniciar sesión.');
+        return;
+    }
+    if (!codeInput || codeInput.value.trim() === '') {
+        showError(twoFaError, 'Introduce el código de 6 dígitos.');
+        return;
+    }
+
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+        const res  = await fetch('/api/auth/2fa-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                challenge_token: challengeToken,
+                code: codeInput.value.trim(),
+            }),
+        });
+        const json = await res.json();
+        if (json.error) {
+            showError(twoFaError, json.message || 'Código incorrecto');
+        } else {
+            window.location.href = '/pitocuixa';
+        }
+    } catch (err) {
+        showError(twoFaError, 'Error de conexión');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar con código email';
     }
 });
 </script>
