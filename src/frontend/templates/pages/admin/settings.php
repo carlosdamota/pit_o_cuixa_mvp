@@ -154,6 +154,10 @@ $lang                  = $pageData['locale'] ?? LANG;
                         Email de recuperacion.
                     </p>
                 </div>
+
+                <button type="submit" class="admin-btn admin-btn--primary" data-company-submit>
+                    Guardar cambios
+                </button>
             </form>
         </section>
     </main>
