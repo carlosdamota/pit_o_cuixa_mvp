@@ -231,8 +231,11 @@
   padding: 0 20px 20px 20px;
 }
 
+/* Hidden must always win over any later layout rule: the featured accordion
+   grid at >=1024px has the same specificity and comes after this rule, which
+   otherwise keeps closed items visible on desktop. */
 .accordion-content[hidden] {
-  display: none;
+  display: none !important;
 }
 
 /* Menu Content Sections inside Accordion */

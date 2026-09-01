@@ -187,6 +187,12 @@ jobs:
           mkdir -p www
           cp -r public/* www/
           cp -r public/.[!.]* www/ 2>/dev/null || true
+          # Windows scheduled-task scripts for dinahosting "Tareas programadas
+          # Windows" (the panel's script picker browses www/ only, and this
+          # workflow excludes scripts/ from the root mirror). They carry NO
+          # secrets: the .ps1 reads the token from the account-root .env one
+          # level above www/ and logs to ../data/cron-sync.log.
+          cp scripts/cron-sync-windows.bat scripts/cron-sync-windows.ps1 www/
           echo "www docroot prepared for deployment."
 
       # `data/` and *.db exclusions are THE layer that keeps the live server

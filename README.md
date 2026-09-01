@@ -297,6 +297,16 @@ En **Dinahosting**, el servidor web (Apache + Varnish / Nginx) utiliza por defec
 5. **Permisos de escritura**:
    - Asigna permisos `775` a las carpetas `data/` (para la base de datos SQLite) y `public/uploads/products/` (para imágenes del catálogo).
 
+#### ⏰ Cron de sincronización de productos (Dinahosting Windows)
+
+El hosting de producción es **Windows** y el panel no ejecuta comandos: **Servidor → Tareas programadas** lanza un script por ruta. El deploy a `main` sube automáticamente `cron-sync-windows.bat` y `cron-sync-windows.ps1` a la raíz web (`www/`) — no contienen secretos.
+
+- El `.ps1` lee `SERVICE_API_TOKEN` y `SITE_URL` del `.env` de la raíz de la cuenta (un nivel por encima de `www/`, que el propio pipeline genera desde GitHub Secrets), hace `POST /api/update-menu` con el token Bearer y deja traza en `data/cron-sync.log`.
+- Configuración en el panel: crear **dos tareas Diarias** apuntando a `www\cron-sync-windows.bat`, una a las `00:00` y otra a las `12:00`. Las tareas no se pueden editar: se eliminan y se vuelven a crear.
+- Para probar sin esperar: crear una tarea temporal con hora inminente y revisar `data/cron-sync.log` (`OK: HTTP 200 {"status":"ok"...}` esperado).
+- Fail-closed: si falta el token en `.env`, el script aborta sin llamar al endpoint y lo registra en el log.
+- En hosting Linux el equivalente es `php scripts/cron-sync.php` vía `scripts/install-cron.sh` (00:00 y 12:00, requiere consola/crontab).
+
 ---
 
 ### CI / CD
