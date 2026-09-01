@@ -234,6 +234,15 @@ class AuthController
             }
         }
 
+        // 3) Mail code (single-use, 5-minute window)
+        if (!$success) {
+            $mailCode = $challengeRepo->getMailCode($challengeToken);
+            if ($mailCode !== null && password_verify($code, $mailCode['hash'])) {
+                $challengeRepo->clearMailCode($challengeToken);
+                $success = true;
+            }
+        }
+
         if (!$success) {
             $limiter->recordFailure("2fa:challenge:{$challengeToken}");
             Response::error('Invalid code', 401);
@@ -258,6 +267,72 @@ class AuthController
                     'display_name' => $user['display_name'],
                 ],
             ],
+        ]);
+    }
+
+    /**
+     * POST /api/auth/2fa-mail-code
+     *
+     * Request a 6-digit code sent to the admin's recovery email.
+     * Body: { "challenge_token": "..." }
+     */
+    public static function twoFactorMailCode(): void
+    {
+        $rawInput = file_get_contents('php://input');
+        $input    = json_decode($rawInput ?: '', true);
+
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        $challengeToken = trim((string) ($input['challenge_token'] ?? ''));
+
+        if ($challengeToken === '') {
+            Response::error('Challenge token is required', 400);
+            return;
+        }
+
+        $challengeRepo = new TwoFactorChallenge();
+        $challenge     = $challengeRepo->find($challengeToken);
+
+        if ($challenge === null) {
+            Response::error('Invalid or expired challenge', 401);
+            return;
+        }
+
+        $userId   = (int) $challenge['user_id'];
+        $userRepo = new UserRepo();
+        $user     = $userRepo->byId($userId);
+
+        if ($user === null || empty($user['mail'])) {
+            Response::error('No hay email de recuperación configurado', 400);
+            return;
+        }
+
+        // Generate 6-digit code
+        $code       = (string) random_int(100000, 999999);
+        $hash       = password_hash($code, PASSWORD_DEFAULT);
+        $expiresAt  = time() + 300; // 5 minutes
+
+        $challengeRepo->storeMailCode($challengeToken, $hash, $expiresAt);
+
+        // Send via native mail()
+        $to      = $user['mail'];
+        $subject = 'Pit o Cuixa — Tu código de acceso';
+        $body    = "Tu código de verificación es: {$code}\n\nEste código caduca en 5 minutos.\nSi no solicitaste este código, ignora este mensaje.";
+        $headers = "From: Pit o Cuixa <info@pitocuixa.es>\r\nContent-Type: text/plain; charset=UTF-8";
+
+        $sent = @mail($to, $subject, $body, $headers);
+
+        if (!$sent) {
+            error_log("2FA mail-code: failed to send to {$to}");
+            Response::error('Error al enviar el email', 500);
+            return;
+        }
+
+        Response::json([
+            'error'   => false,
+            'message' => 'Código enviado a ' . $to,
         ]);
     }
 

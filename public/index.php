@@ -168,6 +168,10 @@ $router->add('POST', '/api/auth/2fa-enroll-confirm', static function (array $par
     AuthController::twoFactorEnrollConfirm();
 });
 
+$router->add('POST', '/api/auth/2fa-mail-code', static function (array $params): void {
+    AuthController::twoFactorMailCode();
+});
+
 //Añadida ruta al Scraper — read-only utility, requires auth (AUTH-1)
 $router->add('GET', '/api/scraper', static function(array $params): void{
     Auth::authorizeSync();
