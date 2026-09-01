@@ -317,14 +317,28 @@ class AuthController
 
         $challengeRepo->storeMailCode($challengeToken, $hash, $expiresAt);
 
-        // Send via SMTP to localhost:25 (dinahosting shared hosting)
+        // Send via SMTP (Gmail)
         $to      = $user['mail'];
         $from    = 'info@pitocuixa.es';
         $subject = 'Pit o Cuixa — Tu código de acceso';
         $body    = "Tu código de verificación es: {$code}\n\nEste código caduca en 5 minutos.\nSi no solicitaste este código, ignora este mensaje.";
 
-        $mailer  = new SmtpMailer('localhost', 25);
-        $result  = $mailer->send($from, $to, $subject, $body);
+        $smtpHost = getenv('SMTP_HOST') ?: 'smtp.gmail.com';
+        $smtpPort = (int) (getenv('SMTP_PORT') ?: 587);
+        $smtpUser = getenv('SMTP_USER') ?: '';
+        $smtpPass = getenv('SMTP_PASS') ?: '';
+
+        if ($smtpUser === '' || $smtpPass === '') {
+            Response::json([
+                'error'   => true,
+                'message' => 'SMTP not configured',
+                'code'    => 500,
+            ], 500);
+            return;
+        }
+
+        $mailer = new SmtpMailer($smtpHost, $smtpPort);
+        $result = $mailer->send($from, $to, $subject, $body, $smtpUser, $smtpPass);
 
         if (!$result['ok']) {
             Response::json([

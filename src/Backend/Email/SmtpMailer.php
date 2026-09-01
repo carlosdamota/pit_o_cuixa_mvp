@@ -2,9 +2,8 @@
 /**
  * Pit o Cuixa — Minimal SMTP Mailer
  *
- * Sends email via fsockopen to a local SMTP server (localhost:25).
- * No auth, no composer, no vendor — pure PHP.
- * Designed for dinahosting shared hosting where mail() doesn't work.
+ * Sends email via fsockopen with STARTTLS and AUTH LOGIN.
+ * No composer, no vendor — pure PHP.
  *
  * @package Pit\Cuixa\Backend\Email
  */
@@ -19,7 +18,7 @@ class SmtpMailer
     private int    $port;
     private int    $timeout;
 
-    public function __construct(string $host = 'localhost', int $port = 25, int $timeout = 10)
+    public function __construct(string $host, int $port = 587, int $timeout = 10)
     {
         $this->host    = $host;
         $this->port    = $port;
@@ -33,19 +32,20 @@ class SmtpMailer
      * @param string $to      Recipient email address
      * @param string $subject Email subject
      * @param string $body    Email body (plain text)
+     * @param string $user    SMTP username (email)
+     * @param string $pass    SMTP password (app password)
      * @return array{ok: bool, error?: string}
      */
-    public function send(string $from, string $to, string $subject, string $body): array
+    public function send(string $from, string $to, string $subject, string $body, string $user, string $pass): array
     {
         $errno  = 0;
         $errstr = '';
         $fp = @fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
 
         if ($fp === false) {
-            return ['ok' => false, "error" => "Connection failed: {$errstr} ({$errno})"];
+            return ['ok' => false, 'error' => "Connection failed: {$errstr} ({$errno})"];
         }
 
-        // Set timeout for reads
         stream_set_timeout($fp, $this->timeout);
 
         // Read server greeting
@@ -54,6 +54,47 @@ class SmtpMailer
         // EHLO
         $this->write($fp, 'EHLO pitocuixa.es');
         $this->read($fp);
+
+        // STARTTLS
+        $this->write($fp, 'STARTTLS');
+        $resp = $this->read($fp);
+        if (strpos($resp, '220') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "STARTTLS failed: {$resp}"];
+        }
+
+        if (!stream_socket_enable_crypto($fp, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT, true)) {
+            fclose($fp);
+            return ['ok' => false, 'error' => 'TLS handshake failed'];
+        }
+
+        // Re-EHLO after STARTTLS
+        $this->write($fp, 'EHLO pitocuixa.es');
+        $this->read($fp);
+
+        // AUTH LOGIN
+        $this->write($fp, 'AUTH LOGIN');
+        $resp = $this->read($fp);
+        if (strpos($resp, '334') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "AUTH LOGIN failed: {$resp}"];
+        }
+
+        // Username (base64)
+        $this->write($fp, base64_encode($user));
+        $resp = $this->read($fp);
+        if (strpos($resp, '334') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "AUTH username rejected: {$resp}"];
+        }
+
+        // Password (base64)
+        $this->write($fp, base64_encode($pass));
+        $resp = $this->read($fp);
+        if (strpos($resp, '235') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "AUTH password rejected: {$resp}"];
+        }
 
         // MAIL FROM
         $this->write($fp, "MAIL FROM:<{$from}>");
@@ -91,9 +132,6 @@ class SmtpMailer
         return ['ok' => true];
     }
 
-    /**
-     * Read SMTP response line(s) from the server.
-     */
     private function read($fp): string
     {
         $response = '';
@@ -103,7 +141,6 @@ class SmtpMailer
                 break;
             }
             $response .= $line;
-            // SMTP multi-line responses have '-' on lines 1..N-1, ' ' on last
             if (isset($line[3]) && $line[3] === ' ') {
                 break;
             }
@@ -111,9 +148,6 @@ class SmtpMailer
         return $response;
     }
 
-    /**
-     * Write a command to the SMTP server.
-     */
     private function write($fp, string $command): void
     {
         fwrite($fp, $command . "\r\n");
