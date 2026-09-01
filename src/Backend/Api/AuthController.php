@@ -320,19 +320,25 @@ class AuthController
         $to      = $user['mail'];
         $subject = 'Pit o Cuixa — Tu código de acceso';
         $body    = "Tu código de verificación es: {$code}\n\nEste código caduca en 5 minutos.\nSi no solicitaste este código, ignora este mensaje.";
-        $headers = "From: Pit o Cuixa <info@pitocuixa.es>\r\nContent-Type: text/plain; charset=UTF-8";
+        $headers = "From: info@pitocuixa.es\r\nContent-Type: text/plain; charset=UTF-8";
 
         $sent = mail($to, $subject, $body, $headers);
 
         if (!$sent) {
-            $phpError = error_get_last();
-            $detail   = $phpError['message'] ?? 'unknown';
-            error_log("2FA mail-code: failed to send to {$to} — {$detail}");
             Response::json([
                 'error'   => true,
                 'message' => 'Error al enviar el email',
-                'debug'   => $detail,
-                'code'    => 500,
+                'debug'   => [
+                    'to'       => $to,
+                    'php_ver'  => PHP_VERSION,
+                    'os'       => PHP_OS,
+                    'mail_cfg' => [
+                        'SMTP'      => ini_get('SMTP'),
+                        'smtp_port' => ini_get('smtp_port'),
+                        'sendmail'  => ini_get('sendmail_from'),
+                    ],
+                ],
+                'code' => 500,
             ], 500);
             return;
         }
