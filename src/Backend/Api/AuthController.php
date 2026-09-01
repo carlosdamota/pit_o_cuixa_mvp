@@ -20,6 +20,7 @@ use Pit\Cuixa\Backend\Auth\Auth;
 use Pit\Cuixa\Backend\Auth\RateLimiter;
 use Pit\Cuixa\Backend\Auth\Crypto;
 use Pit\Cuixa\Backend\Auth\Totp;
+use Pit\Cuixa\Backend\Email\SmtpMailer;
 
 class AuthController
 {
@@ -316,29 +317,21 @@ class AuthController
 
         $challengeRepo->storeMailCode($challengeToken, $hash, $expiresAt);
 
-        // Send via native mail()
+        // Send via SMTP to localhost:25 (dinahosting shared hosting)
         $to      = $user['mail'];
+        $from    = 'info@pitocuixa.es';
         $subject = 'Pit o Cuixa — Tu código de acceso';
         $body    = "Tu código de verificación es: {$code}\n\nEste código caduca en 5 minutos.\nSi no solicitaste este código, ignora este mensaje.";
-        $headers = "From: info@pitocuixa.es\r\nContent-Type: text/plain; charset=UTF-8";
 
-        $sent = mail($to, $subject, $body, $headers, '-finfo@pitocuixa.es');
+        $mailer  = new SmtpMailer('localhost', 25);
+        $result  = $mailer->send($from, $to, $subject, $body);
 
-        if (!$sent) {
+        if (!$result['ok']) {
             Response::json([
                 'error'   => true,
                 'message' => 'Error al enviar el email',
-                'debug'   => [
-                    'to'       => $to,
-                    'php_ver'  => PHP_VERSION,
-                    'os'       => PHP_OS,
-                    'mail_cfg' => [
-                        'SMTP'      => ini_get('SMTP'),
-                        'smtp_port' => ini_get('smtp_port'),
-                        'sendmail'  => ini_get('sendmail_from'),
-                    ],
-                ],
-                'code' => 500,
+                'debug'   => $result['error'] ?? 'unknown',
+                'code'    => 500,
             ], 500);
             return;
         }
