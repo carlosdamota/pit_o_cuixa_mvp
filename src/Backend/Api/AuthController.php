@@ -322,7 +322,7 @@ class AuthController
         $body    = "Tu código de verificación es: {$code}\n\nEste código caduca en 5 minutos.\nSi no solicitaste este código, ignora este mensaje.";
         $headers = "From: info@pitocuixa.es\r\nContent-Type: text/plain; charset=UTF-8";
 
-        $sent = mail($to, $subject, $body, $headers);
+        $sent = mail($to, $subject, $body, $headers, '-finfo@pitocuixa.es');
 
         if (!$sent) {
             Response::json([
