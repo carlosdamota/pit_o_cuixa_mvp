@@ -138,9 +138,22 @@ $lang                  = $pageData['locale'] ?? LANG;
                     </p>
                 </div>
 
-                <button type="submit" class="admin-btn admin-btn--primary" data-company-submit>
-                    Guardar cambios
-                </button>
+                <div class="admin-field">
+                    <label class="admin-field__label" for="company-email">
+                        Email de recuperación para 2FA
+                    </label>
+                    <input type="email"
+                           id="company-email"
+                           name="company_email"
+                           class="admin-field__input"
+                           data-company-input="mail"
+                           value="<?= htmlspecialchars($user['mail'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                           maxlength="100"
+                           autocomplete="email">
+                    <p class="admin-field__hint">
+                        Email de recuperacion.
+                    </p>
+                </div>
             </form>
         </section>
     </main>

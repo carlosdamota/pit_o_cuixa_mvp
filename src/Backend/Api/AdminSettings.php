@@ -28,6 +28,7 @@ class AdminSettings
         'company_address',
         'company_phone',
         'company_whatsapp',
+        'mail',
     ];
 
     /**
@@ -61,7 +62,7 @@ class AdminSettings
      */
     public static function update(): void
     {
-        Auth::requireToken();
+        $user = Auth::requireToken();
         Auth::validateCsrfToken();
 
         $rawInput = file_get_contents('php://input');
@@ -106,7 +107,14 @@ class AdminSettings
         Settings::ensureSchema();
 
         foreach ($clean as $key => $value) {
-            Settings::set($key, $value);
+            if ($key === 'mail') {
+                // mail lives in the users table, not settings
+                $pdo  = \Pit\Cuixa\Backend\Db\Connection::get();
+                $stmt = $pdo->prepare('UPDATE users SET mail = :mail WHERE id = :id');
+                $stmt->execute([':mail' => $value, ':id' => (int) $user['id']]);
+            } else {
+                Settings::set($key, $value);
+            }
         }
 
         Response::json([
@@ -153,6 +161,18 @@ class AdminSettings
             case 'company_address':
                 if (mb_strlen($value) > 200) {
                     return 'Invalid value for company_address. Maximum 200 characters';
+                }
+                return null;
+
+            case 'mail':
+                if ($value === '') {
+                    return null; // Optional — clears the recovery email
+                }
+                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    return 'Invalid email format for mail';
+                }
+                if (mb_strlen($value) > 100) {
+                    return 'Invalid value for mail. Maximum 100 characters';
                 }
                 return null;
         }
