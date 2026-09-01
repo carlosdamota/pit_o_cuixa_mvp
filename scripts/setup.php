@@ -295,8 +295,8 @@ if ($adminCount > 0) {
         $stmt = $pdo->prepare(
             'INSERT INTO users (
                 username, password, display_name, role, is_active,
-                totp_secret, totp_enabled, totp_verified_at
-             ) VALUES (:u, :p, :d, :r, 1, :secret, 1, datetime(\'now\'))'
+                mail, totp_secret, totp_enabled, totp_verified_at
+             ) VALUES (:u, :p, :d, :r, 1, :mail, :secret, 1, datetime(\'now\'))'
         );
         $stmt->execute([
             ':u'      => $username,
@@ -317,6 +317,15 @@ if ($adminCount > 0) {
         }
 
         status('✓', "Admin user '{$username}' created successfully.");
+
+        // Solicitar email de recuperación para 2FA
+        echo "\n";
+        $mail = prompt('Email de recuperación para 2FA (opcional pero recomendado): ');
+        if ($mail !== '') {
+            $stmt = $pdo->prepare('UPDATE users SET mail = :m WHERE id = :id');
+            $stmt->execute([':m' => $mail, ':id' => $adminId]);
+            echo "  ✓ Email de recuperación guardado en la base de datos.\n";
+        }
 
         // Print enrollment material for the human operator to scan/save.
         echo "\n";
