@@ -8,6 +8,11 @@
 #   DB_PATH             — Absolute path to SQLite DB on server (e.g. /home/user/data/app.db)
 #   SERVICE_API_TOKEN   — Bearer token for /api/migrate authentication
 #   SITE_URL            — Public URL of the deployed site (e.g. https://example.com)
+#   TOTP_ENC_KEY        — 32-byte hex key for AES-256-GCM encryption of TOTP secrets.
+#                         MUST match the key that encrypted existing users.totp_secret
+#                         rows — rotating it makes previously-encrypted secrets
+#                         undecryptable (2FA re-enrollment required).
+#   DEEPL_API_KEY       — DeepL API key for automatic menu translations.
 # ──────────────────────────────────────────────────────────────────────────────
 
 name: Deploy Preproduction
@@ -54,7 +59,7 @@ jobs:
       - name: Validate required secrets
         run: |
           MISSING=()
-          for SECRET in FTP_HOST FTP_USER FTP_PASS DB_PATH SERVICE_API_TOKEN SITE_URL; do
+          for SECRET in FTP_HOST FTP_USER FTP_PASS DB_PATH SERVICE_API_TOKEN SITE_URL TOTP_ENC_KEY DEEPL_API_KEY; do
             if [ -z "${!SECRET}" ]; then
               MISSING+=("$SECRET")
             fi
@@ -71,19 +76,26 @@ jobs:
           DB_PATH: ${{ secrets.DB_PATH }}
           SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
           SITE_URL: ${{ secrets.SITE_URL }}
+          TOTP_ENC_KEY: ${{ secrets.TOTP_ENC_KEY }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
 
       - name: Build .env from secrets
         run: |
           cat > .env <<EOF
+          APP_ENV=prod
           DB_PATH=${DB_PATH}
           SERVICE_API_TOKEN=${SERVICE_API_TOKEN}
           SITE_URL=${SITE_URL}
+          TOTP_ENC_KEY=${TOTP_ENC_KEY}
+          DEEPL_API_KEY=${DEEPL_API_KEY}
           EOF
           echo ".env file generated."
         env:
           DB_PATH: ${{ secrets.DB_PATH }}
           SERVICE_API_TOKEN: ${{ secrets.SERVICE_API_TOKEN }}
           SITE_URL: ${{ secrets.SITE_URL }}
+          TOTP_ENC_KEY: ${{ secrets.TOTP_ENC_KEY }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
 
       - name: Prepare public_html for hosting
         run: |
