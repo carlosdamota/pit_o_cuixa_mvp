@@ -17,6 +17,10 @@
 #                              rows — rotating it makes previously-encrypted secrets
 #                              undecryptable (2FA re-enrollment required).
 #   DEEPL_API_KEY_PROD       — DeepL API key for automatic menu translations.
+#   SMTP_HOST_PROD           — SMTP server hostname for outgoing email (2FA codes).
+#   SMTP_PORT_PROD           — SMTP server port (typically 587 with STARTTLS).
+#   SMTP_USER_PROD           — SMTP username (sender mailbox).
+#   SMTP_PASS_PROD           — SMTP password (app password recommended).
 # ──────────────────────────────────────────────────────────────────────────────
 # DATABASE SAFETY
 # The SQLite database is a live data file on the server. It is protected by
@@ -76,7 +80,7 @@ jobs:
       - name: Validate required secrets
         run: |
           MISSING=()
-          for SECRET in FTP_HOST_PROD FTP_USER_PROD FTP_PASS_PROD DB_PATH_PROD SERVICE_API_TOKEN_PROD SITE_URL_PROD TOTP_ENC_KEY_PROD DEEPL_API_KEY_PROD; do
+          for SECRET in FTP_HOST_PROD FTP_USER_PROD FTP_PASS_PROD DB_PATH_PROD SERVICE_API_TOKEN_PROD SITE_URL_PROD TOTP_ENC_KEY_PROD DEEPL_API_KEY_PROD SMTP_HOST_PROD SMTP_PORT_PROD SMTP_USER_PROD SMTP_PASS_PROD; do
             if [ -z "${!SECRET}" ]; then
               MISSING+=("$SECRET")
             fi
@@ -95,6 +99,10 @@ jobs:
           SITE_URL_PROD: ${{ secrets.SITE_URL_PROD }}
           TOTP_ENC_KEY_PROD: ${{ secrets.TOTP_ENC_KEY_PROD }}
           DEEPL_API_KEY_PROD: ${{ secrets.DEEPL_API_KEY_PROD }}
+          SMTP_HOST_PROD: ${{ secrets.SMTP_HOST_PROD }}
+          SMTP_PORT_PROD: ${{ secrets.SMTP_PORT_PROD }}
+          SMTP_USER_PROD: ${{ secrets.SMTP_USER_PROD }}
+          SMTP_PASS_PROD: ${{ secrets.SMTP_PASS_PROD }}
 
       # Fail-closed: a SQLite file in the tree means someone committed live data.
       # Deploying it could overwrite or shadow the server's real database.
@@ -117,6 +125,10 @@ jobs:
           SITE_URL=${SITE_URL_PROD}
           TOTP_ENC_KEY=${TOTP_ENC_KEY_PROD}
           DEEPL_API_KEY=${DEEPL_API_KEY_PROD}
+          SMTP_HOST=${SMTP_HOST_PROD}
+          SMTP_PORT=${SMTP_PORT_PROD}
+          SMTP_USER=${SMTP_USER_PROD}
+          SMTP_PASS=${SMTP_PASS_PROD}
           EOF
           echo ".env file generated."
         env:
@@ -125,6 +137,10 @@ jobs:
           SITE_URL_PROD: ${{ secrets.SITE_URL_PROD }}
           TOTP_ENC_KEY_PROD: ${{ secrets.TOTP_ENC_KEY_PROD }}
           DEEPL_API_KEY_PROD: ${{ secrets.DEEPL_API_KEY_PROD }}
+          SMTP_HOST_PROD: ${{ secrets.SMTP_HOST_PROD }}
+          SMTP_PORT_PROD: ${{ secrets.SMTP_PORT_PROD }}
+          SMTP_USER_PROD: ${{ secrets.SMTP_USER_PROD }}
+          SMTP_PASS_PROD: ${{ secrets.SMTP_PASS_PROD }}
 
       # Download the live production DB before touching anything. The backup is
       # stored under $RUNNER_TEMP (NEVER in the workspace, or the mirror step

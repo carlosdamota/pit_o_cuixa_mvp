@@ -13,6 +13,10 @@
 #                         rows — rotating it makes previously-encrypted secrets
 #                         undecryptable (2FA re-enrollment required).
 #   DEEPL_API_KEY       — DeepL API key for automatic menu translations.
+#   SMTP_HOST           — SMTP server hostname for outgoing email (2FA codes).
+#   SMTP_PORT           — SMTP server port (typically 587 with STARTTLS).
+#   SMTP_USER           — SMTP username (sender mailbox).
+#   SMTP_PASS           — SMTP password (app password recommended).
 # ──────────────────────────────────────────────────────────────────────────────
 
 name: Deploy Preproduction
@@ -59,7 +63,7 @@ jobs:
       - name: Validate required secrets
         run: |
           MISSING=()
-          for SECRET in FTP_HOST FTP_USER FTP_PASS DB_PATH SERVICE_API_TOKEN SITE_URL TOTP_ENC_KEY DEEPL_API_KEY; do
+          for SECRET in FTP_HOST FTP_USER FTP_PASS DB_PATH SERVICE_API_TOKEN SITE_URL TOTP_ENC_KEY DEEPL_API_KEY SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS; do
             if [ -z "${!SECRET}" ]; then
               MISSING+=("$SECRET")
             fi
@@ -78,6 +82,10 @@ jobs:
           SITE_URL: ${{ secrets.SITE_URL }}
           TOTP_ENC_KEY: ${{ secrets.TOTP_ENC_KEY }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
 
       - name: Build .env from secrets
         run: |
@@ -88,6 +96,10 @@ jobs:
           SITE_URL=${SITE_URL}
           TOTP_ENC_KEY=${TOTP_ENC_KEY}
           DEEPL_API_KEY=${DEEPL_API_KEY}
+          SMTP_HOST=${SMTP_HOST}
+          SMTP_PORT=${SMTP_PORT}
+          SMTP_USER=${SMTP_USER}
+          SMTP_PASS=${SMTP_PASS}
           EOF
           echo ".env file generated."
         env:
@@ -96,6 +108,10 @@ jobs:
           SITE_URL: ${{ secrets.SITE_URL }}
           TOTP_ENC_KEY: ${{ secrets.TOTP_ENC_KEY }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
 
       - name: Prepare public_html for hosting
         run: |
