@@ -53,18 +53,18 @@ function status(string $label, string $message): void
  * Display names for the category slugs produced by WebScraper::mapCategory().
  * Mirrors the names previously seeded by migration 007.
  *
- * @return array<string, array{name_es: string, name_en: string, name_ca: string}>
+ * @return array<string, array{name_es: string, name_en: string}>
  */
 function categoryNames(): array
 {
     return [
-        'menus'     => ['name_es' => 'Menu',              'name_en' => 'Menu',             'name_ca' => 'Menú'],
-        'platos'    => ['name_es' => 'Platos principales', 'name_en' => 'Main dishes',     'name_ca' => 'Plats principals'],
-        'entrantes' => ['name_es' => 'Entrantes',          'name_en' => 'Starters',        'name_ca' => 'Entrants'],
-        'bebidas'   => ['name_es' => 'Bebidas',            'name_en' => 'Drinks',          'name_ca' => 'Begudes'],
-        'postres'   => ['name_es' => 'Postres',            'name_en' => 'Desserts',        'name_ca' => 'Postres'],
-        'portes'    => ['name_es' => 'Portes',             'name_en' => 'Delivery Charges', 'name_ca' => 'Portes'],
-        'otros'     => ['name_es' => 'Otros',              'name_en' => '',                'name_ca' => ''],
+        'menus'     => ['name_es' => 'Menu',              'name_en' => 'Menu'],
+        'platos'    => ['name_es' => 'Platos principales', 'name_en' => 'Main dishes'],
+        'entrantes' => ['name_es' => 'Entrantes',          'name_en' => 'Starters'],
+        'bebidas'   => ['name_es' => 'Bebidas',            'name_en' => 'Drinks'],
+        'postres'   => ['name_es' => 'Postres',            'name_en' => 'Desserts'],
+        'portes'    => ['name_es' => 'Portes',             'name_en' => 'Delivery Charges'],
+        'otros'     => ['name_es' => 'Otros',              'name_en' => ''],
     ];
 }
 
@@ -181,16 +181,15 @@ function ensureCategories(array $products): int
         }
         $seen[$slug] = true;
 
-        $row  = $names[$slug] ?? ['name_es' => ucfirst($slug), 'name_en' => '', 'name_ca' => ''];
+        $row  = $names[$slug] ?? ['name_es' => ucfirst($slug), 'name_en' => ''];
         $stmt = $pdo->prepare(
-            'INSERT OR IGNORE INTO categories (slug, name_es, name_en, name_ca, name_uk, sort_order, is_active)
-             VALUES (:slug, :name_es, :name_en, :name_ca, :name_uk, :sort_order, 1)'
+            'INSERT OR IGNORE INTO categories (slug, name_es, name_en, name_uk, sort_order, is_active)
+             VALUES (:slug, :name_es, :name_en, :name_uk, :sort_order, 1)'
         );
         $stmt->execute([
             ':slug'       => $slug,
             ':name_es'    => $row['name_es'],
             ':name_en'    => $row['name_en'] ?? '',
-            ':name_ca'    => $row['name_ca'] ?? '',
             ':name_uk'    => '',
             ':sort_order' => count($seen),
         ]);
@@ -280,9 +279,9 @@ try {
     $repo->sync($products);
     status('✓', 'Synced ' . count($products) . ' product(s) into the database.');
 
-    // 5. Auto-translate missing fields in CA, EN, UK (best effort)
+    // 5. Auto-translate missing fields in EN, UK (best effort)
     if (empty(getenv('DEEPL_API_KEY'))) {
-        status('!', 'DEEPL_API_KEY no configurada en .env — traducción automática omitida. Añade la key para traducir a CA, EN, UK.');
+        status('!', 'DEEPL_API_KEY no configurada en .env — traducción automática omitida. Añade la key para traducir a EN, UK.');
     } else {
         try {
             $translator = new MenuTranslator();

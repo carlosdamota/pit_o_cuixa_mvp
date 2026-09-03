@@ -25,7 +25,7 @@ class MenuTranslator
      * SQL is built — dynamic interpolation of `$lang` into column names is a
      * SQL injection surface.
      */
-    private const LANGS = ['ca', 'en', 'uk'];
+    private const LANGS = ['en', 'uk'];
 
     private DeepLService $deepl;
     private \PDO $pdo;
@@ -44,8 +44,8 @@ class MenuTranslator
      * can reach a query.
      *
      * @param  string $pfx Column prefix, e.g. 'name' or 'description'
-     * @param  string $l   Target language ('ca' | 'en' | 'uk')
-     * @return string      Whitelisted column name, e.g. 'name_ca'
+     * @param  string $l   Target language ('en' | 'uk')
+     * @return string      Whitelisted column name, e.g. 'name_en'
      * @throws \InvalidArgumentException When $l is not a supported target
      */
     private function col(string $pfx, string $l): string
@@ -62,10 +62,10 @@ class MenuTranslator
     /**
      * Translate missing name and description fields for categories and products.
      *
-     * @param array<int, string> $targetLangs Target languages ('ca', 'en', 'uk')
+     * @param array<int, string> $targetLangs Target languages ('en', 'uk')
      * @return array{categories: int, products: int} Translation count stats
      */
-    public function translateMissing(array $targetLangs = ['ca', 'en', 'uk']): array
+    public function translateMissing(array $targetLangs = ['en', 'uk']): array
     {
         $stats = ['categories' => 0, 'products' => 0];
 

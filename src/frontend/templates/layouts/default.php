@@ -27,8 +27,8 @@ $locale      = $pageData['locale']      ?? LANG;
 
 $siteUrl = \Config::siteUrl();
 
-// og:locale mapping for 4 supported locales
-$ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_UA'];
+// og:locale mapping for the supported locales
+$ogLocaleMap = ['es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_UA'];
 ?>
 <html lang="<?= $locale ?>" dir="ltr" translate="no">
 <head>
@@ -50,7 +50,7 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <meta property="og:image"       content="<?= htmlspecialchars($siteUrl . $ogImage, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:url"         content="<?= htmlspecialchars($canonical, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:type"        content="website">
-    <meta property="og:locale"      content="<?= $ogLocaleMap[$locale] ?? 'ca_ES' ?>">
+    <meta property="og:locale"      content="<?= $ogLocaleMap[$locale] ?? 'es_ES' ?>">
     <meta property="og:site_name"   content="<?= __('site.name') ?>">
 
     <!-- ── Twitter Card ─────────────────────────────────────────────── -->
@@ -64,9 +64,9 @@ $ogLocaleMap = ['ca' => 'ca_ES', 'es' => 'es_ES', 'en' => 'en_US', 'uk' => 'uk_U
     <link rel="alternate" hreflang="<?= $code ?>" href="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>">
     <?php endforeach; ?>
 
-    <!-- x-default → Catalan (default locale) -->
-    <?php if (isset($langs['ca'])): ?>
-    <link rel="alternate" hreflang="x-default" href="<?= htmlspecialchars($langs['ca'], ENT_QUOTES, 'UTF-8') ?>">
+    <!-- x-default → Spanish (default locale) -->
+    <?php if (isset($langs['es'])): ?>
+    <link rel="alternate" hreflang="x-default" href="<?= htmlspecialchars($langs['es'], ENT_QUOTES, 'UTF-8') ?>">
     <?php elseif (isset($langs[LANG])): ?>
     <link rel="alternate" hreflang="x-default" href="<?= htmlspecialchars($langs[LANG], ENT_QUOTES, 'UTF-8') ?>">
     <?php endif; ?>

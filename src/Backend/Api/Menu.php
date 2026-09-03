@@ -88,9 +88,8 @@ class Menu
     /**
      * Localized field lookup with empty-string fallback, mirroring
      * Pit\Cuixa\Backend\Pages\Menu::translateField(). Falls back through the
-     * requested locale → es → en → ca so a missing/empty translation never
-     * yields a blank name (e.g. Catalan product names are often empty in the
-     * DB, yet "carta" is detected as Catalan by detectLanguage()).
+     * requested locale → es → en so a missing/empty translation never
+     * yields a blank name.
      *
      * @param  array<string, mixed> $row
      */
@@ -100,7 +99,6 @@ class Menu
             "{$field}_{$lang}",
             "{$field}_es",
             "{$field}_en",
-            "{$field}_ca",
         ];
 
         foreach ($keys as $key) {

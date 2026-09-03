@@ -120,7 +120,7 @@ El proyecto cuenta con 4 scripts PHP nativos en `scripts/` para tareas administr
 | `scripts/setup.php` | Inicializa la base de datos SQLite (`data/pitocuixa.db`), aplica `db/schema.sql`, inserta datos semilla y crea el usuario administrador inicial. Admite banderas CLI para automatización. | `php scripts/setup.php --fresh --scrape --translate` |
 | `scripts/migrate.php` | Ejecuta migraciones de base de datos pendientes desde `db/migrations/*.sql` y registra su ejecución en la tabla `_migrations`. | `php scripts/migrate.php` |
 | `scripts/sync-css.php` | Copia y sincroniza hojas de estilo desde `src/frontend/css/` a `public/css/` para que el servidor web sirva la versión más reciente. | `php scripts/sync-css.php` |
-| `scripts/translate.php` | Traduce automáticamente en lote categorías y productos a catalán, inglés y ucraniano utilizando la API de DeepL (requiere `DEEPL_API_KEY` en `.env`). | `php scripts/translate.php` |
+| `scripts/translate.php` | Traduce automáticamente en lote categorías y productos a inglés y ucraniano utilizando la API de DeepL (requiere `DEEPL_API_KEY` en `.env`). | `php scripts/translate.php` |
 
 #### ⚙️ Opciones del script `setup.php`:
 
@@ -176,7 +176,7 @@ pit-o-cuixa/
 | **Estilos** | Design System con tokens CSS, BEM y Responsive Mobile-First |
 | **Sincronizador CSS**| Script PHP nativo (`scripts/sync-css.php`) |
 | **Plantillas** | SSR con PHP embebido en componentes HTML |
-| **Traducciones** | Arrays PHP en `src/shared/i18n/{es,en,ca}.php` + helper `__()` |
+| **Traducciones** | Arrays PHP en `src/shared/i18n/{es,en,uk}.php` + helper `__()` |
 | **CI** | GitHub Actions: `php -l` syntax check en cada PR |
 | **Dependencias** | Cero dependencias externas (sin Composer ni Node) |
 

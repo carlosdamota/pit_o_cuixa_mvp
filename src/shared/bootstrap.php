@@ -66,16 +66,20 @@ define('LANG', $locale);
 
 // ── 5. Load i18n with Fallback Chain ────────────────────────────────────
 // Each locale file now returns a pure data array (no function definitions).
-// Fallback order: requested locale → CA → EN
-$localeStrings = require __DIR__ . '/i18n/' . LANG . '.php';
-$caStrings     = require __DIR__ . '/i18n/ca.php';
+// Fallback order: requested locale → ES → EN
+// Guard against a stale/invalid locale config (e.g. DEFAULT_LOCALE=ca left
+// in a server .env after the Catalan removal): fall back to ES instead of
+// failing on a missing require.
+$localeFile = __DIR__ . '/i18n/' . LANG . '.php';
+$localeStrings = is_file($localeFile) ? require $localeFile : require __DIR__ . '/i18n/es.php';
+$esStrings     = require __DIR__ . '/i18n/es.php';
 $enStrings     = require __DIR__ . '/i18n/en.php';
 
-$GLOBALS['_translations'] = array_merge($enStrings, $caStrings, $localeStrings);
+$GLOBALS['_translations'] = array_merge($enStrings, $esStrings, $localeStrings);
 
 /**
  * Translate a key into the current locale.
- * Falls back through: requested locale → CA → EN → key itself.
+ * Falls back through: requested locale → ES → EN → key itself.
  *
  * @param  string $key     Translation key (dot-notation: section.key)
  * @param  array  $params  Optional sprintf parameters

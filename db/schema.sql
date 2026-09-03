@@ -3,8 +3,9 @@
 -- Executed by scripts/setup.php on first deploy.
 --
 -- NOTE: This file is the COMPLETE current schema — every migration has been
--- folded in (role column, settings, Catalan/Ukrainian fields, channels,
--- clicks_count, category refactor). A fresh setup runs ONLY this file and
+-- folded in (role column, settings, Ukrainian fields, channels,
+-- clicks_count, category refactor; the Catalan fields were removed by
+-- migration 015). A fresh setup runs ONLY this file and
 -- no longer needs db/migrations/.
 --
 -- The catalog tables (categories, products) are intentionally EMPTY.
@@ -48,7 +49,6 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS categories (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     slug        TEXT    NOT NULL UNIQUE,
-    name_ca     TEXT    NOT NULL DEFAULT '',
     name_es     TEXT    NOT NULL,
     name_en     TEXT    NOT NULL,
     name_uk     TEXT    NOT NULL DEFAULT '',
@@ -62,11 +62,9 @@ CREATE TABLE IF NOT EXISTS products (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     category_id     INTEGER NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
     slug            TEXT    NOT NULL UNIQUE,
-    name_ca         TEXT    NOT NULL DEFAULT '',
     name_es         TEXT    NOT NULL,
     name_en         TEXT    NOT NULL,
     name_uk         TEXT    NOT NULL DEFAULT '',
-    description_ca  TEXT    NOT NULL DEFAULT '',
     description_es  TEXT    NOT NULL DEFAULT '',
     description_en  TEXT    NOT NULL DEFAULT '',
     description_uk  TEXT    NOT NULL DEFAULT '',

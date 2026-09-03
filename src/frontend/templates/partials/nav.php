@@ -14,13 +14,12 @@ $baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
 $langSeparator = (strpos($baseUri, '?') !== false) ? '&' : '?';
 
 $languages = [
-    'ca' => ['label' => 'Català',     'flag' => 'favicon_CAT.webp'],
     'es' => ['label' => 'Castellano', 'flag' => 'favicon_ES.webp'],
     'en' => ['label' => 'English',    'flag' => 'favicon_UK.webp'],
     'uk' => ['label' => 'Українська', 'flag' => 'favicon_UKR.webp'],
 ];
 $currentLang = LANG;
-$currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
+$currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_ES.webp';
 ?>
 
 <nav class="header__nav container" role="navigation" aria-label="<?= __('nav.menu') ?>">

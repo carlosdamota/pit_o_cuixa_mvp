@@ -149,11 +149,11 @@ final class Config
     }
 
     /**
-     * Default locale (ca|es|en).
+     * Default locale (es|en|uk).
      */
     public static function defaultLocale(): string
     {
-        return self::get('DEFAULT_LOCALE', 'ca');
+        return self::get('DEFAULT_LOCALE', 'es');
     }
 
     /**
@@ -163,7 +163,7 @@ final class Config
      */
     public static function supportedLocales(): array
     {
-        return ['ca', 'es', 'en', 'uk'];
+        return ['es', 'en', 'uk'];
     }
 
     /**

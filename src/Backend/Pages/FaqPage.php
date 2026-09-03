@@ -45,7 +45,6 @@ class FaqPage
             'canonical'   => $siteUrl . '/faq',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'ca' => $siteUrl . '/faq',
                 'es' => $siteUrl . '/faq?lang=es',
                 'en' => $siteUrl . '/faq?lang=en',
                 'uk' => $siteUrl . '/faq?lang=uk',

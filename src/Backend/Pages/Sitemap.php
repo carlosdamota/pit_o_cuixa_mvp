@@ -62,7 +62,6 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/',
             'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/?lang=en'],
                 ['hreflang' => 'uk', 'href' => $siteUrl . '/?lang=uk'],
@@ -74,7 +73,6 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/menu',
             'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/menu'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/menu?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/menu?lang=en'],
                 ['hreflang' => 'uk', 'href' => $siteUrl . '/menu?lang=uk'],
@@ -86,7 +84,6 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/faq',
             'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/faq'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/faq?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/faq?lang=en'],
                 ['hreflang' => 'uk', 'href' => $siteUrl . '/faq?lang=uk'],
@@ -98,7 +95,6 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/privacy',
             'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/privacy'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/privacy?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/privacy?lang=en'],
                 ['hreflang' => 'uk', 'href' => $siteUrl . '/privacy?lang=uk'],
@@ -110,7 +106,6 @@ class Sitemap
         $pages[] = [
             'loc' => $siteUrl . '/cookies',
             'alternates' => [
-                ['hreflang' => 'ca', 'href' => $siteUrl . '/cookies'],
                 ['hreflang' => 'es', 'href' => $siteUrl . '/cookies?lang=es'],
                 ['hreflang' => 'en', 'href' => $siteUrl . '/cookies?lang=en'],
                 ['hreflang' => 'uk', 'href' => $siteUrl . '/cookies?lang=uk'],

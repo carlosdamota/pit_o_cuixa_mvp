@@ -281,11 +281,9 @@ $dineInMenus  = $pageData['dine_in_menus']  ?? [];
             $lang     = $locale;
             $catName  = !empty($category["name_{$lang}"])
                 ? $category["name_{$lang}"]
-                : (!empty($category['name_ca'])
-                    ? $category['name_ca']
-                    : (!empty($category['name_es'])
-                        ? $category['name_es']
-                        : ($category['name_en'] ?? '')));
+                : (!empty($category['name_es'])
+                    ? $category['name_es']
+                    : ($category['name_en'] ?? ''));
             $catSlug  = $category['slug'] ?? '';
         ?>
             <section class="product-group" data-category="<?= htmlspecialchars($catSlug, ENT_QUOTES, 'UTF-8') ?>">

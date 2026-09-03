@@ -31,7 +31,7 @@ class DeepLService
      * Translate text or array of texts from source language (or auto) to target language.
      *
      * @param string|array<int, string> $texts String or array of strings to translate.
-     * @param string $targetLang Target language ISO code ('ca', 'en', 'uk').
+     * @param string $targetLang Target language ISO code ('en', 'uk').
      * @param string $sourceLang Source language code (default: 'ES').
      * @return array<int, string> Array of translated texts.
      * @throws \RuntimeException If API call fails.
@@ -50,7 +50,6 @@ class DeepLService
 
         // Map locale codes to DeepL expected ISO targets
         $targetCode = match (strtolower($targetLang)) {
-            'ca' => 'CA',
             'en' => 'EN-US',
             'uk', 'ukr' => 'UK',
             default => strtoupper($targetLang),

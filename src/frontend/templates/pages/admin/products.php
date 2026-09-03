@@ -131,7 +131,7 @@ $lang       = $pageData['locale'] ?? LANG;
                         <div class="admin-field admin-field--full">
                             <label class="admin-checkbox" style="font-size:0.85rem;color:var(--color-primary);">
                                 <input type="checkbox" name="auto_translate" value="1" checked>
-                                🌐 Traducir automáticamente con DeepL (Inglés, Catalán, Ucraniano)
+                                🌐 Traducir automáticamente con DeepL (Inglés, Ucraniano)
                             </label>
                         </div>
 

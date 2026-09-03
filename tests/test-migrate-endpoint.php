@@ -51,12 +51,12 @@ if (!class_exists('Config', false)) {
 
         public static function defaultLocale(): string
         {
-            return 'ca';
+            return 'es';
         }
 
         public static function supportedLocales(): array
         {
-            return ['ca', 'es', 'en'];
+            return ['es', 'en', 'uk'];
         }
 
         public static function sessionLifetime(): int

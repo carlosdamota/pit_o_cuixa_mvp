@@ -11,16 +11,15 @@
 $baseUri = $_SERVER['REQUEST_URI'] ?? '/';
 $baseUri = preg_replace('/[?&]lang=[a-z]{2}/', '', $baseUri);
 $langSeparator = (strpos($baseUri, '?') !== false) ? '&' : '?';
-$langSuffix = LANG === 'ca' ? '' : $langSeparator . 'lang=' . LANG;
+$langSuffix = LANG === 'es' ? '' : $langSeparator . 'lang=' . LANG;
 
 $languages = [
-    'ca' => ['label' => 'Català',     'flag' => 'favicon_CAT.webp'],
     'es' => ['label' => 'Castellano', 'flag' => 'favicon_ES.webp'],
     'en' => ['label' => 'English',    'flag' => 'favicon_UK.webp'],
     'uk' => ['label' => 'Українська', 'flag' => 'favicon_UKR.webp'],
 ];
 $currentLang = LANG;
-$currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_CAT.webp';
+$currentFlag = $languages[$currentLang]['flag'] ?? 'favicon_ES.webp';
 ?>
 <!-- ============================================================
      Landing Onboarding (fullscreen fixed 100dvh)

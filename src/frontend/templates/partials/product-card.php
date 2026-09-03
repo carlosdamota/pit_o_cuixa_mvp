@@ -18,21 +18,17 @@ $name = !empty($product['name'])
     ? $product['name']
     : (!empty($product["name_{$lang}"])
         ? $product["name_{$lang}"]
-        : (!empty($product['name_ca'])
-            ? $product['name_ca']
-            : (!empty($product['name_es'])
-                ? $product['name_es']
-                : ($product['name_en'] ?? ''))));
+        : (!empty($product['name_es'])
+            ? $product['name_es']
+            : ($product['name_en'] ?? '')));
 
 $description = !empty($product['description'])
     ? $product['description']
     : (!empty($product["description_{$lang}"])
         ? $product["description_{$lang}"]
-        : (!empty($product['description_ca'])
-            ? $product['description_ca']
-            : (!empty($product['description_es'])
-                ? $product['description_es']
-                : ($product['description_en'] ?? ''))));
+        : (!empty($product['description_es'])
+            ? $product['description_es']
+            : ($product['description_en'] ?? '')));
 
 $price       = (float) ($product['price'] ?? 0);
 $priceFmt    = $product['price_formatted'] ?? number_format($price, 2, ',', '.') . ' €';

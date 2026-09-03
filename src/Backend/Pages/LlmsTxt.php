@@ -59,7 +59,7 @@ class LlmsTxt
         ];
 
         foreach ($categories as $category) {
-            $catName = $category["name_{$lang}"] ?? $category['name_ca'] ?? '';
+            $catName = $category["name_{$lang}"] ?? $category['name_es'] ?? '';
             $catId   = (int) $category['id'];
 
             $catProducts = array_values(
@@ -75,8 +75,8 @@ class LlmsTxt
 
             $lines[] = '### ' . $catName;
             foreach ($catProducts as $p) {
-                $name = $p["name_{$lang}"] ?? $p['name_ca'] ?? '';
-                $desc = trim($p["description_{$lang}"] ?? $p['description_ca'] ?? '');
+                $name = $p["name_{$lang}"] ?? $p['name_es'] ?? '';
+                $desc = trim($p["description_{$lang}"] ?? $p['description_es'] ?? '');
                 $price = number_format((float) $p['price'], 2, '.', '') . ' €';
 
                 if ($desc !== '') {

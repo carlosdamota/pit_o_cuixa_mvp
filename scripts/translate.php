@@ -2,7 +2,7 @@
 /**
  * Pit o Cuixa — DeepL Batch Translator CLI Script
  *
- * Manual CLI entry point to translate categories and products into CA, EN, UK.
+ * Manual CLI entry point to translate categories and products into EN, UK.
  *
  * Usage: php scripts/translate.php
  *

@@ -269,9 +269,16 @@ $router->add('GET', '/faq', static function (array $params): void {
     FaqPage::render();
 });
 
-// FAQ page with locale prefix (e.g. /ca/faq, /es/faq, /en/faq)
+// FAQ page with locale prefix (e.g. /es/faq, /en/faq)
 $router->add('GET', '/{lang}/faq', static function (array $params): void {
     $lang = $params['lang'] ?? '';
+
+    // Catalan was removed as a locale — permanently 301 the legacy /ca/*
+    // URLs to the unprefixed path so indexed Catalan pages keep working.
+    if ($lang === 'ca') {
+        Response::redirect('/faq', 301);
+        return;
+    }
 
     if (in_array($lang, \Config::supportedLocales(), true)) {
         // Redirect so the request re-enters bootstrap locale resolution,
@@ -293,6 +300,12 @@ $router->add('GET', '/privacy', static function (array $params): void {
 $router->add('GET', '/{lang}/privacy', static function (array $params): void {
     $lang = $params['lang'] ?? '';
 
+    // Catalan was removed as a locale — permanently 301 the legacy /ca/* URLs.
+    if ($lang === 'ca') {
+        Response::redirect('/privacy', 301);
+        return;
+    }
+
     if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/privacy?lang=' . $lang, 302);
         return;
@@ -309,6 +322,12 @@ $router->add('GET', '/cookies', static function (array $params): void {
 // Cookies page with locale prefix
 $router->add('GET', '/{lang}/cookies', static function (array $params): void {
     $lang = $params['lang'] ?? '';
+
+    // Catalan was removed as a locale — permanently 301 the legacy /ca/* URLs.
+    if ($lang === 'ca') {
+        Response::redirect('/cookies', 301);
+        return;
+    }
 
     if (in_array($lang, \Config::supportedLocales(), true)) {
         Response::redirect('/cookies?lang=' . $lang, 302);

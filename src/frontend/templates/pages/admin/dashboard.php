@@ -62,7 +62,7 @@ $lang            = $pageData['locale'] ?? LANG;
                     </thead>
                     <tbody>
                         <?php foreach ($perCategory as $cat): 
-                            $catName = !empty($cat["name_{$lang}"]) ? $cat["name_{$lang}"] : (!empty($cat['name_ca']) ? $cat['name_ca'] : (!empty($cat['name_es']) ? $cat['name_es'] : ($cat['name_en'] ?? '')));
+                            $catName = !empty($cat["name_{$lang}"]) ? $cat["name_{$lang}"] : (!empty($cat['name_es']) ? $cat['name_es'] : ($cat['name_en'] ?? ''));
                         ?>
                             <tr>
                                 <td><?= htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') ?></td>
@@ -81,7 +81,7 @@ $lang            = $pageData['locale'] ?? LANG;
                 Pulsa el botón para sincronizar manualmente la carta con el proveedor externo.
             </p>
             <p class="admin-section__desc">
-                «Traducir campos (DeepL)» rellena los campos vacíos de CA/EN/UK con DeepL
+                «Traducir campos (DeepL)» rellena los campos vacíos de EN/UK con DeepL
                 (útil si la traducción automática falló durante la sincronización).
             </p>
             <div class="admin-header__actions">

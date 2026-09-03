@@ -25,7 +25,6 @@ class Home
             'canonical'   => \Config::siteUrl() . '/',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'ca' => \Config::siteUrl() . '/',
                 'es' => \Config::siteUrl() . '/?lang=es',
                 'en' => \Config::siteUrl() . '/?lang=en',
                 'uk' => \Config::siteUrl() . '/?lang=uk',

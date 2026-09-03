@@ -26,7 +26,6 @@ class Cookies
             'canonical'   => $siteUrl . '/cookies',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'ca' => $siteUrl . '/cookies',
                 'es' => $siteUrl . '/cookies?lang=es',
                 'en' => $siteUrl . '/cookies?lang=en',
                 'uk' => $siteUrl . '/cookies?lang=uk',

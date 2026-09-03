@@ -150,7 +150,6 @@ class Menu
             'canonical'   => $siteUrl . '/menu',
             'og_image'    => '/img/og-image.jpg',
             'langs'       => [
-                'ca' => $siteUrl . '/menu',
                 'es' => $siteUrl . '/menu?lang=es',
                 'en' => $siteUrl . '/menu?lang=en',
                 'uk' => $siteUrl . '/menu?lang=uk',
@@ -201,7 +200,6 @@ class Menu
             "{$field}_{$lang}",
             "{$field}_es",
             "{$field}_en",
-            "{$field}_ca",
         ];
 
         foreach ($keys as $key) {

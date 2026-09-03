@@ -3,7 +3,7 @@
 /**
  * Pit o Cuixa — Admin Translate API Controller
  *
- * POST /api/pitocuixa/translate — Fills missing CA/EN/UK name/description
+ * POST /api/pitocuixa/translate — Fills missing EN/UK name/description
  * fields for categories and products via DeepL. Only NULL/empty columns are
  * filled (idempotent), so running it repeatedly is safe.
  *

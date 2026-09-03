@@ -250,20 +250,18 @@ class Product
         //Preparamos la insercion
         $stmt = $this->pdo->prepare(
             'INSERT INTO products(
-            category_id, slug, name_es, name_en, name_ca, name_uk, description_es, description_en, description_ca, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
+            category_id, slug, name_es, name_en, name_uk, description_es, description_en, description_uk, price, image_url, last_shop_url, sort_order, is_active, is_featured, is_dine_in, is_delivery, source, type, menu_data)
             VALUES(
-            :category_id, :slug, :name_es, :name_en, :name_ca, :name_uk, :description_es, :description_en, :description_ca, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
+            :category_id, :slug, :name_es, :name_en, :name_uk, :description_es, :description_en, :description_uk, :price, :image_url, :last_shop_url, :sort_order, :is_active, :is_featured, :is_dine_in, :is_delivery, :source, :type, :menu_data)'
         );
         $stmt->execute([
             ':category_id' => $product['category_id'],
             ':slug' => $product['slug'],
             ':name_es' => $product['name_es'],
             ':name_en' => $product['name_en'] ?? '',
-            ':name_ca' => $product['name_ca'] ?? '',
             ':name_uk' => $product['name_uk'] ?? '',
             ':description_es' => $product['description_es'] ?? '',
             ':description_en' => $product['description_en'] ?? '',
-            ':description_ca' => $product['description_ca'] ?? '',
             ':description_uk' => $product['description_uk'] ?? '',
             // Normalize BEFORE binding: the scraper emits raw DOM text like
             // "19,50 €" and a naive (float) cast truncates it to 19.0, storing
@@ -519,7 +517,7 @@ class Product
             $onlyActive = true;
         }
 
-        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
+        $sql = 'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                 FROM products p
                 JOIN categories c ON p.category_id = c.id
                 WHERE 1 = 1';
@@ -595,7 +593,7 @@ class Product
     public function bySlug(string $slug): ?array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
+            'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
              FROM products p
              JOIN categories c ON p.category_id = c.id
              WHERE p.slug = :slug AND p.is_active = 1'
@@ -646,14 +644,14 @@ class Product
         $totalClicks = (int) $totalClicksStmt->fetchColumn();
 
         if ($totalClicks > 0) {
-            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
+            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                     FROM products p
                     JOIN categories c ON p.category_id = c.id
                     WHERE p.is_active = 1
                     ORDER BY p.clicks_count DESC, p.sort_order ASC
                     LIMIT :limit';
         } else {
-            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_ca AS category_name_ca, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
+            $sql = 'SELECT p.*, c.slug AS category_slug, c.name_es AS category_name_es, c.name_en AS category_name_en, c.name_uk AS category_name_uk
                     FROM products p
                     JOIN categories c ON p.category_id = c.id
                     WHERE p.is_active = 1
@@ -712,7 +710,7 @@ class Product
 
         // The scraper only syncs the fields below (name_es, description_es,
         // price, image_url, last_shop_url, sort_order, channels). The other
-        // locale fields (name_en/ca/uk, description_en/ca/uk) are owned by
+        // locale fields (name_en/uk, description_en/uk) are owned by
         // the translate API and the admin panel, so a re-sync must never
         // overwrite them.
 

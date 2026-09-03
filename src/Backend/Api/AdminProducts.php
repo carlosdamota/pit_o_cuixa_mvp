@@ -76,11 +76,9 @@ class AdminProducts
         $descEs = trim((string) ($input['description_es'] ?? $input['description'] ?? ''));
 
         $nameEn = trim((string) ($input['name_en'] ?? ''));
-        $nameCa = trim((string) ($input['name_ca'] ?? ''));
         $nameUk = trim((string) ($input['name_uk'] ?? ''));
 
         $descEn = trim((string) ($input['description_en'] ?? ''));
-        $descCa = trim((string) ($input['description_ca'] ?? ''));
         $descUk = trim((string) ($input['description_uk'] ?? ''));
 
         $autoTranslate = !isset($input['auto_translate']) || !empty($input['auto_translate']);
@@ -94,10 +92,6 @@ class AdminProducts
                     $t = $deepl->translate($nameEs, 'en', 'ES');
                     $nameEn = $t[0] ?? '';
                 }
-                if (empty($nameCa)) {
-                    $t = $deepl->translate($nameEs, 'ca', 'ES');
-                    $nameCa = $t[0] ?? '';
-                }
                 if (empty($nameUk)) {
                     $t = $deepl->translate($nameEs, 'uk', 'ES');
                     $nameUk = $t[0] ?? '';
@@ -108,10 +102,6 @@ class AdminProducts
                     if (empty($descEn)) {
                         $t = $deepl->translate($descEs, 'en', 'ES');
                         $descEn = $t[0] ?? '';
-                    }
-                    if (empty($descCa)) {
-                        $t = $deepl->translate($descEs, 'ca', 'ES');
-                        $descCa = $t[0] ?? '';
                     }
                     if (empty($descUk)) {
                         $t = $deepl->translate($descEs, 'uk', 'ES');
@@ -131,12 +121,10 @@ class AdminProducts
         // Fallback for any remaining empty language fields
         $input['name_es']        = $nameEs;
         $input['name_en']        = !empty($nameEn) ? $nameEn : $nameEs;
-        $input['name_ca']        = !empty($nameCa) ? $nameCa : $nameEs;
         $input['name_uk']        = !empty($nameUk) ? $nameUk : $nameEs;
 
         $input['description_es'] = $descEs;
         $input['description_en'] = !empty($descEn) ? $descEn : $descEs;
-        $input['description_ca'] = !empty($descCa) ? $descCa : $descEs;
         $input['description_uk'] = !empty($descUk) ? $descUk : $descEs;
     }
 
@@ -156,7 +144,7 @@ class AdminProducts
             return $menuData;
         }
 
-        $targetLangs = ['en', 'ca', 'uk'];
+        $targetLangs = ['en', 'uk'];
 
         foreach ($targetLangs as $lang) {
             $textsToTranslate = [];
@@ -250,7 +238,6 @@ class AdminProducts
         if (!empty($badgeEs)) {
             $data['badge_es'] = $badgeEs;
             $data['badge_en'] = $data['badge_en'] ?? $badgeEs;
-            $data['badge_ca'] = $data['badge_ca'] ?? $badgeEs;
             $data['badge_uk'] = $data['badge_uk'] ?? $badgeEs;
         }
 
@@ -258,7 +245,6 @@ class AdminProducts
         if (!empty($includesEs)) {
             $data['includes_es'] = $includesEs;
             $data['includes_en'] = $data['includes_en'] ?? $includesEs;
-            $data['includes_ca'] = $data['includes_ca'] ?? $includesEs;
             $data['includes_uk'] = $data['includes_uk'] ?? $includesEs;
         }
 
@@ -271,7 +257,6 @@ class AdminProducts
                 if (!empty($titleEs)) {
                     $sec['title_es'] = $titleEs;
                     $sec['title_en'] = $sec['title_en'] ?? $titleEs;
-                    $sec['title_ca'] = $sec['title_ca'] ?? $titleEs;
                     $sec['title_uk'] = $sec['title_uk'] ?? $titleEs;
                 }
             }
@@ -440,11 +425,9 @@ class AdminProducts
             'slug'           => trim((string) ($input['slug'] ?? '')),
             'name_es'        => trim((string) ($input['name_es'] ?? '')),
             'name_en'        => trim((string) ($input['name_en'] ?? '')),
-            'name_ca'        => trim((string) ($input['name_ca'] ?? '')),
             'name_uk'        => trim((string) ($input['name_uk'] ?? '')),
             'description_es' => trim((string) ($input['description_es'] ?? '')),
             'description_en' => trim((string) ($input['description_en'] ?? '')),
-            'description_ca' => trim((string) ($input['description_ca'] ?? '')),
             'description_uk' => trim((string) ($input['description_uk'] ?? '')),
             'price'          => (float) ($input['price'] ?? 0),
             'image_url'      => ProductRepo::normalizeImageUrl($input['image_url'] ?? null),
@@ -550,11 +533,9 @@ class AdminProducts
             'slug'           => trim((string) ($input['slug'] ?? '')),
             'name_es'        => trim((string) ($input['name_es'] ?? '')),
             'name_en'        => trim((string) ($input['name_en'] ?? '')),
-            'name_ca'        => trim((string) ($input['name_ca'] ?? '')),
             'name_uk'        => trim((string) ($input['name_uk'] ?? '')),
             'description_es' => trim((string) ($input['description_es'] ?? '')),
             'description_en' => trim((string) ($input['description_en'] ?? '')),
-            'description_ca' => trim((string) ($input['description_ca'] ?? '')),
             'description_uk' => trim((string) ($input['description_uk'] ?? '')),
             'price'          => (float) ($input['price'] ?? 0),
             'image_url'      => ProductRepo::normalizeImageUrl($input['image_url'] ?? null),

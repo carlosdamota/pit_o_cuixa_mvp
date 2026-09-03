@@ -10,13 +10,13 @@
 const API_BASE = '/api';
 
 /** Allowed locale codes. */
-const ALLOWED = ['ca', 'es', 'en', 'uk'];
+const ALLOWED = ['es', 'en', 'uk'];
 
 /**
  * Get the current locale from the <html> lang attribute
  * or from the ?lang= query parameter.
  *
- * @returns {string}  Current locale code ('ca' | 'es' | 'en' | 'uk')
+ * @returns {string}  Current locale code ('es' | 'en' | 'uk')
  */
 function getLocale() {
   const htmlLang = document.documentElement.getAttribute('lang');
@@ -30,7 +30,7 @@ function getLocale() {
     return lang;
   }
 
-  return 'ca';
+  return 'es';
 }
 
 /**

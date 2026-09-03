@@ -41,8 +41,9 @@
  *      HTTP-level assertions (literal 405/401 bodies) are impractical in a
  *      single CLI process — see the inline limitation note.
  *   9. Audit-hardening slice 2 (change audit-hardening-security):
- *      - T4.3 MenuTranslator whitelist: col('name','ca') resolves through
- *        the LANGS whitelist, col('name','xx') throws, and
+ *      - T4.3 MenuTranslator whitelist: col('name','en') resolves through
+ *        the LANGS whitelist, col('name','ca') throws (Catalan removed),
+ *        col('name','xx') throws, and
  *        translateMissing(['xx']) throws BEFORE any SQL (TRANSL-6).
  *        The private resolver is exercised via reflection; supported langs
  *        run their queries normally as a positive control.
@@ -158,14 +159,14 @@ function makeProduct(string $slug, string $category = 'platos', int $sortOrder =
  */
 function seedCategories(\PDO $pdo): void
 {
-    $pdo->exec("INSERT INTO categories (slug, name_es, name_en, name_ca, name_uk, sort_order, is_active) VALUES
-        ('menus', 'Menu', 'Menu', 'Menú', '', 1, 1),
-        ('platos', 'Platos principales', 'Main dishes', 'Plats principals', '', 2, 1),
-        ('entrantes', 'Entrantes', 'Starters', 'Entrants', '', 3, 1),
-        ('bebidas', 'Bebidas', 'Drinks', 'Begudes', '', 4, 1),
-        ('postres', 'Postres', 'Desserts', 'Postres', '', 5, 1),
-        ('portes', 'Portes', 'Delivery Charges', 'Portes', '', 6, 1),
-        ('otros', 'Otros', '', '', '', 7, 1)");
+    $pdo->exec("INSERT INTO categories (slug, name_es, name_en, name_uk, sort_order, is_active) VALUES
+        ('menus', 'Menu', 'Menu', '', 1, 1),
+        ('platos', 'Platos principales', 'Main dishes', '', 2, 1),
+        ('entrantes', 'Entrantes', 'Starters', '', 3, 1),
+        ('bebidas', 'Bebidas', 'Drinks', '', 4, 1),
+        ('postres', 'Postres', 'Desserts', '', 5, 1),
+        ('portes', 'Portes', 'Delivery Charges', '', 6, 1),
+        ('otros', 'Otros', '', '', 7, 1)");
 }
 
 /**
@@ -672,8 +673,13 @@ try {
     $colMethod  = new \ReflectionMethod(\Pit\Cuixa\Backend\Services\MenuTranslator::class, 'col');
     $colMethod->setAccessible(true);
 
-    $resolvedCa = $colMethod->invoke($translator, 'name', 'ca');
-    record($resolvedCa === 'name_ca', 'T4.3: col(\'name\', \'ca\') resolves to the whitelisted column name_ca', 'got ' . var_export($resolvedCa, true));
+    $caColThrew = false;
+    try {
+        $colMethod->invoke($translator, 'name', 'ca');
+    } catch (\InvalidArgumentException $e) {
+        $caColThrew = true;
+    }
+    record($caColThrew, 'T4.3: col(\'name\', \'ca\') throws for the removed Catalan language');
 
     $resolvedEn = $colMethod->invoke($translator, 'description', 'en');
     record($resolvedEn === 'description_en', 'T4.3: col(\'description\', \'en\') resolves to description_en', 'got ' . var_export($resolvedEn, true));
@@ -697,7 +703,7 @@ try {
     record($badLangThrew, 'T4.3: translateMissing([\'xx\']) throws before any SQL (fail-closed)');
 
     // Positive control: a supported language runs the queries normally (no
-    // throw) — proving the whitelist admits the real CA/EN/UK path. Rows are
+    // throw) — proving the whitelist admits the real EN/UK path. Rows are
     // wiped first so no missing translation triggers a DeepL API call (which
     // would fail without DEEPL_API_KEY); the point is that the whitelisted
     // column queries execute against SQLite without error.
@@ -705,12 +711,12 @@ try {
     $pdo->exec('DELETE FROM categories');
     $supportedRan = false;
     try {
-        $translator->translateMissing(['ca']);
+        $translator->translateMissing(['en']);
         $supportedRan = true;
     } catch (\Throwable $e) {
         $supportedRan = false;
     }
-    record($supportedRan, 'T4.3: translateMissing([\'ca\']) runs queries normally (whitelist admits supported lang)');
+    record($supportedRan, 'T4.3: translateMissing([\'en\']) runs queries normally (whitelist admits supported lang)');
 
     // HTTP-level assertion gap (documented limitation): issuing real requests
     // against public/index.php to observe literal "405 Method Not Allowed" and
