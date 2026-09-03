@@ -4,9 +4,9 @@
 --
 -- NOTE: This file is the COMPLETE current schema — every migration has been
 -- folded in (role column, settings, Ukrainian fields, channels,
--- clicks_count, category refactor; the Catalan fields were removed by
--- migration 015). A fresh setup runs ONLY this file and
--- no longer needs db/migrations/.
+-- clicks_count, category refactor, users.mail recovery column (016);
+-- the Catalan fields were removed by migration 015). A fresh setup runs
+-- ONLY this file and no longer needs db/migrations/.
 --
 -- The catalog tables (categories, products) are intentionally EMPTY.
 -- They are populated by `php scripts/fill-menu.php`:
@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
     username    TEXT    NOT NULL UNIQUE,
     password    TEXT    NOT NULL,  -- bcrypt hash
     display_name TEXT   NOT NULL DEFAULT '',
+    mail        TEXT    NULL,      -- recovery email for the 2FA mail code (016)
     role        TEXT    NOT NULL DEFAULT 'admin',
     is_active   INTEGER NOT NULL DEFAULT 1,
     -- 2FA (TOTP): secret is stored ENCRYPTED at rest (AES-256-GCM, see Config::totpEncryptionKey)
