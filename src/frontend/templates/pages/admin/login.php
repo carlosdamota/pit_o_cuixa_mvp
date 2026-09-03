@@ -113,6 +113,15 @@ $csrfToken = $pageData['csrf_token'] ?? '';
 
             <div id="enroll-qrcode" class="admin-2fa-qr" hidden></div>
 
+            <div data-backup-codes-wrap hidden>
+                <p class="admin-2fa-backup-title">Códigos de respaldo</p>
+                <p class="admin-login__desc">
+                    Apúntalos ahora: se muestran <strong>una sola vez</strong> y cada uno
+                    permite entrar sin la app autenticadora (un solo uso).
+                </p>
+                <ul class="admin-2fa-backup" data-backup-codes></ul>
+            </div>
+
             <div class="admin-field">
                 <label for="enroll-code" class="admin-field__label">
                     Código de 6 dígitos
@@ -312,9 +321,10 @@ async function enrollStart() {
         const data = json.data ?? {};
         enrollStatus.textContent = '';
 
-        // QR code only (qrcodejs global from unpkg). The secret and backup
-        // codes are NOT exposed to the client — scan the QR and enter the 6-digit
-        // code. This is intentionally "scan → code → confirm", one and done.
+        // QR code (qrcodejs global from unpkg) plus the one-time backup codes.
+        // The codes arrive in plaintext ONLY in this response and just this once
+        // — server-side only their bcrypt hashes persist — so render them for
+        // the admin to write down before continuing.
         if (qr && typeof QRCode !== 'undefined') {
             qr.hidden = false;
             qr.innerHTML = '';
@@ -326,6 +336,22 @@ async function enrollStart() {
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M,
             });
+        }
+
+        const backupWrap = document.querySelector('[data-backup-codes-wrap]');
+        const backupList = document.querySelector('[data-backup-codes]');
+        if (backupWrap && backupList) {
+            if (Array.isArray(data.backup_codes) && data.backup_codes.length > 0) {
+                backupList.innerHTML = '';
+                for (const code of data.backup_codes) {
+                    const li = document.createElement('li');
+                    li.textContent = String(code);
+                    backupList.appendChild(li);
+                }
+                backupWrap.hidden = false;
+            } else {
+                backupWrap.hidden = true;
+            }
         }
     } catch (err) {
         enrollStatus.textContent = '';

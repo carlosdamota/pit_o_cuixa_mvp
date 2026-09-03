@@ -428,15 +428,16 @@ class AuthController
         $challengeRepo->storePendingSecret($enrollToken, Crypto::encrypt($secret));
         $backupRepo->storeMany($userId, $backupHashes);
 
-        // NOTE: secret_base32 and backup_codes are intentionally NOT returned
-        // to the client. The pending secret is staged encrypted on the challenge
-        // row (above) for the confirm step, and backup codes are stored
-        // server-side (hashed) so recovery keeps working — but neither is
-        // displayed in the UI.
+        // The pending secret is staged encrypted on the challenge row (above)
+        // for the confirm step. The PLAINTEXT backup codes are returned exactly
+        // ONCE here so the admin can write them down — only bcrypt hashes are
+        // persisted server-side, so this response is the sole moment they are
+        // ever visible.
         Response::json([
             'error' => false,
             'data'  => [
                 'provisioning_uri' => $uri,
+                'backup_codes'     => $backupCodes,
             ],
         ]);
     }
