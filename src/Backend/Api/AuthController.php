@@ -338,7 +338,21 @@ class AuthController
         }
 
         $mailer = new SmtpMailer($smtpHost, $smtpPort);
-        $result = $mailer->send($from, $to, $subject, $body, $smtpUser, $smtpPass);
+
+        // Belt and braces: any Throwable here must become a JSON 500 with the
+        // reason, never an uncaught fatal (empty HTML 500 on IIS).
+        try {
+            $result = $mailer->send($from, $to, $subject, $body, $smtpUser, $smtpPass);
+        } catch (\Throwable $e) {
+            error_log('SMTP send threw: ' . $e->getMessage());
+            Response::json([
+                'error'   => true,
+                'message' => 'Error al enviar el email',
+                'debug'   => $e->getMessage(),
+                'code'    => 500,
+            ], 500);
+            return;
+        }
 
         if (!$result['ok']) {
             Response::json([

@@ -38,11 +38,19 @@ class SmtpMailer
      */
     public function send(string $from, string $to, string $subject, string $body, string $user, string $pass): array
     {
+        // Capability checks: on a locked-down shared host a missing sockets
+        // or openssl extension would otherwise surface as an uncaught fatal
+        // error (an empty HTML 500 on IIS) instead of a diagnosable message.
+        if (!function_exists('fsockopen')) {
+            return ['ok' => false, 'error' => 'fsockopen() is not available on this server (sockets disabled)'];
+        }
+
         $errno  = 0;
         $errstr = '';
         $fp = @fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
 
-        if ($fp === false) {
+        // A disabled fsockopen returns null (not false) — catch both.
+        if (!is_resource($fp)) {
             return ['ok' => false, 'error' => "Connection failed: {$errstr} ({$errno})"];
         }
 
@@ -55,7 +63,12 @@ class SmtpMailer
         $this->write($fp, 'EHLO pitocuixa.es');
         $this->read($fp);
 
-        // STARTTLS
+        // STARTTLS — requires the openssl extension client-side
+        if (!function_exists('stream_socket_enable_crypto')) {
+            fclose($fp);
+            return ['ok' => false, 'error' => 'openssl PHP extension is not enabled on this server (required for STARTTLS)'];
+        }
+
         $this->write($fp, 'STARTTLS');
         $resp = $this->read($fp);
         if (strpos($resp, '220') !== 0) {
@@ -63,7 +76,7 @@ class SmtpMailer
             return ['ok' => false, 'error' => "STARTTLS failed: {$resp}"];
         }
 
-        if (!stream_socket_enable_crypto($fp, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT, true)) {
+        if (!stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT)) {
             fclose($fp);
             return ['ok' => false, 'error' => 'TLS handshake failed'];
         }
@@ -98,18 +111,32 @@ class SmtpMailer
 
         // MAIL FROM
         $this->write($fp, "MAIL FROM:<{$from}>");
-        $this->read($fp);
+        $resp = $this->read($fp);
+        if (strpos($resp, '250') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "MAIL FROM rejected: {$resp}"];
+        }
 
         // RCPT TO
         $this->write($fp, "RCPT TO:<{$to}>");
-        $this->read($fp);
+        $resp = $this->read($fp);
+        if (strpos($resp, '250') !== 0 && strpos($resp, '251') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "RCPT TO rejected: {$resp}"];
+        }
 
         // DATA
         $this->write($fp, 'DATA');
-        $this->read($fp);
+        $resp = $this->read($fp);
+        if (strpos($resp, '354') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "DATA rejected: {$resp}"];
+        }
 
         // Headers + body
-        $encodedSubject = mb_encode_mimeheader($subject, 'UTF-8', 'B');
+        $encodedSubject = function_exists('mb_encode_mimeheader')
+            ? mb_encode_mimeheader($subject, 'UTF-8', 'B')
+            : '=?UTF-8?B?' . base64_encode($subject) . '?=';
         $data  = "From: {$from}\r\n";
         $data .= "To: {$to}\r\n";
         $data .= "Subject: {$encodedSubject}\r\n";
@@ -121,7 +148,11 @@ class SmtpMailer
         $data .= ".\r\n";
 
         $this->write($fp, $data);
-        $this->read($fp);
+        $resp = $this->read($fp);
+        if (strpos($resp, '250') !== 0) {
+            fclose($fp);
+            return ['ok' => false, 'error' => "Message not accepted: {$resp}"];
+        }
 
         // QUIT
         $this->write($fp, 'QUIT');
