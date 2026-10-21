@@ -40,11 +40,10 @@ function initDeliveryMap(container) {
     scrollWheelZoom: false
   });
 
-  // Clean, high-performance OpenStreetMap / CartoDB tile layer
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    maxZoom: 18,
-    subdomains: 'abcd'
+  // OpenStreetMap standard tiles (no API key). CARTO basemaps now require a key.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
   }).addTo(map);
 
   // Locations coordinates
